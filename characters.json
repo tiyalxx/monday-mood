@@ -13,28 +13,28 @@
       "cp": "紅潮",
       "status": "active",
       "bio": "",
-      "avatarImg": "images/sinkingstar/avatar.jpg",
-      "fullbodyImg": "images/sinkingstar/fullbody.png",
+      "avatarImg": "images/sinkingstar/sinkingstar-avatar.jpg",
+      "fullbodyImg": "images/sinkingstar/sinkingstar-fullbody.png",
       "articles": [],
       "gallery": [
         {
-          "thumb": "images/sinkingstar/gallery-01.jpg",
-          "full": "images/sinkingstar/gallery-01.jpg",
+          "thumb": "images/sinkingstar/sinkingstar-gallery-01.jpg",
+          "full": "images/sinkingstar/sinkingstar-gallery-01.jpg",
           "caption": ""
         },
         {
-          "thumb": "images/sinkingstar/gallery-02.jpg",
-          "full": "images/sinkingstar/gallery-02.jpg",
+          "thumb": "images/sinkingstar/sinkingstar-gallery-02.jpg",
+          "full": "images/sinkingstar/sinkingstar-gallery-02.jpg",
           "caption": ""
         },
         {
-          "thumb": "images/sinkingstar/gallery-03.jpg",
-          "full": "images/sinkingstar/gallery-03.jpg",
+          "thumb": "images/sinkingstar/sinkingstar-gallery-03.jpg",
+          "full": "images/sinkingstar/sinkingstar-gallery-03.jpg",
           "caption": ""
         },
         {
-          "thumb": "images/sinkingstar/gallery-04.jpg",
-          "full": "images/sinkingstar/gallery-04.jpg",
+          "thumb": "images/sinkingstar/sinkingstar-gallery-04.jpg",
+          "full": "images/sinkingstar/sinkingstar-gallery-04.jpg",
           "caption": ""
         }
       ]
@@ -50,93 +50,88 @@
       "skill": "—",
       "status": "active",
       "bio": "",
-      "avatarImg": "images/beppe/avatar.png",
+      "avatarImg": "images/beppe/beppe-avatar.png",
       "fullbodyImg": "",
       "articles": [],
       "gallery": [
         {
-          "thumb": "images/beppe/gallery-01.png",
-          "full": "images/beppe/gallery-01.png",
+          "thumb": "images/beppe/beppe-gallery-01.png",
+          "full": "images/beppe/beppe-gallery-01.png",
           "caption": ""
         },
         {
-          "thumb": "images/beppe/gallery-02.png",
-          "full": "images/beppe/gallery-02.png",
+          "thumb": "images/beppe/beppe-gallery-02.png",
+          "full": "images/beppe/beppe-gallery-02.png",
           "caption": ""
         },
         {
-          "thumb": "images/beppe/gallery-03.png",
-          "full": "images/beppe/gallery-03.png",
+          "thumb": "images/beppe/beppe-gallery-03.png",
+          "full": "images/beppe/beppe-gallery-03.png",
           "caption": ""
         },
         {
-          "thumb": "images/beppe/gallery-04.png",
-          "full": "images/beppe/gallery-04.png",
+          "thumb": "images/beppe/beppe-gallery-04.png",
+          "full": "images/beppe/beppe-gallery-04.png",
           "caption": ""
         },
         {
-          "thumb": "images/beppe/gallery-05.png",
-          "full": "images/beppe/gallery-05.png",
+          "thumb": "images/beppe/beppe-gallery-05.png",
+          "full": "images/beppe/beppe-gallery-05.png",
           "caption": ""
         },
         {
-          "thumb": "images/beppe/gallery-06.png",
-          "full": "images/beppe/gallery-06.png",
+          "thumb": "images/beppe/beppe-gallery-06.png",
+          "full": "images/beppe/beppe-gallery-06.png",
           "caption": ""
         },
         {
-          "thumb": "images/beppe/gallery-07.png",
-          "full": "images/beppe/gallery-07.png",
+          "thumb": "images/beppe/beppe-gallery-07.png",
+          "full": "images/beppe/beppe-gallery-07.png",
           "caption": ""
         },
         {
-          "thumb": "images/beppe/gallery-08.png",
-          "full": "images/beppe/gallery-08.png",
+          "thumb": "images/beppe/beppe-gallery-08.png",
+          "full": "images/beppe/beppe-gallery-08.png",
           "caption": ""
         },
         {
-          "thumb": "images/beppe/gallery-09.png",
-          "full": "images/beppe/gallery-09.png",
+          "thumb": "images/beppe/beppe-gallery-09.png",
+          "full": "images/beppe/beppe-gallery-09.png",
           "caption": ""
         },
         {
-          "thumb": "images/beppe/gallery-10.png",
-          "full": "images/beppe/gallery-10.png",
+          "thumb": "images/beppe/beppe-gallery-10.png",
+          "full": "images/beppe/beppe-gallery-10.png",
           "caption": ""
         },
         {
-          "thumb": "images/beppe/gallery-11.png",
-          "full": "images/beppe/gallery-11.png",
+          "thumb": "images/beppe/beppe-gallery-11.png",
+          "full": "images/beppe/beppe-gallery-11.png",
           "caption": ""
         },
         {
-          "thumb": "images/beppe/gallery-12.png",
-          "full": "images/beppe/gallery-12.png",
+          "thumb": "images/beppe/beppe-gallery-12.png",
+          "full": "images/beppe/beppe-gallery-12.png",
           "caption": ""
         },
         {
-          "thumb": "images/beppe/gallery-13.jpg",
-          "full": "images/beppe/gallery-13.jpg",
+          "thumb": "images/beppe/beppe-gallery-13.jpg",
+          "full": "images/beppe/beppe-gallery-13.jpg",
           "caption": ""
         },
         {
-          "thumb": "images/beppe/gallery-14.png",
-          "full": "images/beppe/gallery-14.png",
+          "thumb": "images/beppe/beppe-gallery-15.png",
+          "full": "images/beppe/beppe-gallery-15.png",
           "caption": ""
         },
         {
-          "thumb": "images/beppe/gallery-15.png",
-          "full": "images/beppe/gallery-15.png",
+          "thumb": "images/beppe/beppe-gallery-16.jpg",
+          "full": "images/beppe/beppe-gallery-16.jpg",
           "caption": ""
         },
         {
-          "thumb": "images/beppe/gallery-16.jpg",
-          "full": "images/beppe/gallery-16.jpg",
-          "caption": ""
-        },
-        {
-          "thumb": "images/beppe/gallery-17.jpg",
-          "full": "images/beppe/gallery-17.jpg",
+          "thumb": "images/beppe/beppe-gallery-17.jpg",
+          "full": "images/beppe/beppe-gallery-17.jpg",
           "caption": ""
         }
       ],

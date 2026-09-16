@@ -1354,5 +1354,18 @@ document.addEventListener('mouseout', (e)=>{ if(e.target.closest(HOVER_SELECTOR)
   requestAnimationFrame(cursorLoop);
 })();
 </script>
+<!-- Netlify Identity：讓邀請信、忘記密碼的連結能正常運作（點連結後會跳出設定密碼的視窗） -->
+<script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+<script>
+  if (window.netlifyIdentity) {
+    window.netlifyIdentity.on("init", user => {
+      if (!user) {
+        window.netlifyIdentity.on("login", () => {
+          document.location.href = "/admin/";
+        });
+      }
+    });
+  }
+</script>
 </body>
 </html>
