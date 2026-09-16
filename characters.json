@@ -1,0 +1,147 @@
+{
+  "characters": [
+    {
+      "id": "coop-hero-01",
+      "category": "coop",
+      "world": "hero",
+      "codename": "沉星",
+      "realname": "瀧川原 晴",
+      "role": "首席英雄",
+      "affiliation": "守護之界",
+      "faction": "—",
+      "skill": "重力操控",
+      "cp": "紅潮",
+      "status": "active",
+      "bio": "",
+      "avatarImg": "images/sinkingstar/avatar.jpg",
+      "fullbodyImg": "images/sinkingstar/fullbody.png",
+      "articles": [],
+      "gallery": [
+        {
+          "thumb": "images/sinkingstar/gallery-01.jpg",
+          "full": "images/sinkingstar/gallery-01.jpg",
+          "caption": ""
+        },
+        {
+          "thumb": "images/sinkingstar/gallery-02.jpg",
+          "full": "images/sinkingstar/gallery-02.jpg",
+          "caption": ""
+        },
+        {
+          "thumb": "images/sinkingstar/gallery-03.jpg",
+          "full": "images/sinkingstar/gallery-03.jpg",
+          "caption": ""
+        },
+        {
+          "thumb": "images/sinkingstar/gallery-04.jpg",
+          "full": "images/sinkingstar/gallery-04.jpg",
+          "caption": ""
+        }
+      ]
+    },
+    {
+      "id": "coop-mafia-01",
+      "category": "coop",
+      "codename": "貝佩·馬爾塔奇",
+      "realname": "—",
+      "role": "指揮官(已卸任)",
+      "affiliation": "坎圖家族",
+      "faction": "MAFIA",
+      "skill": "—",
+      "status": "active",
+      "bio": "",
+      "avatarImg": "images/beppe/avatar.png",
+      "fullbodyImg": "",
+      "articles": [],
+      "gallery": [
+        {
+          "thumb": "images/beppe/gallery-01.png",
+          "full": "images/beppe/gallery-01.png",
+          "caption": ""
+        },
+        {
+          "thumb": "images/beppe/gallery-02.png",
+          "full": "images/beppe/gallery-02.png",
+          "caption": ""
+        },
+        {
+          "thumb": "images/beppe/gallery-03.png",
+          "full": "images/beppe/gallery-03.png",
+          "caption": ""
+        },
+        {
+          "thumb": "images/beppe/gallery-04.png",
+          "full": "images/beppe/gallery-04.png",
+          "caption": ""
+        },
+        {
+          "thumb": "images/beppe/gallery-05.png",
+          "full": "images/beppe/gallery-05.png",
+          "caption": ""
+        },
+        {
+          "thumb": "images/beppe/gallery-06.png",
+          "full": "images/beppe/gallery-06.png",
+          "caption": ""
+        },
+        {
+          "thumb": "images/beppe/gallery-07.png",
+          "full": "images/beppe/gallery-07.png",
+          "caption": ""
+        },
+        {
+          "thumb": "images/beppe/gallery-08.png",
+          "full": "images/beppe/gallery-08.png",
+          "caption": ""
+        },
+        {
+          "thumb": "images/beppe/gallery-09.png",
+          "full": "images/beppe/gallery-09.png",
+          "caption": ""
+        },
+        {
+          "thumb": "images/beppe/gallery-10.png",
+          "full": "images/beppe/gallery-10.png",
+          "caption": ""
+        },
+        {
+          "thumb": "images/beppe/gallery-11.png",
+          "full": "images/beppe/gallery-11.png",
+          "caption": ""
+        },
+        {
+          "thumb": "images/beppe/gallery-12.png",
+          "full": "images/beppe/gallery-12.png",
+          "caption": ""
+        },
+        {
+          "thumb": "images/beppe/gallery-13.jpg",
+          "full": "images/beppe/gallery-13.jpg",
+          "caption": ""
+        },
+        {
+          "thumb": "images/beppe/gallery-14.png",
+          "full": "images/beppe/gallery-14.png",
+          "caption": ""
+        },
+        {
+          "thumb": "images/beppe/gallery-15.png",
+          "full": "images/beppe/gallery-15.png",
+          "caption": ""
+        },
+        {
+          "thumb": "images/beppe/gallery-16.jpg",
+          "full": "images/beppe/gallery-16.jpg",
+          "caption": ""
+        },
+        {
+          "thumb": "images/beppe/gallery-17.jpg",
+          "full": "images/beppe/gallery-17.jpg",
+          "caption": ""
+        }
+      ],
+      "cp": "艾尼亞斯·坎圖",
+      "world": "mafia"
+    }
+  ]
+}

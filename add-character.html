@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Add Character — Monday's Mood</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
+:root{
+  --bg:#ffffff; --panel:#f6f6f4; --line:#e3e3e0;
+  --ink:#2a2a2e; --ink-soft:#6b6b70; --accent:#46545c;
+  --radius:12px; --radius-sm:8px;
+}
+*{box-sizing:border-box;}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:'Noto Sans TC', sans-serif;
+  padding:40px 20px 120px;
+}
+.wrap{max-width:760px; margin:0 auto;}
+h1{font-size:22px; margin:0 0 6px;}
+.note{color:var(--ink-soft); font-size:13.5px; margin:0 0 32px; line-height:1.7;}
+.note code{font-family:'IBM Plex Mono', monospace; background:var(--panel); padding:1px 5px; border-radius:4px;}
+fieldset{border:1px solid var(--line); border-radius:var(--radius); padding:20px 22px; margin:0 0 20px;}
+legend{font-family:'IBM Plex Mono', monospace; font-size:12px; color:var(--ink-soft); padding:0 6px;}
+label{display:block; font-size:12.5px; color:var(--ink-soft); margin:14px 0 6px;}
+label:first-child{margin-top:0;}
+input[type=text], textarea, select{
+  width:100%; border:1px solid var(--line); border-radius:var(--radius-sm);
+  padding:10px 12px; font-family:inherit; font-size:14px; color:var(--ink);
+  background:#fff;
+}
+textarea{resize:vertical; min-height:70px;}
+.row{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
+.row3{display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; align-items:end;}
+.repeat-item{border:1px dashed var(--line); border-radius:var(--radius-sm); padding:14px; margin-bottom:10px; position:relative;}
+.repeat-item button.remove{
+  position:absolute; top:8px; right:8px; border:none; background:none;
+  color:var(--ink-soft); cursor:pointer; font-size:16px; line-height:1;
+}
+.add-btn, .primary-btn, .copy-btn{
+  font-family:'IBM Plex Mono', monospace; font-size:12.5px; letter-spacing:.03em;
+  border:1px solid var(--ink); background:transparent; color:var(--ink);
+  border-radius:999px; padding:9px 18px; cursor:pointer;
+  transition:all .2s ease;
+}
+.add-btn:hover, .copy-btn:hover{background:var(--panel);}
+.primary-btn{background:var(--ink); color:#fff; padding:13px 26px; font-size:13.5px;}
+.primary-btn:hover{opacity:.85;}
+.actions{margin-top:8px;}
+#output-wrap{margin-top:28px; display:none;}
+#output{
+  width:100%; min-height:260px; font-family:'IBM Plex Mono', monospace; font-size:12.5px;
+  border:1px solid var(--line); border-radius:var(--radius-sm); padding:16px; background:var(--panel);
+  white-space:pre; overflow:auto;
+}
+.output-actions{display:flex; gap:10px; margin-top:10px; align-items:center;}
+.copied-msg{font-size:12px; color:var(--accent); font-family:'IBM Plex Mono', monospace; opacity:0; transition:opacity .3s ease;}
+.copied-msg.show{opacity:1;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Add a Character</h1>
+  <p class="note">
+    填好下面的表單，按最下面的「Generate JSON」，會產生一段可以直接貼進 <code>characters.json</code> 的內容。<br>
+    貼的位置：打開 <code>characters.json</code>，找到陣列最後一個 <code>}</code>，在它後面加一個逗號 <code>,</code>，然後把產生的內容貼在後面（放在最外層的 <code>]</code> 之前）。存檔後重新整理網站就會看到新角色。
+  </p>
+
+  <fieldset>
+    <legend>BASIC</legend>
+    <label>Codename（角色名稱 / 代號）</label>
+    <input type="text" id="codename" placeholder="e.g. White Night">
+
+    <div class="row">
+      <div>
+        <label>Real Name（本名，沒有可留空）</label>
+        <input type="text" id="realname" placeholder="—">
+      </div>
+      <div>
+        <label>Role（身分 / 角色定位）</label>
+        <input type="text" id="role" placeholder="e.g. Solo Storyline">
+      </div>
+    </div>
+
+    <div class="row">
+      <div>
+        <label>Category（分類）</label>
+        <select id="category">
+          <option value="original">Original（企劃）</option>
+          <option value="coop">Collab（共構）</option>
+        </select>
+      </div>
+      <div id="world-field">
+        <label>World（世界觀，只有 Collab 需要選）</label>
+        <select id="world">
+          <option value="mafia">Mafia</option>
+          <option value="ancient">Ancient</option>
+          <option value="hero">Hero</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="row">
+      <div>
+        <label>Affiliation（所屬）</label>
+        <input type="text" id="affiliation" placeholder="—">
+      </div>
+      <div>
+        <label>Faction（分類標籤，例如 MAFIA / HERO，企劃角色可留空或自訂）</label>
+        <input type="text" id="faction" placeholder="—">
+      </div>
+    </div>
+
+    <div class="row">
+      <div>
+        <label>Skill（專長）</label>
+        <input type="text" id="skill" placeholder="—">
+      </div>
+      <div>
+        <label>Status（狀態）</label>
+        <select id="status">
+          <option value="active">Active</option>
+          <option value="classified">Classified</option>
+          <option value="archived">Archived</option>
+        </select>
+      </div>
+    </div>
+
+    <label>Bio（簡介）</label>
+    <textarea id="bio" placeholder="角色簡介..."></textarea>
+  </fieldset>
+
+  <fieldset>
+    <legend>IMAGES（先留空也可以，之後補圖片路徑即可）</legend>
+    <label>Avatar Image path（大頭照，例如 images/whitenight/avatar.jpg）</label>
+    <input type="text" id="avatarImg" placeholder="images/角色資料夾/avatar.jpg">
+    <label>Full Body Image path（全身立繪）</label>
+    <input type="text" id="fullbodyImg" placeholder="images/角色資料夾/fullbody.jpg">
+  </fieldset>
+
+  <fieldset>
+    <legend>ARTICLES（外連文章，可不填）</legend>
+    <div id="articles-list"></div>
+    <button type="button" class="add-btn" onclick="addArticle()">+ Add Article</button>
+  </fieldset>
+
+  <fieldset>
+    <legend>GALLERY（圖片，可不填）</legend>
+    <div id="gallery-list"></div>
+    <button type="button" class="add-btn" onclick="addGalleryItem()">+ Add Image</button>
+  </fieldset>
+
+  <div class="actions">
+    <button type="button" class="primary-btn" onclick="generate()">Generate JSON →</button>
+  </div>
+
+  <div id="output-wrap">
+    <label>把下面這段貼到 characters.json：</label>
+    <textarea id="output" readonly></textarea>
+    <div class="output-actions">
+      <button type="button" class="copy-btn" onclick="copyOutput()">Copy</button>
+      <span class="copied-msg" id="copied-msg">已複製 / Copied!</span>
+    </div>
+  </div>
+</div>
+
+<script>
+function toggleWorldField(){
+  document.getElementById('world-field').style.display =
+    document.getElementById('category').value === 'coop' ? 'block' : 'none';
+}
+document.getElementById('category').addEventListener('change', toggleWorldField);
+toggleWorldField();
+
+function addArticle(article){
+  const wrap = document.createElement('div');
+  wrap.className = 'repeat-item';
+  wrap.innerHTML = `
+    <button type="button" class="remove" onclick="this.parentElement.remove()">✕</button>
+    <label>Title</label><input type="text" class="a-title" value="${article?.title||''}">
+    <label>Source（例如 BOOTH、Vocus、X (Twitter)）</label><input type="text" class="a-src" value="${article?.src||''}">
+    <label>URL</label><input type="text" class="a-url" value="${article?.url||''}" placeholder="https://...">
+  `;
+  document.getElementById('articles-list').appendChild(wrap);
+}
+function addGalleryItem(item){
+  const wrap = document.createElement('div');
+  wrap.className = 'repeat-item';
+  wrap.innerHTML = `
+    <button type="button" class="remove" onclick="this.parentElement.remove()">✕</button>
+    <div class="row">
+      <div><label>Thumbnail path</label><input type="text" class="g-thumb" value="${item?.thumb||''}"></div>
+      <div><label>Full image path</label><input type="text" class="g-full" value="${item?.full||''}"></div>
+    </div>
+    <label>Caption（可留空）</label><input type="text" class="g-caption" value="${item?.caption||''}">
+  `;
+  document.getElementById('gallery-list').appendChild(wrap);
+}
+
+function slugify(str){
+  return (str||'untitled').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'') || 'untitled';
+}
+
+function generate(){
+  const category = document.getElementById('category').value;
+  const world = document.getElementById('world').value;
+  const codename = document.getElementById('codename').value.trim() || 'Untitled';
+
+  const idPrefix = category === 'original' ? 'orig' : `coop-${world}`;
+  const id = `${idPrefix}-${slugify(codename)}`;
+
+  const obj = {
+    id, category,
+    ...(category === 'coop' ? { world } : {}),
+    codename,
+    realname: document.getElementById('realname').value.trim() || '—',
+    role: document.getElementById('role').value.trim() || '—',
+    affiliation: document.getElementById('affiliation').value.trim() || '—',
+    faction: document.getElementById('faction').value.trim() || '—',
+    skill: document.getElementById('skill').value.trim() || '—',
+    status: document.getElementById('status').value,
+    bio: document.getElementById('bio').value.trim(),
+    avatarImg: document.getElementById('avatarImg').value.trim(),
+    fullbodyImg: document.getElementById('fullbodyImg').value.trim(),
+    articles: Array.from(document.querySelectorAll('#articles-list .repeat-item')).map(el=>({
+      title: el.querySelector('.a-title').value.trim(),
+      src: el.querySelector('.a-src').value.trim(),
+      url: el.querySelector('.a-url').value.trim() || '#',
+    })),
+    gallery: Array.from(document.querySelectorAll('#gallery-list .repeat-item')).map(el=>{
+      const cap = el.querySelector('.g-caption').value.trim();
+      const item = {
+        thumb: el.querySelector('.g-thumb').value.trim(),
+        full: el.querySelector('.g-full').value.trim(),
+      };
+      if(cap) item.caption = cap;
+      return item;
+    }),
+  };
+
+  const json = JSON.stringify(obj, null, 2);
+  document.getElementById('output').value = json + ',';
+  document.getElementById('output-wrap').style.display = 'block';
+  document.getElementById('output-wrap').scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+function copyOutput(){
+  const ta = document.getElementById('output');
+  ta.select();
+  navigator.clipboard.writeText(ta.value).then(()=>{
+    const msg = document.getElementById('copied-msg');
+    msg.classList.add('show');
+    setTimeout(()=>msg.classList.remove('show'), 1800);
+  }).catch(()=>{ document.execCommand('copy'); });
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,65 @@
+backend:
+  name: git-gateway
+  branch: main
+
+# 圖片上傳後會放在這個資料夾（網站裡的 images/uploads/）
+media_folder: "images/uploads"
+public_folder: "/images/uploads"
+
+# 存檔後直接發布，不需要額外審核流程
+publish_mode: simple
+
+collections:
+  - name: "characters"
+    label: "角色資料庫 Characters"
+    files:
+      - file: "characters.json"
+        label: "所有角色 All Characters"
+        name: "characters"
+        fields:
+          - label: "角色列表 Characters"
+            name: "characters"
+            widget: "list"
+            summary: "{{fields.codename}} — {{fields.role}}"
+            fields:
+              - {label: "ID（例如 coop-hero-02，同分類底下不要重複）", name: "id", widget: "string"}
+              - {label: "分類 Category", name: "category", widget: "select", options: [
+                  {label: "企劃 Original", value: "original"},
+                  {label: "共構 Collab", value: "coop"}
+                ]}
+              - {label: "世界觀 World（只有共構需要選）", name: "world", widget: "select", required: false, options: [
+                  {label: "Mafia", value: "mafia"},
+                  {label: "Ancient", value: "ancient"},
+                  {label: "Hero", value: "hero"}
+                ]}
+              - {label: "代號 Codename", name: "codename", widget: "string"}
+              - {label: "本名 Real Name", name: "realname", widget: "string", required: false, default: "—"}
+              - {label: "身分 Role", name: "role", widget: "string", required: false, default: "—"}
+              - {label: "所屬 Affiliation", name: "affiliation", widget: "string", required: false, default: "—"}
+              - {label: "分類標籤 Faction", name: "faction", widget: "string", required: false, default: "—"}
+              - {label: "專長 Skill", name: "skill", widget: "string", required: false, default: "—"}
+              - {label: "CP", name: "cp", widget: "string", required: false}
+              - {label: "狀態 Status", name: "status", widget: "select", options: [
+                  {label: "Active", value: "active"},
+                  {label: "Classified", value: "classified"},
+                  {label: "Archived", value: "archived"}
+                ], default: "active"}
+              - {label: "簡介 Bio", name: "bio", widget: "text", required: false}
+              - {label: "大頭照 Avatar Image", name: "avatarImg", widget: "image", required: false}
+              - {label: "全身立繪 Fullbody Image", name: "fullbodyImg", widget: "image", required: false}
+              - label: "外連文章 Articles"
+                name: "articles"
+                widget: "list"
+                required: false
+                fields:
+                  - {label: "標題 Title", name: "title", widget: "string"}
+                  - {label: "來源 Source", name: "src", widget: "string"}
+                  - {label: "連結 URL", name: "url", widget: "string"}
+              - label: "圖片 Gallery"
+                name: "gallery"
+                widget: "list"
+                required: false
+                fields:
+                  - {label: "縮圖 Thumbnail", name: "thumb", widget: "image"}
+                  - {label: "原圖 Full Image", name: "full", widget: "image"}
+                  - {label: "說明 Caption", name: "caption", widget: "string", required: false}
