@@ -38,13 +38,15 @@ collections:
               - {label: "所屬 Affiliation", name: "affiliation", widget: "string", required: false, default: "—"}
               - {label: "分類標籤 Faction", name: "faction", widget: "string", required: false, default: "—"}
               - {label: "專長 Skill", name: "skill", widget: "string", required: false, default: "—"}
+              - {label: "身高 Height", name: "height", widget: "string", required: false}
+              - {label: "生日 Birthday", name: "birthday", widget: "string", required: false}
+              - {label: "年齡 Age", name: "age", widget: "string", required: false}
               - {label: "CP", name: "cp", widget: "string", required: false}
               - {label: "狀態 Status", name: "status", widget: "select", options: [
-                  {label: "Active", value: "active"},
-                  {label: "Classified", value: "classified"},
-                  {label: "Archived", value: "archived"}
-                ], default: "active"}
-              - {label: "簡介 Bio", name: "bio", widget: "text", required: false}
+                  {label: "生存 Alive", value: "alive"},
+                  {label: "死亡 Dead", value: "dead"}
+                ], default: "alive"}
+              - {label: "簡介 Bio（想分段的話，中間空一行就會自動分段）", name: "bio", widget: "text", required: false}
               - {label: "大頭照 Avatar Image", name: "avatarImg", widget: "image", required: false}
               - {label: "全身立繪 Fullbody Image", name: "fullbodyImg", widget: "image", required: false}
               - label: "外連文章 Articles"
