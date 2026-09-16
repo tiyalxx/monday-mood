@@ -1,21 +1,13 @@
 {
   "characters": [
     {
-      "id": "coop-hero-01",
-      "category": "coop",
-      "world": "hero",
-      "codename": "沉星",
-      "realname": "瀧川原 晴",
-      "role": "首席英雄",
-      "affiliation": "守護之界",
-      "faction": "—",
-      "skill": "重力操控",
-      "cp": "紅潮",
-      "status": "active",
       "bio": "",
+      "realname": "瀧川原 晴",
       "avatarImg": "images/sinkingstar/sinkingstar-avatar.jpg",
+      "cp": "紅潮",
+      "affiliation": "守護之界",
+      "skill": "重力操控",
       "fullbodyImg": "images/sinkingstar/sinkingstar-fullbody.png",
-      "articles": [],
       "gallery": [
         {
           "thumb": "images/sinkingstar/sinkingstar-gallery-01.jpg",
@@ -36,23 +28,29 @@
           "thumb": "images/sinkingstar/sinkingstar-gallery-04.jpg",
           "full": "images/sinkingstar/sinkingstar-gallery-04.jpg",
           "caption": ""
+        },
+        {
+          "full": "https://images.plurk.com/T4nZcSKuixF2Gr5W4qKhu.jpg",
+          "thumb": "https://images.plurk.com/T4nZcSKuixF2Gr5W4qKhu.jpg"
         }
-      ]
+      ],
+      "world": "hero",
+      "status": "active",
+      "role": "首席英雄",
+      "codename": "沉星",
+      "id": "coop-hero-01",
+      "faction": "—",
+      "articles": [],
+      "category": "coop"
     },
     {
-      "id": "coop-mafia-01",
-      "category": "coop",
-      "codename": "貝佩·馬爾塔奇",
-      "realname": "—",
-      "role": "指揮官(已卸任)",
-      "affiliation": "坎圖家族",
-      "faction": "MAFIA",
-      "skill": "—",
-      "status": "active",
       "bio": "",
+      "realname": "—",
       "avatarImg": "images/beppe/beppe-avatar.png",
+      "cp": "艾尼亞斯·坎圖",
+      "affiliation": "坎圖家族",
+      "skill": "—",
       "fullbodyImg": "",
-      "articles": [],
       "gallery": [
         {
           "thumb": "images/beppe/beppe-gallery-01.png",
@@ -135,8 +133,14 @@
           "caption": ""
         }
       ],
-      "cp": "艾尼亞斯·坎圖",
-      "world": "mafia"
+      "world": "mafia",
+      "status": "active",
+      "role": "指揮官(已卸任)",
+      "codename": "貝佩·馬爾塔奇",
+      "id": "coop-mafia-01",
+      "faction": "MAFIA",
+      "articles": [],
+      "category": "coop"
     }
   ]
 }
