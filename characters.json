@@ -141,6 +141,26 @@
       "faction": "MAFIA",
       "articles": [],
       "category": "coop"
+    },
+    {
+      "realname": "羽深 洸夜",
+      "avatarImg": "https://images.plurk.com/2MS483CBdNNBqEuVRzOCh4.jpg",
+      "cp": "心念 (大石 心陸)",
+      "affiliation": "守護之界",
+      "skill": "穿透",
+      "gallery": [
+        {
+          "thumb": "https://images.plurk.com/4sORqYGLBbVf7jxl50EZrk.jpg",
+          "full": "https://images.plurk.com/4sORqYGLBbVf7jxl50EZrk.jpg"
+        }
+      ],
+      "world": "hero",
+      "status": "active",
+      "role": "第三席次英雄",
+      "codename": "霧相",
+      "id": "coop-hero-02",
+      "faction": "—",
+      "category": "coop"
     }
   ]
 }
