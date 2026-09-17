@@ -1,47 +1,7 @@
 {
   "characters": [
     {
-      "height": "192",
-      "bio": "沉星能創造並操控特定區域的重力場，並可調整這個區域的重力強度、方向，甚至讓物體在空中懸浮。不過操控重力需消耗大量體力或精神力，維持過久會對身體產生負擔。\n\n終極：天體引力共鳴\n\n在特定情況下，能與星球或其他天體的重力共鳴，暫時獲得強大的重力增幅，但僅能維持幾秒，這種共鳴能引發地面裂縫、崩塌或強大的推擠力。\n\n他在年僅25歲就成為「守護之界」的首席，擁有許多驚人的戰鬥與救援經歷。據說他是在太空艙裡出生的，天生就能將重力操控自如。\n\n實際上是傳奇英雄「裂空」的兒子。\n\n個性爽朗，臉上總是充滿笑容，是民眾相當信賴的英雄，人氣也很旺，沉星玩偶總是在開售後一小時就缺貨。",
-      "realname": "瀧川原 晴",
-      "avatarImg": "images/sinkingstar/sinkingstar-avatar.jpg",
-      "cp": "紅潮",
-      "affiliation": "守護之界",
-      "skill": "重力操控",
-      "fullbodyImg": "images/sinkingstar/sinkingstar-fullbody.png",
-      "gallery": [
-        {
-          "thumb": "images/sinkingstar/sinkingstar-gallery-01.jpg",
-          "full": "images/sinkingstar/sinkingstar-gallery-01.jpg",
-          "caption": ""
-        },
-        {
-          "thumb": "images/sinkingstar/sinkingstar-gallery-02.jpg",
-          "full": "images/sinkingstar/sinkingstar-gallery-02.jpg",
-          "caption": ""
-        },
-        {
-          "thumb": "images/sinkingstar/sinkingstar-gallery-03.jpg",
-          "full": "images/sinkingstar/sinkingstar-gallery-03.jpg",
-          "caption": ""
-        },
-        {
-          "thumb": "images/sinkingstar/sinkingstar-gallery-04.jpg",
-          "full": "images/sinkingstar/sinkingstar-gallery-04.jpg",
-          "caption": ""
-        }
-      ],
-      "world": "hero",
-      "status": "alive",
-      "role": "首席英雄",
-      "codename": "沉星",
-      "id": "coop-hero-01",
-      "faction": "—",
-      "articles": [],
-      "category": "coop",
-      "age": "25"
-    },
-    {
+      "height": "187",
       "bio": "",
       "realname": "—",
       "avatarImg": "images/beppe/beppe-avatar.png",
@@ -138,7 +98,49 @@
       "id": "coop-mafia-01",
       "faction": "MAFIA",
       "articles": [],
-      "category": "coop"
+      "category": "coop",
+      "age": "30→35"
+    },
+    {
+      "height": "192",
+      "bio": "沉星能創造並操控特定區域的重力場，並可調整這個區域的重力強度、方向，甚至讓物體在空中懸浮。不過操控重力需消耗大量體力或精神力，維持過久會對身體產生負擔。\n\n終極：天體引力共鳴\n\n在特定情況下，能與星球或其他天體的重力共鳴，暫時獲得強大的重力增幅，但僅能維持幾秒，這種共鳴能引發地面裂縫、崩塌或強大的推擠力。\n\n他在年僅25歲就成為「守護之界」的首席，擁有許多驚人的戰鬥與救援經歷。據說他是在太空艙裡出生的，天生就能將重力操控自如。\n\n實際上是傳奇英雄「裂空」的兒子。\n\n個性爽朗，臉上總是充滿笑容，是民眾相當信賴的英雄，人氣也很旺，沉星玩偶總是在開售後一小時就缺貨。",
+      "realname": "瀧川原 晴",
+      "avatarImg": "images/sinkingstar/sinkingstar-avatar.jpg",
+      "cp": "紅潮",
+      "affiliation": "守護之界",
+      "skill": "重力操控",
+      "fullbodyImg": "images/sinkingstar/sinkingstar-fullbody.png",
+      "gallery": [
+        {
+          "thumb": "images/sinkingstar/sinkingstar-gallery-01.jpg",
+          "full": "images/sinkingstar/sinkingstar-gallery-01.jpg",
+          "caption": ""
+        },
+        {
+          "thumb": "images/sinkingstar/sinkingstar-gallery-02.jpg",
+          "full": "images/sinkingstar/sinkingstar-gallery-02.jpg",
+          "caption": ""
+        },
+        {
+          "thumb": "images/sinkingstar/sinkingstar-gallery-03.jpg",
+          "full": "images/sinkingstar/sinkingstar-gallery-03.jpg",
+          "caption": ""
+        },
+        {
+          "thumb": "images/sinkingstar/sinkingstar-gallery-04.jpg",
+          "full": "images/sinkingstar/sinkingstar-gallery-04.jpg",
+          "caption": ""
+        }
+      ],
+      "world": "hero",
+      "status": "alive",
+      "role": "首席英雄",
+      "codename": "沉星",
+      "id": "coop-hero-01",
+      "faction": "—",
+      "articles": [],
+      "category": "coop",
+      "age": "25"
     },
     {
       "height": "185",
@@ -168,6 +170,141 @@
       "role": "第五席次英雄",
       "codename": "殛導",
       "id": "coop-hero-03",
+      "faction": "—",
+      "category": "coop"
+    },
+    {
+      "height": "188",
+      "bio": "守護之界席次上一個時代留下來的最後一個人，天傾曾經的隊友不是退休就是死亡，只剩下他還繼續留在這個位子。\n\n論實力能夠排進席次前三，但論公眾形象卻相當糟糕，長年酗酒，曾被媒體拍到深夜在居酒屋門口滿身酒氣的跟路人吵架，也有在現場直播的記者會上宿醉嘔吐的事蹟。特別喜歡逗弄那些認真、嚴肅的後輩，大叔的捉弄總是無下限，讓人看到他就想翻白眼。\n\n天傾能強制將大範圍內萬物的摩擦力歸零。因難以掌握目標，算是不分敵我的異能，通常不會讓同伴跟他一起出任務。",
+      "realname": "御洗手 樞",
+      "cp": "藏家",
+      "affiliation": "守護之界",
+      "skill": "萬象流失",
+      "world": "hero",
+      "status": "alive",
+      "role": "第六席次英雄",
+      "codename": "天傾",
+      "id": "coop-hero-04",
+      "faction": "—",
+      "category": "coop",
+      "age": "45"
+    },
+    {
+      "height": "180",
+      "realname": "—",
+      "cp": "苔見 幸織",
+      "affiliation": "守護之界",
+      "skill": "連鎖效應",
+      "world": "hero",
+      "status": "alive",
+      "role": "第八席次英雄",
+      "codename": "漣影",
+      "id": "coop-hero-05",
+      "faction": "—",
+      "category": "coop",
+      "age": "20"
+    },
+    {
+      "height": "190",
+      "realname": "銀河 零士",
+      "cp": "司令 (宮本 目魅)",
+      "affiliation": "守護之界",
+      "skill": "機鋼躰",
+      "world": "hero",
+      "status": "alive",
+      "role": "第九席次英雄",
+      "codename": "銀核",
+      "id": "coop-hero-06",
+      "faction": "—",
+      "category": "coop",
+      "age": "35"
+    },
+    {
+      "height": "182",
+      "realname": "鷹埜 轟真",
+      "cp": "冰紗",
+      "affiliation": "守護之界",
+      "skill": "體能提升",
+      "world": "hero",
+      "status": "alive",
+      "role": "第十一席次英雄",
+      "codename": "狂躍",
+      "id": "coop-hero-07",
+      "faction": "—",
+      "category": "coop",
+      "age": "19"
+    },
+    {
+      "height": "184",
+      "realname": "嶺崎 燿司",
+      "cp": "亞里宮士 琉",
+      "affiliation": "",
+      "skill": "—",
+      "world": "hero",
+      "status": "alive",
+      "role": "異能研究開發博士 (原惡人)",
+      "codename": "噬元",
+      "id": "coop-hero-08",
+      "faction": "分解重組",
+      "category": "coop",
+      "age": "45 (外表30)"
+    },
+    {
+      "height": "189",
+      "bio": "慾律和昏葵出身於同一個製造能力者的實驗室，與昏葵的身體改造不同，他本身就有精神操控的能力，但是在實驗室中被加強。\n\n他可以調整目標的「慾望權重」，可透過語音、觸碰和目光進行影響，不同於心念能改變當下的想法，而是作為長期的慾望調整，影響目標的整個行為；例如，可以抑制某人的食慾，讓他逐漸減少食量，長期下來達到節食的舉動。\n\n給人的感覺有一點像騙子，大概是因為從小就在黑市遊蕩而學來的生存方式。\n基本上不出外勤，因為能力的關係，自身的慾望幾乎趨於各種極端的狀態，需要定期做身體機能的修復，否則很可能過勞、或是過於飢餓等等。",
+      "realname": "不可考",
+      "cp": "栞梣",
+      "affiliation": "—",
+      "skill": "精神慾望干涉",
+      "world": "hero",
+      "status": "alive",
+      "role": "英雄心理醫生",
+      "codename": "慾律",
+      "id": "coop-hero-09",
+      "faction": "—",
+      "category": "coop",
+      "age": "26"
+    },
+    {
+      "height": "189",
+      "realname": "—",
+      "cp": "久遠鴉 狷雅",
+      "affiliation": "—",
+      "skill": "殘影軌跡",
+      "world": "hero",
+      "status": "alive",
+      "role": "惡人 (改造人)",
+      "codename": "昏葵",
+      "id": "coop-hero-10",
+      "faction": "—",
+      "category": "coop",
+      "age": "25"
+    },
+    {
+      "height": "187",
+      "realname": "—",
+      "cp": "大石 蓮司",
+      "affiliation": "—",
+      "skill": "審判",
+      "world": "hero",
+      "status": "alive",
+      "role": "天峰集團總裁",
+      "codename": "天峰 滕征",
+      "id": "coop-hero-11",
+      "faction": "—",
+      "category": "coop",
+      "age": "32"
+    },
+    {
+      "height": "186",
+      "realname": "—",
+      "affiliation": "—",
+      "skill": "—",
+      "world": "hero",
+      "status": "alive",
+      "role": "—",
+      "codename": " 宮本 深繼",
+      "id": "coop-hero-12",
       "faction": "—",
       "category": "coop"
     }
