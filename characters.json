@@ -1,21 +1,14 @@
 {
   "characters": [
     {
-      "id": "coop-hero-01",
-      "category": "coop",
-      "world": "hero",
-      "codename": "沉星",
+      "height": "192",
+      "bio": "沉星能創造並操控特定區域的重力場，並可調整這個區域的重力強度、方向，甚至讓物體在空中懸浮。不過操控重力需消耗大量體力或精神力，維持過久會對身體產生負擔。\n\n終極：天體引力共鳴\n\n在特定情況下，能與星球或其他天體的重力共鳴，暫時獲得強大的重力增幅，但僅能維持幾秒，這種共鳴能引發地面裂縫、崩塌或強大的推擠力。\n\n他在年僅25歲就成為「守護之界」的首席，擁有許多驚人的戰鬥與救援經歷。據說他是在太空艙裡出生的，天生就能將重力操控自如。\n\n實際上是傳奇英雄「裂空」的兒子。\n\n個性爽朗，臉上總是充滿笑容，是民眾相當信賴的英雄，人氣也很旺，沉星玩偶總是在開售後一小時就缺貨。",
       "realname": "瀧川原 晴",
-      "role": "首席英雄",
-      "affiliation": "守護之界",
-      "faction": "—",
-      "skill": "重力操控",
-      "cp": "紅潮",
-      "status": "alive",
-      "bio": "",
       "avatarImg": "images/sinkingstar/sinkingstar-avatar.jpg",
+      "cp": "紅潮",
+      "affiliation": "守護之界",
+      "skill": "重力操控",
       "fullbodyImg": "images/sinkingstar/sinkingstar-fullbody.png",
-      "articles": [],
       "gallery": [
         {
           "thumb": "images/sinkingstar/sinkingstar-gallery-01.jpg",
@@ -37,22 +30,25 @@
           "full": "images/sinkingstar/sinkingstar-gallery-04.jpg",
           "caption": ""
         }
-      ]
+      ],
+      "world": "hero",
+      "status": "alive",
+      "role": "首席英雄",
+      "codename": "沉星",
+      "id": "coop-hero-01",
+      "faction": "—",
+      "articles": [],
+      "category": "coop",
+      "age": "25"
     },
     {
-      "id": "coop-mafia-01",
-      "category": "coop",
-      "codename": "貝佩·馬爾塔奇",
-      "realname": "—",
-      "role": "指揮官(已卸任)",
-      "affiliation": "坎圖家族",
-      "faction": "MAFIA",
-      "skill": "—",
-      "status": "alive",
       "bio": "",
+      "realname": "—",
       "avatarImg": "images/beppe/beppe-avatar.png",
+      "cp": "艾尼亞斯·坎圖",
+      "affiliation": "坎圖家族",
+      "skill": "—",
       "fullbodyImg": "",
-      "articles": [],
       "gallery": [
         {
           "thumb": "images/beppe/beppe-gallery-01.png",
@@ -135,8 +131,14 @@
           "caption": ""
         }
       ],
-      "cp": "艾尼亞斯·坎圖",
-      "world": "mafia"
+      "world": "mafia",
+      "status": "alive",
+      "role": "指揮官(已卸任)",
+      "codename": "貝佩·馬爾塔奇",
+      "id": "coop-mafia-01",
+      "faction": "MAFIA",
+      "articles": [],
+      "category": "coop"
     }
   ]
 }
