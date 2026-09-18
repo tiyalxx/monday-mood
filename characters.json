@@ -298,6 +298,20 @@
       "age": "35"
     },
     {
+      "realname": "—",
+      "cp": "卡夏諾・達爾維利",
+      "affiliation": "維契尼家族",
+      "skill": "—",
+      "world": "mafia",
+      "status": "alive",
+      "role": "首領",
+      "codename": "內雷奧·維契尼",
+      "id": "coop-mafia-15",
+      "faction": "—",
+      "category": "coop",
+      "age": "23"
+    },
+    {
       "height": "188",
       "realname": "—",
       "cp": "克萊芒·波略特",
@@ -307,7 +321,7 @@
       "status": "alive",
       "role": "義大利外交官",
       "codename": "奎里諾·佩龍",
-      "id": "coop-mafia-15",
+      "id": "coop-mafia-16",
       "faction": "—",
       "category": "coop",
       "age": "46"
@@ -322,7 +336,7 @@
       "status": "alive",
       "role": "警察首長",
       "codename": "希西德羅·古佐",
-      "id": "coop-mafia-16",
+      "id": "coop-mafia-17",
       "faction": "—",
       "category": "coop",
       "age": "46"
@@ -337,7 +351,7 @@
       "status": "alive",
       "role": "調查員",
       "codename": "曼弗雷多·古佐",
-      "id": "coop-mafia-17",
+      "id": "coop-mafia-18",
       "faction": "—",
       "category": "coop",
       "age": "20"
@@ -352,7 +366,7 @@
       "status": "alive",
       "role": "舞台劇演員",
       "codename": "里希耶·托馬·珀蒂",
-      "id": "coop-mafia-18",
+      "id": "coop-mafia-19",
       "faction": "—",
       "category": "coop",
       "age": "22"
@@ -367,7 +381,7 @@
       "status": "alive",
       "role": "副手",
       "codename": "培迪·布朗寧",
-      "id": "coop-mafia-19",
+      "id": "coop-mafia-20",
       "faction": "—",
       "category": "coop",
       "age": "30"
@@ -382,7 +396,7 @@
       "status": "alive",
       "role": "地盤代理",
       "codename": "埃里安·奧萊森",
-      "id": "coop-mafia-20",
+      "id": "coop-mafia-21",
       "faction": "—",
       "category": "coop",
       "age": "28"
