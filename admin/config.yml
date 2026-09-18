@@ -28,6 +28,24 @@ publish_mode: simple
 # ------------------------------------------------------------------
 
 collections:
+  - name: "worlds"
+    label: "世界觀 Worlds"
+    files:
+      - file: "worlds.json"
+        label: "世界觀介紹 World Intros"
+        name: "worlds"
+        fields:
+          - label: "世界觀列表 Worlds"
+            name: "worlds"
+            widget: "list"
+            summary: "{{fields.name}}"
+            fields:
+              - {label: "代號 Slug（英文小寫，例如 mafia／ancient／hero，新增世界觀時要跟角色檔案的 world 對應，請先跟我確認）", name: "slug", widget: "string"}
+              - {label: "名稱 Name（顯示在畫面上，例如 MAFIA）", name: "name", widget: "string"}
+              - {label: "編號 Code（例如 W-01）", name: "code", widget: "string", required: false}
+              - {label: "簡短說明 Short Desc（顯示在共構世界選單卡片上）", name: "desc", widget: "text", required: false}
+              - {label: "介紹全文 Brief（顯示在該世界觀角色列表頁的浮動卡片裡）", name: "brief", widget: "text", required: false}
+
   - name: "original"
     label: "企劃 Original"
     files:
@@ -173,6 +191,178 @@ collections:
             summary: "{{fields.codename}} — {{fields.role}}"
             fields:
               - {label: "ID（例如 coop-hero-13，同一個資料夾底下不要重複）", name: "id", widget: "string"}
+              - {label: "代號 Codename", name: "codename", widget: "string"}
+              - {label: "本名 Real Name", name: "realname", widget: "string", required: false, default: "—"}
+              - {label: "身分 Role", name: "role", widget: "string", required: false, default: "—"}
+              - {label: "所屬 Affiliation", name: "affiliation", widget: "string", required: false, default: "—"}
+              - {label: "專長 Skill", name: "skill", widget: "string", required: false, default: "—"}
+              - {label: "身高 Height", name: "height", widget: "string", required: false}
+              - {label: "生日 Birthday", name: "birthday", widget: "string", required: false}
+              - {label: "年齡 Age", name: "age", widget: "string", required: false}
+              - {label: "CP", name: "cp", widget: "string", required: false}
+              - {label: "狀態 Status", name: "status", widget: "select", options: [
+                  {label: "生存 Alive", value: "alive"},
+                  {label: "死亡 Dead", value: "dead"}
+                ], default: "alive"}
+              - {label: "簡介 Bio（想分段的話，中間空一行就會自動分段）", name: "bio", widget: "text", required: false}
+              - {label: "大頭照 Avatar Image", name: "avatarImg", widget: "image", required: false}
+              - {label: "全身立繪 Fullbody Image", name: "fullbodyImg", widget: "image", required: false}
+              - label: "外連文章 Articles"
+                name: "articles"
+                widget: "list"
+                required: false
+                fields:
+                  - {label: "標題 Title", name: "title", widget: "string"}
+                  - {label: "來源 Source", name: "src", widget: "string"}
+                  - {label: "連結 URL", name: "url", widget: "string"}
+              - label: "圖片 Gallery"
+                name: "gallery"
+                widget: "list"
+                required: false
+                fields:
+                  - {label: "縮圖 Thumbnail", name: "thumb", widget: "image"}
+                  - {label: "原圖 Full Image", name: "full", widget: "image"}
+                  - {label: "說明 Caption", name: "caption", widget: "string", required: false}
+
+      - file: "characters-fantasy.json"
+        label: "FANTASY"
+        name: "coop_fantasy"
+        fields:
+          - label: "角色列表 Characters"
+            name: "characters"
+            widget: "list"
+            summary: "{{fields.codename}} — {{fields.role}}"
+            fields:
+              - {label: "ID（例如 coop-fantasy-01，同一個資料夾底下不要重複）", name: "id", widget: "string"}
+              - {label: "代號 Codename", name: "codename", widget: "string"}
+              - {label: "本名 Real Name", name: "realname", widget: "string", required: false, default: "—"}
+              - {label: "身分 Role", name: "role", widget: "string", required: false, default: "—"}
+              - {label: "所屬 Affiliation", name: "affiliation", widget: "string", required: false, default: "—"}
+              - {label: "專長 Skill", name: "skill", widget: "string", required: false, default: "—"}
+              - {label: "身高 Height", name: "height", widget: "string", required: false}
+              - {label: "生日 Birthday", name: "birthday", widget: "string", required: false}
+              - {label: "年齡 Age", name: "age", widget: "string", required: false}
+              - {label: "CP", name: "cp", widget: "string", required: false}
+              - {label: "狀態 Status", name: "status", widget: "select", options: [
+                  {label: "生存 Alive", value: "alive"},
+                  {label: "死亡 Dead", value: "dead"}
+                ], default: "alive"}
+              - {label: "簡介 Bio（想分段的話，中間空一行就會自動分段）", name: "bio", widget: "text", required: false}
+              - {label: "大頭照 Avatar Image", name: "avatarImg", widget: "image", required: false}
+              - {label: "全身立繪 Fullbody Image", name: "fullbodyImg", widget: "image", required: false}
+              - label: "外連文章 Articles"
+                name: "articles"
+                widget: "list"
+                required: false
+                fields:
+                  - {label: "標題 Title", name: "title", widget: "string"}
+                  - {label: "來源 Source", name: "src", widget: "string"}
+                  - {label: "連結 URL", name: "url", widget: "string"}
+              - label: "圖片 Gallery"
+                name: "gallery"
+                widget: "list"
+                required: false
+                fields:
+                  - {label: "縮圖 Thumbnail", name: "thumb", widget: "image"}
+                  - {label: "原圖 Full Image", name: "full", widget: "image"}
+                  - {label: "說明 Caption", name: "caption", widget: "string", required: false}
+
+      - file: "characters-football.json"
+        label: "FOOTBALL"
+        name: "coop_football"
+        fields:
+          - label: "角色列表 Characters"
+            name: "characters"
+            widget: "list"
+            summary: "{{fields.codename}} — {{fields.role}}"
+            fields:
+              - {label: "ID（例如 coop-football-01，同一個資料夾底下不要重複）", name: "id", widget: "string"}
+              - {label: "代號 Codename", name: "codename", widget: "string"}
+              - {label: "本名 Real Name", name: "realname", widget: "string", required: false, default: "—"}
+              - {label: "身分 Role", name: "role", widget: "string", required: false, default: "—"}
+              - {label: "所屬 Affiliation", name: "affiliation", widget: "string", required: false, default: "—"}
+              - {label: "專長 Skill", name: "skill", widget: "string", required: false, default: "—"}
+              - {label: "身高 Height", name: "height", widget: "string", required: false}
+              - {label: "生日 Birthday", name: "birthday", widget: "string", required: false}
+              - {label: "年齡 Age", name: "age", widget: "string", required: false}
+              - {label: "CP", name: "cp", widget: "string", required: false}
+              - {label: "狀態 Status", name: "status", widget: "select", options: [
+                  {label: "生存 Alive", value: "alive"},
+                  {label: "死亡 Dead", value: "dead"}
+                ], default: "alive"}
+              - {label: "簡介 Bio（想分段的話，中間空一行就會自動分段）", name: "bio", widget: "text", required: false}
+              - {label: "大頭照 Avatar Image", name: "avatarImg", widget: "image", required: false}
+              - {label: "全身立繪 Fullbody Image", name: "fullbodyImg", widget: "image", required: false}
+              - label: "外連文章 Articles"
+                name: "articles"
+                widget: "list"
+                required: false
+                fields:
+                  - {label: "標題 Title", name: "title", widget: "string"}
+                  - {label: "來源 Source", name: "src", widget: "string"}
+                  - {label: "連結 URL", name: "url", widget: "string"}
+              - label: "圖片 Gallery"
+                name: "gallery"
+                widget: "list"
+                required: false
+                fields:
+                  - {label: "縮圖 Thumbnail", name: "thumb", widget: "image"}
+                  - {label: "原圖 Full Image", name: "full", widget: "image"}
+                  - {label: "說明 Caption", name: "caption", widget: "string", required: false}
+
+      - file: "characters-victorian.json"
+        label: "VICTORIAN"
+        name: "coop_victorian"
+        fields:
+          - label: "角色列表 Characters"
+            name: "characters"
+            widget: "list"
+            summary: "{{fields.codename}} — {{fields.role}}"
+            fields:
+              - {label: "ID（例如 coop-victorian-01，同一個資料夾底下不要重複）", name: "id", widget: "string"}
+              - {label: "代號 Codename", name: "codename", widget: "string"}
+              - {label: "本名 Real Name", name: "realname", widget: "string", required: false, default: "—"}
+              - {label: "身分 Role", name: "role", widget: "string", required: false, default: "—"}
+              - {label: "所屬 Affiliation", name: "affiliation", widget: "string", required: false, default: "—"}
+              - {label: "專長 Skill", name: "skill", widget: "string", required: false, default: "—"}
+              - {label: "身高 Height", name: "height", widget: "string", required: false}
+              - {label: "生日 Birthday", name: "birthday", widget: "string", required: false}
+              - {label: "年齡 Age", name: "age", widget: "string", required: false}
+              - {label: "CP", name: "cp", widget: "string", required: false}
+              - {label: "狀態 Status", name: "status", widget: "select", options: [
+                  {label: "生存 Alive", value: "alive"},
+                  {label: "死亡 Dead", value: "dead"}
+                ], default: "alive"}
+              - {label: "簡介 Bio（想分段的話，中間空一行就會自動分段）", name: "bio", widget: "text", required: false}
+              - {label: "大頭照 Avatar Image", name: "avatarImg", widget: "image", required: false}
+              - {label: "全身立繪 Fullbody Image", name: "fullbodyImg", widget: "image", required: false}
+              - label: "外連文章 Articles"
+                name: "articles"
+                widget: "list"
+                required: false
+                fields:
+                  - {label: "標題 Title", name: "title", widget: "string"}
+                  - {label: "來源 Source", name: "src", widget: "string"}
+                  - {label: "連結 URL", name: "url", widget: "string"}
+              - label: "圖片 Gallery"
+                name: "gallery"
+                widget: "list"
+                required: false
+                fields:
+                  - {label: "縮圖 Thumbnail", name: "thumb", widget: "image"}
+                  - {label: "原圖 Full Image", name: "full", widget: "image"}
+                  - {label: "說明 Caption", name: "caption", widget: "string", required: false}
+
+      - file: "characters-other.json"
+        label: "OTHER"
+        name: "coop_other"
+        fields:
+          - label: "角色列表 Characters"
+            name: "characters"
+            widget: "list"
+            summary: "{{fields.codename}} — {{fields.role}}"
+            fields:
+              - {label: "ID（例如 coop-other-01，同一個資料夾底下不要重複）", name: "id", widget: "string"}
               - {label: "代號 Codename", name: "codename", widget: "string"}
               - {label: "本名 Real Name", name: "realname", widget: "string", required: false, default: "—"}
               - {label: "身分 Role", name: "role", widget: "string", required: false, default: "—"}
