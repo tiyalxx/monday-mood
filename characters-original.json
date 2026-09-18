@@ -1,3 +1,74 @@
 {
-  "characters": []
+  "characters": [
+    {
+      "height": "180→181",
+      "bio": "出身於純血古老的黑棘家，家族作風嚴謹高傲，\n但是他卻個性古怪，對魔法研究與知識探索極為癡狂。\n不看場合和臉色、我行我素的個性被視為家族中的異類。\n\n患有述情障礙，畢業後離家出走，四處旅遊，遇上了一名常人女子後，開始學習魔法以外的事物。\n\n特質魔法： [樞紐解構]\n使魔： 白堊",
+      "realname": "—",
+      "avatarImg": "/images/uploads/010000.jpg",
+      "cp": "菲洛梅娜·斯托亞諾夫斯基",
+      "affiliation": "(2026) 霍洛伊魔法學院",
+      "skill": "—",
+      "fullbodyImg": "/images/uploads/052515157111.png",
+      "gallery": [
+        {
+          "full": "/images/uploads/人設圖-拉爾2.jpg",
+          "thumb": "/images/uploads/人設圖-拉爾2.jpg"
+        },
+        {
+          "full": "/images/uploads/091992.jpg",
+          "thumb": "/images/uploads/091992.jpg"
+        },
+        {
+          "full": "/images/uploads/3728822.jpg",
+          "thumb": "/images/uploads/3728822.jpg"
+        },
+        {
+          "full": "/images/uploads/172882.jpg",
+          "thumb": "/images/uploads/172882.jpg"
+        },
+        {
+          "full": "/images/uploads/25277272.jpg",
+          "thumb": "/images/uploads/25277272.jpg"
+        },
+        {
+          "full": "/images/uploads/hcppxjzbeaqeqre.jpg",
+          "thumb": "/images/uploads/hcppxjzbeaqeqre.jpg"
+        },
+        {
+          "full": "/images/uploads/7488383.jpg",
+          "thumb": "/images/uploads/7488383.jpg"
+        },
+        {
+          "full": "/images/uploads/363673.jpg",
+          "thumb": "/images/uploads/363673.jpg"
+        },
+        {
+          "full": "/images/uploads/插圖-20260810.jpg",
+          "thumb": "/images/uploads/插圖-20260810.jpg"
+        },
+        {
+          "full": "/images/uploads/插圖-20260819.jpg",
+          "thumb": "/images/uploads/插圖-20260819.jpg"
+        },
+        {
+          "full": "/images/uploads/插圖-20260826.jpg",
+          "thumb": "/images/uploads/插圖-20260826.jpg"
+        },
+        {
+          "full": "/images/uploads/插圖-20260824.png",
+          "thumb": "/images/uploads/插圖-20260824.png"
+        },
+        {
+          "full": "/images/uploads/插圖-20260914.jpg",
+          "thumb": "/images/uploads/插圖-20260914.jpg"
+        }
+      ],
+      "status": "alive",
+      "role": "巫師",
+      "codename": "亞茲拉爾·黑棘",
+      "id": "ORIG-01",
+      "birthday": "6.6",
+      "age": "18→20→25"
+    }
+  ]
 }
