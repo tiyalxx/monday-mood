@@ -199,7 +199,7 @@ body.is-gate{overflow:hidden;}
 .gate-quote cite i{font-style:italic;}
 .gate-bottom-logo{
   position:relative; z-index:1;
-  width:100%; line-height:0; overflow:hidden;
+  width:94%; margin:0 auto; line-height:0; overflow:hidden;
   animation:logoReveal 1.5s cubic-bezier(.2,.7,.2,1) both;
 }
 @keyframes logoReveal{
@@ -799,7 +799,13 @@ body.has-fullbody-bg footer{ border-top:none; }
    - gallery 陣列每一項為 { thumb, full, caption }，同樣可留空顯示佔位。
    - articles 陣列每一項為 { title, src, url }，url 可為外部連結（同人誌網站、社群貼文等）。
 ============================================================ */
-const WORLD_META = {
+/* 世界觀介紹文字（名稱／代號／簡述／介紹卡片）現在從 worlds.json 讀取，
+   在後台的「世界觀 Worlds」分類裡就能直接編輯，不用改這支 index.html。
+   這裡先放一份跟 worlds.json 一樣的內容當備援，避免 worlds.json 讀取失敗時整頁掛掉。
+   注意：這裡只是「介紹文字」的資料，真正的角色列表還是各自存在
+   characters-mafia.json / characters-ancient.json / characters-hero.json 這幾個檔案裡，
+   兩邊的 slug（例如 "mafia"）要一致，角色才會被歸到對的世界觀底下。 */
+let WORLD_META = {
   mafia:  { name:'MAFIA',   code:'W-01', desc:'A criminal underworld built on power, contracts, and family loyalty.',
     brief:'現代黑手黨世界觀，三大黑幫家族佔據了西西里，分別是坎圖家族、羅西家族與馬拉斯家族。這裡訴說的是他們的故事。' },
   ancient:{ name:'ANCIENT', code:'W-02', desc:'An alternate ancient-East setting where court politics and jianghu coexist.',
@@ -807,6 +813,22 @@ const WORLD_META = {
   hero:   { name:'HERO',    code:'W-03', desc:'A contemporary order of licensed superhumans.',
     brief:'Placeholder text — replace with your own worldbuilding. Powers were legalized eleven years ago and immediately turned into a ranking system. Every hero answers to a division; not every division agrees on what "answer to" means.' },
 };
+
+async function loadWorldMeta(){
+  try{
+    const res = await fetch('./worlds.json', {cache:'no-store'});
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    const data = await res.json();
+    const list = Array.isArray(data) ? data : (data.worlds || []);
+    if(list.length){
+      const merged = {};
+      list.forEach(w=>{ if(w.slug) merged[w.slug] = { name:w.name, code:w.code, desc:w.desc, brief:w.brief }; });
+      WORLD_META = merged;
+    }
+  }catch(err){
+    console.warn('無法讀取 worlds.json，改用內建備援世界觀資料。', err);
+  }
+}
 
 /* 首頁縮圖預覽區（moodboard）—— 自動從角色資料裡「已經有上傳圖片」的角色收集
    大頭照＋Gallery 縮圖，每次整理頁面會重新洗牌隨機排序。電腦只留一排、手機留兩排，
@@ -881,7 +903,7 @@ function runWipe(renderFn){
 window.addEventListener('hashchange', ()=> runWipe(route));
 window.addEventListener('DOMContentLoaded', ()=>{
   document.getElementById('foot-time').textContent = 'REV. ' + new Date().toISOString().slice(0,10);
-  loadCharacters();
+  loadWorldMeta().then(loadCharacters);
 });
 
 /* 角色資料現在拆成 4 個檔案，對應後台的分類/世界觀資料夾，
@@ -899,10 +921,14 @@ window.addEventListener('DOMContentLoaded', ()=>{
       http://localhost:8000 來本機測試。
    讀取失敗時，畫面會顯示提示，並先用少量內建範例資料頂著，不會整頁空白。 */
 const CHARACTER_SOURCES = [
-  { file: './characters-original.json', category: 'original', world: null },
-  { file: './characters-mafia.json',    category: 'coop', world: 'mafia' },
-  { file: './characters-ancient.json',  category: 'coop', world: 'ancient' },
-  { file: './characters-hero.json',     category: 'coop', world: 'hero' },
+  { file: './characters-original.json',  category: 'original', world: null },
+  { file: './characters-mafia.json',     category: 'coop', world: 'mafia' },
+  { file: './characters-ancient.json',   category: 'coop', world: 'ancient' },
+  { file: './characters-hero.json',      category: 'coop', world: 'hero' },
+  { file: './characters-fantasy.json',   category: 'coop', world: 'fantasy' },
+  { file: './characters-football.json',  category: 'coop', world: 'football' },
+  { file: './characters-victorian.json', category: 'coop', world: 'victorian' },
+  { file: './characters-other.json',     category: 'coop', world: 'other' },
 ];
 
 async function loadCharacters(){
@@ -964,12 +990,6 @@ function route(){
 
 /* ---------------- GATE (首頁入口) ---------------- */
 function renderGate(){
-  /* 只取前 8 張：不管螢幕寬度、不管排成幾欄，反正就 8 張圖，
-     不會有多餘的圖片需要靠裁切隱藏，避免不同瀏覽器裁切表現不一致 */
-  const thumbs = buildThumbPool().slice(0, 8).map((url,i)=>{
-    return `<div class="thumb-tile"><img src="${url}" alt="Character thumbnail ${i+1}" loading="lazy"></div>`;
-  }).join('');
-
   app.innerHTML = `
   <div class="gate">
     <div class="gate-media">
@@ -981,7 +1001,6 @@ function renderGate(){
       <div class="gate-fallback" id="gate-fallback"></div>
     </div>
     <div class="gate-center">
-      <div class="gate-thumbs">${thumbs}</div>
       <blockquote class="gate-quote">
         <p>"Every portrait that is painted with feeling is a portrait of the artist, not of the sitter."</p>
         <cite>— Oscar Wilde,<br><i>The Picture of Dorian Gray</i></cite>

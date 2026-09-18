@@ -1,0 +1,53 @@
+{
+  "worlds": [
+    {
+      "slug": "mafia",
+      "name": "MAFIA",
+      "code": "W-01",
+      "desc": "A criminal underworld built on power, contracts, and family loyalty.",
+      "brief": "現代黑手黨世界觀，三大黑幫家族佔據了西西里，分別是坎圖家族、羅西家族與馬拉斯家族。這裡訴說的是他們的故事。"
+    },
+    {
+      "slug": "ancient",
+      "name": "ANCIENT",
+      "code": "W-02",
+      "desc": "An alternate ancient-East setting where court politics and jianghu coexist.",
+      "brief": "Placeholder text — replace with your own worldbuilding. An empire in decline, held together by ritual and rumor. Wandering swordsmen drift between border garrisons and the capital, carrying messages no one will say out loud."
+    },
+    {
+      "slug": "hero",
+      "name": "HERO",
+      "code": "W-03",
+      "desc": "A contemporary order of licensed superhumans.",
+      "brief": "Placeholder text — replace with your own worldbuilding. Powers were legalized eleven years ago and immediately turned into a ranking system. Every hero answers to a division; not every division agrees on what \"answer to\" means."
+    },
+    {
+      "slug": "fantasy",
+      "name": "FANTASY",
+      "code": "W-04",
+      "desc": "",
+      "brief": ""
+    },
+    {
+      "slug": "football",
+      "name": "FOOTBALL",
+      "code": "W-05",
+      "desc": "",
+      "brief": ""
+    },
+    {
+      "slug": "victorian",
+      "name": "VICTORIAN",
+      "code": "W-06",
+      "desc": "",
+      "brief": ""
+    },
+    {
+      "slug": "other",
+      "name": "OTHER",
+      "code": "W-07",
+      "desc": "",
+      "brief": ""
+    }
+  ]
+}
