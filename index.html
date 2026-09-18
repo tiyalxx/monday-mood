@@ -69,6 +69,34 @@ body.theme-ancient{
   --logo-color:#808f7c;
 }
 
+/* 西方奇幻世界觀專屬配色：白底，強調色換成霧紫色 */
+body.theme-fantasy{
+  --accent:#72636e;
+  --accent-soft:#e6e3e5;
+  --brand:#72636e;
+  --logo-color:#72636e;
+}
+
+/* 足球世界觀專屬配色：白底，強調色換成草地綠 */
+body.theme-football{
+  --accent:#619e69;
+  --accent-soft:#e3eee4;
+  --brand:#619e69;
+  --logo-color:#619e69;
+}
+
+/* 西方古典世界觀專屬配色：淺灰紫底，強調色換成暗酒紅 */
+body.theme-victorian{
+  --bg:#edebed;
+  --panel:#e5e3e5;
+  --panel2:#dfdddf;
+  --line:#d5d4d5;
+  --accent:#60373e;
+  --accent-soft:#d4cbce;
+  --brand:#60373e;
+  --logo-color:#60373e;
+}
+
 *{box-sizing:border-box;}
 html,body{margin:0;padding:0;}
 body{
@@ -460,25 +488,34 @@ body.is-gate{overflow:hidden;}
 }
 .cat-panel:hover .cat-arrow{transform:translateX(4px); border-color:var(--accent); background:var(--accent); color:#fff;}
 
-/* world sub-chips (共構) */
-.world-list{
-  margin-top:36px;
-  display:grid; grid-template-columns:repeat(3,1fr); gap:1px;
-  background:var(--line); border:1px solid var(--line);
-  border-radius:var(--radius);
-  overflow:hidden;
+/* world sub-tiles (共構)：拿掉文字說明，改成置中、偏小的方塊群，
+   滑過去單一方塊會放大（其他方塊不動），像一排可以把玩的印章 */
+.world-tiles{
+  margin:48px auto 0; max-width:560px;
+  display:flex; flex-wrap:wrap; justify-content:center; gap:16px;
 }
-@media (max-width:640px){.world-list{grid-template-columns:1fr;}}
-.world-chip{
-  background:var(--bg); padding:26px 24px;
-  display:flex; flex-direction:column; gap:6px;
-  border-radius:var(--radius);
-  transition:background .25s ease;
+.world-tile{
+  position:relative; width:118px; height:118px; z-index:1;
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px;
+  background:var(--panel); border:1px solid var(--line); border-radius:var(--radius-sm);
+  text-align:center; padding:10px;
+  transition:transform .3s cubic-bezier(.2,.8,.2,1), box-shadow .3s ease, background .3s ease;
 }
-.world-chip:hover{background:var(--panel);}
-.world-chip .wc-code{font-family:var(--font-mono); font-size:11px; color:var(--ink-faint);}
-.world-chip .wc-name{font-family:var(--font-disp); font-weight:600; font-size:19px; color:var(--brand);}
-.world-chip .wc-desc{color:var(--ink-soft); font-size:13px;}
+.world-tile:hover{
+  transform:scale(1.22);
+  z-index:5;
+  background:var(--brand);
+  box-shadow:0 22px 44px rgba(30,30,34,.22);
+  border-color:var(--brand);
+}
+.world-tile .wt-code{font-family:var(--font-mono); font-size:9px; letter-spacing:.08em; color:var(--ink-faint); transition:color .3s ease;}
+.world-tile .wt-name{font-family:var(--font-disp); font-weight:600; font-size:14px; color:var(--brand); line-height:1.25; transition:color .3s ease;}
+.world-tile:hover .wt-code{color:rgba(255,255,255,.75);}
+.world-tile:hover .wt-name{color:#fff;}
+@media (max-width:640px){
+  .world-tile{ width:96px; height:96px; }
+  .world-tile .wt-name{ font-size:12.5px; }
+}
 
 /* ================= GRID (character list) ================= */
 .section-head{
@@ -555,10 +592,25 @@ body.is-gate{overflow:hidden;}
 .world-brief p{ margin:0; font-size:13px; line-height:1.8; color:var(--ink); }
 
 @media (max-width:820px){
-  .arc-stage{ height:auto; overflow:visible; display:block; margin:0; }
-  .arc-track{ display:flex; flex-direction:column; align-items:center; padding:4px 0 0; }
-  .arc-hint{ padding-top:8px; }
-  .arc-card .name-bar{ opacity:1; transform:none; }
+  /* 手機版：限制在一個固定高度的區塊裡上下滑（不是把整頁往下拉才看得到），
+     一次大概看得到 8 張左右的份量，其餘要在這個區塊裡滑動才會出現 */
+  .arc-stage{
+    height:56vh; max-height:480px;
+    overflow-x:hidden; overflow-y:auto; display:block; margin:0;
+    -webkit-overflow-scrolling:touch;
+  }
+  .arc-track{ display:flex; flex-direction:column; align-items:center; padding:16px 0; }
+  .arc-hint{ padding-top:10px; }
+  /* 手機卡片是由上往下疊、後面的卡片蓋住前一張的「下半部」，
+     所以名字條要放在卡片「上緣」才不會被蓋住看不到 */
+  .arc-card .name-bar{
+    opacity:1; transform:none;
+    top:0; bottom:auto;
+    padding:8px 8px 16px;
+    background:linear-gradient(to bottom, rgba(0,0,0,.6), transparent);
+  }
+  .arc-card .name-bar .cn{ font-size:11.5px; }
+  .arc-card .name-bar .role{ font-size:9px; }
   .arc-card:hover{ transform:none !important; box-shadow:0 26px 50px rgba(30,30,34,.16); }
 }
 
@@ -972,6 +1024,9 @@ function setCrumb(parts){
 function setWorldTheme(world){
   document.body.classList.toggle('theme-mafia', world==='mafia');
   document.body.classList.toggle('theme-ancient', world==='ancient');
+  document.body.classList.toggle('theme-fantasy', world==='fantasy');
+  document.body.classList.toggle('theme-football', world==='football');
+  document.body.classList.toggle('theme-victorian', world==='victorian');
 }
 
 function route(){
@@ -1123,22 +1178,14 @@ function renderAbout(){
 function renderCoopWorlds(){
   setCrumb([{label:'Home',hash:'#/index'},{label:'Collab'}]);
   const rows = Object.entries(WORLD_META).map(([key,w])=>{
-    const count = CHARACTERS.filter(c=>c.category==='coop' && c.world===key).length;
-    return `<a class="world-chip" href="#/grid/coop/${key}">
-      <div class="wc-code">${w.code}</div>
-      <div class="wc-name">${w.name}</div>
-      <div class="wc-desc">${w.desc}</div>
-      <div class="empty-note" style="padding:2px 0 0;">${count} RECORDS</div>
+    return `<a class="world-tile" href="#/grid/coop/${key}">
+      <div class="wt-code">${w.code}</div>
+      <div class="wt-name">${w.name}</div>
     </a>`;
   }).join('');
   app.innerHTML = `
-  <div class="view">
-    <div class="hero" style="padding-top:min(6vh,60px);">
-      <div class="hero-eyebrow">CAT-02 / COLLAB</div>
-      <h1>Collab Universe</h1>
-      <p>Choose a world branch to view its character records.</p>
-    </div>
-    <div class="world-list">${rows}</div>
+  <div class="view" style="min-height:70vh; display:flex; align-items:center; justify-content:center;">
+    <div class="world-tiles" style="margin:0;">${rows}</div>
   </div>`;
 }
 
@@ -1197,10 +1244,10 @@ function buildArcStage(list){
   const isMobile = window.innerWidth <= 820;
   const n = list.length;
   const peakIdx = (n-1)/2;
-  const OVERLAP = 0.46;
+  const OVERLAP = isMobile ? 0.56 : 0.46;
 
-  const baseW = isMobile ? 46 : 9.2;     // vw
-  const wRange = isMobile ? 20 : 5.4;    // vw
+  const baseW = isMobile ? 24 : 9.2;     // vw
+  const wRange = isMobile ? 7 : 5.4;    // vw
   const yRange = 74;                     // px，只有電腦版用來做垂直拱起
 
   let html = '';
@@ -1211,9 +1258,13 @@ function buildArcStage(list){
     const k = Math.min(1, Math.max(0, arc + wobble));
     const w = +(baseW + wRange * k).toFixed(2);
     const dist = Math.abs(i - peakIdx);
-    const z = Math.round(100 - dist*10);
-    const fade = Math.max(0, 1 - dist*0.09);
-    const sat = Math.max(35, 100 - dist*13);
+    /* 手機是由上往下自然堆疊（後面的卡片蓋在前一張上面），
+       z-index 照順序遞增即可；電腦才需要「離中間越遠疊越下面」那套 */
+    const z = isMobile ? i : Math.round(100 - dist*10);
+    /* 淡出/降飽和只在電腦版用來凸顯「正中間那張最清楚」；
+       手機是直接滑動瀏覽每一張，全部維持完整清楚，不要半透明 */
+    const fade = isMobile ? 1 : Math.max(0, 1 - dist*0.09);
+    const sat = isMobile ? 100 : Math.max(35, 100 - dist*13);
 
     let styleParts = [`width:${w}vw`, `z-index:${z}`, `opacity:${fade.toFixed(2)}`, `filter:saturate(${sat}%)`];
     if(isMobile){
@@ -1235,9 +1286,10 @@ function buildArcStage(list){
     </a>`;
   });
 
+  const hintLabel = isMobile ? 'SWIPE TO BROWSE' : 'SCROLL TO BROWSE';
   return `
   <div class="arc-stage" id="arc-stage"><div class="arc-track" id="arc-track">${html}</div></div>
-  <div class="arc-hint"><span class="dot"></span> SCROLL TO BROWSE</div>`;
+  <div class="arc-hint"><span class="dot"></span> ${hintLabel}</div>`;
 }
 
 /* 電腦版：滾輪轉成橫向捲動，並且一開始自動把畫面對準弧線最高點（最中間那張） */
