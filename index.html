@@ -824,18 +824,17 @@ function buildThumbPool(){
   return pool;
 }
 
-/* 角色資料現在改成從外部的 characters.json 讀取，
-   之後要新增/修改角色，只要編輯 characters.json 這個檔案就好，完全不用碰這支 index.html。
-   （細節請看聊天室裡的說明，或 add-character.html 這個小工具。） */
+/* 角色資料現在拆成 4 個外部檔案讀取（見下方 CHARACTER_SOURCES），
+   之後要新增/修改角色，直接在後台（/admin/）編輯即可，完全不用碰這支 index.html。 */
 let CHARACTERS = [];
 
-/* 讀不到 characters.json 時（例如用 file:// 直接打開）顯示的內建備用資料，避免整頁空白 */
+/* 讀不到角色資料檔案時（例如用 file:// 直接打開）顯示的內建備用資料，避免整頁空白 */
 const FALLBACK_CHARACTERS = [
   {
     id:'sample-01', category:'original',
     codename:'Sample Character', realname:'—', role:'Placeholder',
-    affiliation:'—', faction:'—', skill:'—', status:'active',
-    bio:'This is placeholder data. See the on-screen notice for how to load your real characters.json file.',
+    affiliation:'—', skill:'—', status:'active',
+    bio:'This is placeholder data. See the on-screen notice for how to load your real character data files.',
     avatarImg:'', fullbodyImg:'', articles:[], gallery:[],
   },
 ];
@@ -885,24 +884,41 @@ window.addEventListener('DOMContentLoaded', ()=>{
   loadCharacters();
 });
 
-/* 讀取 characters.json。
+/* 角色資料現在拆成 4 個檔案，對應後台的分類/世界觀資料夾，
+   category 跟 world 不再存在 JSON 裡面，而是依照「這筆角色放在哪個檔案」自動決定——
+   這樣在後台把角色移到不同的資料夾，分類就會自動改變，不用另外選欄位。
+     characters-original.json → category: original
+     characters-mafia.json    → category: coop, world: mafia
+     characters-ancient.json  → category: coop, world: ancient
+     characters-hero.json     → category: coop, world: hero
    注意：如果你是直接雙擊 index.html 打開（file:// 開頭的網址），瀏覽器基於安全性考量
    通常會擋掉這個讀取動作。這種情況下請改用下面兩種方式測試：
-   1. 把整包檔案（index.html + characters.json + add-character.html）上傳到任何免費靜態網站空間
-      （例如 GitHub Pages、Netlify、Vercel 都是免費的），用網址打開就不會有這個問題。
+   1. 把整包檔案上傳到任何免費靜態網站空間（例如 GitHub Pages、Netlify、Vercel 都是免費的），
+      用網址打開就不會有這個問題。
    2. 或在這個資料夾裡開終端機執行 `python3 -m http.server`，然後瀏覽器打開
       http://localhost:8000 來本機測試。
    讀取失敗時，畫面會顯示提示，並先用少量內建範例資料頂著，不會整頁空白。 */
+const CHARACTER_SOURCES = [
+  { file: './characters-original.json', category: 'original', world: null },
+  { file: './characters-mafia.json',    category: 'coop', world: 'mafia' },
+  { file: './characters-ancient.json',  category: 'coop', world: 'ancient' },
+  { file: './characters-hero.json',     category: 'coop', world: 'hero' },
+];
+
 async function loadCharacters(){
   try{
-    const res = await fetch('./characters.json', {cache:'no-store'});
-    if(!res.ok) throw new Error('HTTP '+res.status);
-    const data = await res.json();
-    /* characters.json 現在是 { "characters": [...] } 這個格式（配合 CMS 後台），
-       這裡相容處理，萬一哪天又改回純陣列也不會壞掉 */
-    CHARACTERS = Array.isArray(data) ? data : (data.characters || []);
+    const results = await Promise.all(CHARACTER_SOURCES.map(async src=>{
+      const res = await fetch(src.file, {cache:'no-store'});
+      if(!res.ok) throw new Error('HTTP '+res.status+' — '+src.file);
+      const data = await res.json();
+      const list = Array.isArray(data) ? data : (data.characters || []);
+      return list.map(ch=>({ ...ch, category: src.category, ...(src.world?{world:src.world}:{}) }));
+    }));
+    const merged = results.flat();
+    if(!merged.length) throw new Error('All character files loaded but were empty.');
+    CHARACTERS = merged;
   }catch(err){
-    console.warn('無法讀取 characters.json，改用內建範例資料。', err);
+    console.warn('無法讀取角色資料檔案，改用內建範例資料。', err);
     CHARACTERS = FALLBACK_CHARACTERS;
     showDataWarning();
   }
@@ -912,7 +928,7 @@ async function loadCharacters(){
 function showDataWarning(){
   const bar = document.createElement('div');
   bar.style.cssText = 'position:fixed; left:0; right:0; bottom:0; z-index:300; background:var(--ink); color:#fff; font-family:var(--font-mono); font-size:12px; padding:12px 20px; text-align:center;';
-  bar.innerHTML = 'Could not load characters.json — showing sample data instead. Host this site or run a local server to load your real data. <span style="text-decoration:underline; cursor:pointer; margin-left:8px;" onclick="this.parentElement.remove()">dismiss</span>';
+  bar.innerHTML = 'Could not load character data files — showing sample data instead. Host this site or run a local server to load your real data. <span style="text-decoration:underline; cursor:pointer; margin-left:8px;" onclick="this.parentElement.remove()">dismiss</span>';
   document.body.appendChild(bar);
 }
 
@@ -1173,7 +1189,6 @@ function renderProfile(id){
   const fields = [
     ['Real Name', ch.realname||'—'],
     ['Affiliation', ch.affiliation||'—'],
-    ['Faction', ch.faction||'—'],
     ['Skill', ch.skill||'—'],
     ['Height', ch.height||'—'],
     ['Birthday', ch.birthday||'—'],

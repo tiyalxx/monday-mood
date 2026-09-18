@@ -1,0 +1,342 @@
+{
+  "characters": [
+    {
+      "height": "187",
+      "bio": "",
+      "realname": "—",
+      "avatarImg": "images/beppe/beppe-avatar.png",
+      "cp": "艾尼亞斯·坎圖",
+      "affiliation": "坎圖家族",
+      "skill": "—",
+      "fullbodyImg": "",
+      "gallery": [
+        {
+          "thumb": "images/beppe/beppe-gallery-01.png",
+          "full": "images/beppe/beppe-gallery-01.png",
+          "caption": ""
+        },
+        {
+          "thumb": "images/beppe/beppe-gallery-02.png",
+          "full": "images/beppe/beppe-gallery-02.png",
+          "caption": ""
+        },
+        {
+          "thumb": "images/beppe/beppe-gallery-03.png",
+          "full": "images/beppe/beppe-gallery-03.png",
+          "caption": ""
+        },
+        {
+          "thumb": "images/beppe/beppe-gallery-04.png",
+          "full": "images/beppe/beppe-gallery-04.png",
+          "caption": ""
+        },
+        {
+          "thumb": "images/beppe/beppe-gallery-05.png",
+          "full": "images/beppe/beppe-gallery-05.png",
+          "caption": ""
+        },
+        {
+          "thumb": "images/beppe/beppe-gallery-06.png",
+          "full": "images/beppe/beppe-gallery-06.png",
+          "caption": ""
+        },
+        {
+          "thumb": "images/beppe/beppe-gallery-07.png",
+          "full": "images/beppe/beppe-gallery-07.png",
+          "caption": ""
+        },
+        {
+          "thumb": "images/beppe/beppe-gallery-08.png",
+          "full": "images/beppe/beppe-gallery-08.png",
+          "caption": ""
+        },
+        {
+          "thumb": "images/beppe/beppe-gallery-09.png",
+          "full": "images/beppe/beppe-gallery-09.png",
+          "caption": ""
+        },
+        {
+          "thumb": "images/beppe/beppe-gallery-10.png",
+          "full": "images/beppe/beppe-gallery-10.png",
+          "caption": ""
+        },
+        {
+          "thumb": "images/beppe/beppe-gallery-11.png",
+          "full": "images/beppe/beppe-gallery-11.png",
+          "caption": ""
+        },
+        {
+          "thumb": "images/beppe/beppe-gallery-12.png",
+          "full": "images/beppe/beppe-gallery-12.png",
+          "caption": ""
+        },
+        {
+          "thumb": "images/beppe/beppe-gallery-13.jpg",
+          "full": "images/beppe/beppe-gallery-13.jpg",
+          "caption": ""
+        },
+        {
+          "thumb": "images/beppe/beppe-gallery-15.png",
+          "full": "images/beppe/beppe-gallery-15.png",
+          "caption": ""
+        },
+        {
+          "thumb": "images/beppe/beppe-gallery-16.jpg",
+          "full": "images/beppe/beppe-gallery-16.jpg",
+          "caption": ""
+        },
+        {
+          "thumb": "images/beppe/beppe-gallery-17.jpg",
+          "full": "images/beppe/beppe-gallery-17.jpg",
+          "caption": ""
+        }
+      ],
+      "status": "alive",
+      "role": "指揮官→卸任",
+      "codename": "貝佩·馬爾塔奇",
+      "id": "coop-mafia-01",
+      "articles": [],
+      "age": "30→35"
+    },
+    {
+      "height": "190",
+      "realname": "—",
+      "cp": "克勞迪奧·馬利亞",
+      "affiliation": "坎圖家族",
+      "skill": "—",
+      "status": "alive",
+      "role": "法律顧問",
+      "codename": "拉涅里·桑托魯姆",
+      "id": "coop-mafia-02",
+      "age": "42→48"
+    },
+    {
+      "height": "180",
+      "realname": "—",
+      "cp": "維藍‧海沃涅",
+      "affiliation": "坎圖家族",
+      "skill": "",
+      "status": "alive",
+      "role": "士兵→指揮官",
+      "codename": "米凱萊·羅貝托",
+      "id": "coop-mafia-03",
+      "age": "25→30"
+    },
+    {
+      "height": "190",
+      "realname": "—",
+      "cp": "克里斯蒂亞諾·坎圖",
+      "affiliation": "北方共和黨",
+      "skill": "—",
+      "status": "alive",
+      "role": "參議院議員→羅馬市長",
+      "codename": "恩里科·佩龍",
+      "id": "coop-mafia-04",
+      "age": "37→42"
+    },
+    {
+      "height": "184",
+      "realname": "—",
+      "cp": "慕尼夫·哈什米·羅西",
+      "affiliation": "馬拉斯家族→坎圖家族",
+      "skill": "—",
+      "status": "alive",
+      "role": "逃亡→士兵→首領",
+      "codename": "諾埃米·奧爾薩蒂·坎圖",
+      "id": "coop-mafia-05",
+      "birthday": "",
+      "age": "23→28"
+    },
+    {
+      "height": "187",
+      "realname": "—",
+      "cp": "蘿札·阿萊莫·斯帕塔羅",
+      "affiliation": "坎圖家族",
+      "skill": "—",
+      "status": "alive",
+      "role": "指揮官→二老闆",
+      "codename": "法斯托·比索尼",
+      "id": "coop-mafia-06",
+      "age": "33→38"
+    },
+    {
+      "height": "187",
+      "realname": "—",
+      "cp": "維維安娜·羅西",
+      "affiliation": "羅西家族",
+      "skill": "—",
+      "status": "alive",
+      "role": "首領",
+      "codename": "萊昂內·羅西",
+      "id": "coop-mafia-07",
+      "age": "42→48"
+    },
+    {
+      "height": "170",
+      "realname": "—",
+      "cp": "李判頌",
+      "affiliation": "羅西家族",
+      "skill": "—",
+      "status": "alive",
+      "role": "首領繼承人",
+      "codename": "維托里奧·羅西",
+      "id": "coop-mafia-08",
+      "age": "15"
+    },
+    {
+      "height": "188",
+      "realname": "—",
+      "cp": "拉法埃洛·德拉",
+      "affiliation": "羅西家族",
+      "skill": "—",
+      "status": "alive",
+      "role": "二老闆",
+      "codename": "杜喬·羅西",
+      "id": "coop-mafia-09",
+      "age": "38→43"
+    },
+    {
+      "height": "185",
+      "realname": "—",
+      "cp": "基蘭·斯福爾察",
+      "affiliation": "羅西家族",
+      "skill": "—",
+      "status": "alive",
+      "role": "殺手→暴力專家",
+      "codename": "費利切·奧蘭迪",
+      "id": "coop-mafia-10",
+      "age": "27"
+    },
+    {
+      "height": "187",
+      "realname": "—",
+      "cp": "喬凡尼·馬拉斯",
+      "affiliation": "馬拉斯家族",
+      "skill": "—",
+      "status": "dead",
+      "role": "首領",
+      "codename": "里卡多·馬拉斯",
+      "id": "coop-mafia-11",
+      "age": "32"
+    },
+    {
+      "height": "187",
+      "realname": "—",
+      "cp": "約書亞·科司塔",
+      "affiliation": "馬拉斯家族→坎圖家族",
+      "skill": "—",
+      "status": "alive",
+      "role": "指揮官",
+      "codename": "塞謬爾·法維諾",
+      "id": "coop-mafia-12",
+      "age": "25→30"
+    },
+    {
+      "height": "190",
+      "realname": "—",
+      "cp": "狄龍·阿比斯",
+      "affiliation": "阿比斯家族",
+      "skill": "—",
+      "status": "alive",
+      "role": "法律顧問",
+      "codename": "西爾瓦諾·傑瑪",
+      "id": "coop-mafia-13",
+      "age": "36"
+    },
+    {
+      "height": "180",
+      "realname": "—",
+      "cp": "科里·馬寧",
+      "affiliation": "阿比斯家族",
+      "skill": "—",
+      "status": "alive",
+      "role": "指揮官",
+      "codename": "米哈伊·阿伽利",
+      "id": "coop-mafia-14",
+      "age": "35"
+    },
+    {
+      "realname": "—",
+      "cp": "卡夏諾・達爾維利",
+      "affiliation": "維契尼家族",
+      "skill": "—",
+      "status": "alive",
+      "role": "首領",
+      "codename": "內雷奧·維契尼",
+      "id": "coop-mafia-15",
+      "age": "23"
+    },
+    {
+      "height": "188",
+      "realname": "—",
+      "cp": "克萊芒·波略特",
+      "affiliation": "北方共和黨",
+      "skill": "—",
+      "status": "alive",
+      "role": "義大利外交官",
+      "codename": "奎里諾·佩龍",
+      "id": "coop-mafia-16",
+      "age": "46"
+    },
+    {
+      "height": "188",
+      "realname": "—",
+      "cp": "帕爾米羅·德拉瓦萊",
+      "affiliation": "墨西拿警察總局",
+      "skill": "—",
+      "status": "alive",
+      "role": "警察首長",
+      "codename": "希西德羅·古佐",
+      "id": "coop-mafia-17",
+      "age": "46"
+    },
+    {
+      "height": "184",
+      "realname": "—",
+      "cp": "帕爾米羅·德拉瓦萊",
+      "affiliation": "義大利調查局",
+      "skill": "—",
+      "status": "alive",
+      "role": "調查員",
+      "codename": "曼弗雷多·古佐",
+      "id": "coop-mafia-18",
+      "age": "20"
+    },
+    {
+      "height": "178",
+      "realname": "—",
+      "cp": "勒涅·波略特",
+      "affiliation": "—",
+      "skill": "—",
+      "status": "alive",
+      "role": "舞台劇演員",
+      "codename": "里希耶·托馬·珀蒂",
+      "id": "coop-mafia-19",
+      "age": "22"
+    },
+    {
+      "height": "187",
+      "realname": "—",
+      "cp": "馬蘇德·布朗寧",
+      "affiliation": "金手槍 (英國黑幫)",
+      "skill": "—",
+      "status": "alive",
+      "role": "副手",
+      "codename": "培迪·布朗寧",
+      "id": "coop-mafia-20",
+      "age": "30"
+    },
+    {
+      "height": "188",
+      "realname": "—",
+      "cp": "艾米爾·瑟斯頓",
+      "affiliation": "金手槍 (英國黑幫)",
+      "skill": "—",
+      "status": "alive",
+      "role": "地盤代理",
+      "codename": "埃里安·奧萊森",
+      "id": "coop-mafia-21",
+      "age": "28"
+    }
+  ]
+}

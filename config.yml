@@ -1,0 +1,207 @@
+backend:
+  name: git-gateway
+  branch: main
+
+# 圖片上傳後會放在這個資料夾（網站裡的 images/uploads/）
+media_folder: "images/uploads"
+public_folder: "/images/uploads"
+
+# 存檔後直接發布，不需要額外審核流程
+publish_mode: simple
+
+# ------------------------------------------------------------------
+# 角色資料拆成 4 個檔案，分屬兩個大分類的資料夾：
+#   企劃 Original
+#     └─ characters-original.json
+#   共構 Collab
+#     ├─ MAFIA   → characters-mafia.json
+#     ├─ ANCIENT → characters-ancient.json
+#     └─ HERO    → characters-hero.json
+#
+# 左側選單會先看到「企劃 Original」「共構 Collab」兩個大分類，
+# 點開「共構 Collab」才會看到 MAFIA / ANCIENT / HERO 三個子項，
+# 點進去才是該世界觀底下的角色列表——不會再把 30 幾個角色全部塞在同一頁。
+#
+# 世界觀（world）跟分類（category）已經不是角色資料裡的欄位了，
+# 而是由「這個角色被放進哪一個資料夾」自動決定：
+# 把角色移到 MAFIA 資料夾，他就自動變成 MAFIA 世界觀的角色，不需要另外選欄位。
+# ------------------------------------------------------------------
+
+collections:
+  - name: "original"
+    label: "企劃 Original"
+    files:
+      - file: "characters-original.json"
+        label: "企劃角色 Original Characters"
+        name: "original_characters"
+        fields:
+          - label: "角色列表 Characters"
+            name: "characters"
+            widget: "list"
+            summary: "{{fields.codename}} — {{fields.role}}"
+            fields:
+              - {label: "ID（例如 orig-01，同一個資料夾底下不要重複）", name: "id", widget: "string"}
+              - {label: "代號 Codename", name: "codename", widget: "string"}
+              - {label: "本名 Real Name", name: "realname", widget: "string", required: false, default: "—"}
+              - {label: "身分 Role", name: "role", widget: "string", required: false, default: "—"}
+              - {label: "所屬 Affiliation", name: "affiliation", widget: "string", required: false, default: "—"}
+              - {label: "專長 Skill", name: "skill", widget: "string", required: false, default: "—"}
+              - {label: "身高 Height", name: "height", widget: "string", required: false}
+              - {label: "生日 Birthday", name: "birthday", widget: "string", required: false}
+              - {label: "年齡 Age", name: "age", widget: "string", required: false}
+              - {label: "CP", name: "cp", widget: "string", required: false}
+              - {label: "狀態 Status", name: "status", widget: "select", options: [
+                  {label: "生存 Alive", value: "alive"},
+                  {label: "死亡 Dead", value: "dead"}
+                ], default: "alive"}
+              - {label: "簡介 Bio（想分段的話，中間空一行就會自動分段）", name: "bio", widget: "text", required: false}
+              - {label: "大頭照 Avatar Image", name: "avatarImg", widget: "image", required: false}
+              - {label: "全身立繪 Fullbody Image", name: "fullbodyImg", widget: "image", required: false}
+              - label: "外連文章 Articles"
+                name: "articles"
+                widget: "list"
+                required: false
+                fields:
+                  - {label: "標題 Title", name: "title", widget: "string"}
+                  - {label: "來源 Source", name: "src", widget: "string"}
+                  - {label: "連結 URL", name: "url", widget: "string"}
+              - label: "圖片 Gallery"
+                name: "gallery"
+                widget: "list"
+                required: false
+                fields:
+                  - {label: "縮圖 Thumbnail", name: "thumb", widget: "image"}
+                  - {label: "原圖 Full Image", name: "full", widget: "image"}
+                  - {label: "說明 Caption", name: "caption", widget: "string", required: false}
+
+  - name: "coop"
+    label: "共構 Collab"
+    files:
+      - file: "characters-mafia.json"
+        label: "MAFIA"
+        name: "coop_mafia"
+        fields:
+          - label: "角色列表 Characters"
+            name: "characters"
+            widget: "list"
+            summary: "{{fields.codename}} — {{fields.role}}"
+            fields:
+              - {label: "ID（例如 coop-mafia-22，同一個資料夾底下不要重複）", name: "id", widget: "string"}
+              - {label: "代號 Codename", name: "codename", widget: "string"}
+              - {label: "本名 Real Name", name: "realname", widget: "string", required: false, default: "—"}
+              - {label: "身分 Role", name: "role", widget: "string", required: false, default: "—"}
+              - {label: "所屬 Affiliation", name: "affiliation", widget: "string", required: false, default: "—"}
+              - {label: "專長 Skill", name: "skill", widget: "string", required: false, default: "—"}
+              - {label: "身高 Height", name: "height", widget: "string", required: false}
+              - {label: "生日 Birthday", name: "birthday", widget: "string", required: false}
+              - {label: "年齡 Age", name: "age", widget: "string", required: false}
+              - {label: "CP", name: "cp", widget: "string", required: false}
+              - {label: "狀態 Status", name: "status", widget: "select", options: [
+                  {label: "生存 Alive", value: "alive"},
+                  {label: "死亡 Dead", value: "dead"}
+                ], default: "alive"}
+              - {label: "簡介 Bio（想分段的話，中間空一行就會自動分段）", name: "bio", widget: "text", required: false}
+              - {label: "大頭照 Avatar Image", name: "avatarImg", widget: "image", required: false}
+              - {label: "全身立繪 Fullbody Image", name: "fullbodyImg", widget: "image", required: false}
+              - label: "外連文章 Articles"
+                name: "articles"
+                widget: "list"
+                required: false
+                fields:
+                  - {label: "標題 Title", name: "title", widget: "string"}
+                  - {label: "來源 Source", name: "src", widget: "string"}
+                  - {label: "連結 URL", name: "url", widget: "string"}
+              - label: "圖片 Gallery"
+                name: "gallery"
+                widget: "list"
+                required: false
+                fields:
+                  - {label: "縮圖 Thumbnail", name: "thumb", widget: "image"}
+                  - {label: "原圖 Full Image", name: "full", widget: "image"}
+                  - {label: "說明 Caption", name: "caption", widget: "string", required: false}
+
+      - file: "characters-ancient.json"
+        label: "ANCIENT"
+        name: "coop_ancient"
+        fields:
+          - label: "角色列表 Characters"
+            name: "characters"
+            widget: "list"
+            summary: "{{fields.codename}} — {{fields.role}}"
+            fields:
+              - {label: "ID（例如 coop-ancient-01，同一個資料夾底下不要重複）", name: "id", widget: "string"}
+              - {label: "代號 Codename", name: "codename", widget: "string"}
+              - {label: "本名 Real Name", name: "realname", widget: "string", required: false, default: "—"}
+              - {label: "身分 Role", name: "role", widget: "string", required: false, default: "—"}
+              - {label: "所屬 Affiliation", name: "affiliation", widget: "string", required: false, default: "—"}
+              - {label: "專長 Skill", name: "skill", widget: "string", required: false, default: "—"}
+              - {label: "身高 Height", name: "height", widget: "string", required: false}
+              - {label: "生日 Birthday", name: "birthday", widget: "string", required: false}
+              - {label: "年齡 Age", name: "age", widget: "string", required: false}
+              - {label: "CP", name: "cp", widget: "string", required: false}
+              - {label: "狀態 Status", name: "status", widget: "select", options: [
+                  {label: "生存 Alive", value: "alive"},
+                  {label: "死亡 Dead", value: "dead"}
+                ], default: "alive"}
+              - {label: "簡介 Bio（想分段的話，中間空一行就會自動分段）", name: "bio", widget: "text", required: false}
+              - {label: "大頭照 Avatar Image", name: "avatarImg", widget: "image", required: false}
+              - {label: "全身立繪 Fullbody Image", name: "fullbodyImg", widget: "image", required: false}
+              - label: "外連文章 Articles"
+                name: "articles"
+                widget: "list"
+                required: false
+                fields:
+                  - {label: "標題 Title", name: "title", widget: "string"}
+                  - {label: "來源 Source", name: "src", widget: "string"}
+                  - {label: "連結 URL", name: "url", widget: "string"}
+              - label: "圖片 Gallery"
+                name: "gallery"
+                widget: "list"
+                required: false
+                fields:
+                  - {label: "縮圖 Thumbnail", name: "thumb", widget: "image"}
+                  - {label: "原圖 Full Image", name: "full", widget: "image"}
+                  - {label: "說明 Caption", name: "caption", widget: "string", required: false}
+
+      - file: "characters-hero.json"
+        label: "HERO"
+        name: "coop_hero"
+        fields:
+          - label: "角色列表 Characters"
+            name: "characters"
+            widget: "list"
+            summary: "{{fields.codename}} — {{fields.role}}"
+            fields:
+              - {label: "ID（例如 coop-hero-13，同一個資料夾底下不要重複）", name: "id", widget: "string"}
+              - {label: "代號 Codename", name: "codename", widget: "string"}
+              - {label: "本名 Real Name", name: "realname", widget: "string", required: false, default: "—"}
+              - {label: "身分 Role", name: "role", widget: "string", required: false, default: "—"}
+              - {label: "所屬 Affiliation", name: "affiliation", widget: "string", required: false, default: "—"}
+              - {label: "專長 Skill", name: "skill", widget: "string", required: false, default: "—"}
+              - {label: "身高 Height", name: "height", widget: "string", required: false}
+              - {label: "生日 Birthday", name: "birthday", widget: "string", required: false}
+              - {label: "年齡 Age", name: "age", widget: "string", required: false}
+              - {label: "CP", name: "cp", widget: "string", required: false}
+              - {label: "狀態 Status", name: "status", widget: "select", options: [
+                  {label: "生存 Alive", value: "alive"},
+                  {label: "死亡 Dead", value: "dead"}
+                ], default: "alive"}
+              - {label: "簡介 Bio（想分段的話，中間空一行就會自動分段）", name: "bio", widget: "text", required: false}
+              - {label: "大頭照 Avatar Image", name: "avatarImg", widget: "image", required: false}
+              - {label: "全身立繪 Fullbody Image", name: "fullbodyImg", widget: "image", required: false}
+              - label: "外連文章 Articles"
+                name: "articles"
+                widget: "list"
+                required: false
+                fields:
+                  - {label: "標題 Title", name: "title", widget: "string"}
+                  - {label: "來源 Source", name: "src", widget: "string"}
+                  - {label: "連結 URL", name: "url", widget: "string"}
+              - label: "圖片 Gallery"
+                name: "gallery"
+                widget: "list"
+                required: false
+                fields:
+                  - {label: "縮圖 Thumbnail", name: "thumb", widget: "image"}
+                  - {label: "原圖 Full Image", name: "full", widget: "image"}
+                  - {label: "說明 Caption", name: "caption", widget: "string", required: false}
