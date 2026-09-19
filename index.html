@@ -735,10 +735,18 @@ body.is-gate{overflow:hidden;}
     padding-left:clamp(12px,2vw,28px);
   }
   /* 立繪放大之後，內容區塊要蓋在它上面才看得到文字，
-     所以文章／畫廊這幾個區塊要給不透明背景，疊在立繪上層也不會被看穿 */
-  body.has-fullbody-bg .profile-view > .pf-reveal{
+     但直接給不透明背景會變成壓在立繪上的醜方塊，
+     改成半透明毛玻璃＋圓角，讓立繪隱約透出來，看起來像浮貼在上面而不是硬蓋住。
+     只套用在 Articles／Gallery 這兩個區塊——基本資料（.pf-basic）本來排版就沒問題，
+     不需要也不應該被這個玻璃底加上去 */
+  body.has-fullbody-bg .profile-view > .pf-reveal:not(.pf-basic):not(.pf-fullbody-mobile){
     position:relative; z-index:1;
-    background:var(--bg);
+    background:color-mix(in srgb, var(--bg) 74%, transparent);
+    backdrop-filter:blur(18px) saturate(1.15);
+    -webkit-backdrop-filter:blur(18px) saturate(1.15);
+    border-radius:22px;
+    padding:26px clamp(16px,3vw,34px);
+    margin-left:-8px; margin-right:-8px;
   }
 }
 
@@ -871,12 +879,39 @@ body.has-fullbody-bg footer{ border-top:none; }
   transition:opacity .9s ease;
 }
 #intro-splash.hide{ opacity:0; pointer-events:none; }
-.intro-globe-wrap{
-  width:min(46vw,220px); aspect-ratio:1/1;
-  animation:introSpin 3.2s linear infinite;
+/* 開場改成「讀取中」的感覺：一圈圓點依序亮起（像 loading spinner），
+   下面配一條會跑滿的進度條，兩種讀取感一起給 */
+.intro-loader{
+  position:relative;
+  width:min(30vw,116px); aspect-ratio:1/1;
 }
-.intro-globe-wrap svg{ width:100%; height:100%; display:block; }
-/* 結束時不是直接淡出消失，而是從地球的位置長出一個白色圓圈，
+.intro-loader .intro-dot{
+  position:absolute; top:50%; left:50%; width:10px; height:10px;
+  margin:-5px 0 0 -5px; border-radius:50%; background:#fff;
+  opacity:.28;
+  animation:introDotPulse 1.15s ease-in-out infinite;
+}
+@keyframes introDotPulse{
+  0%,100%{ opacity:.28; transform:scale(.72); }
+  50%{ opacity:1; transform:scale(1.18); }
+}
+.intro-label{
+  position:absolute; left:50%; top:calc(50% + 26vmin);
+  transform:translateX(-50%);
+  font-family:var(--font-mono); font-size:11px; letter-spacing:.22em;
+  color:rgba(255,255,255,.85); white-space:nowrap;
+}
+.intro-progress{
+  position:absolute; left:50%; top:calc(50% + 42vmin); transform:translateX(-50%);
+  width:min(48vw,220px); height:3px; border-radius:2px;
+  background:rgba(255,255,255,.25); overflow:hidden;
+}
+.intro-progress-fill{
+  height:100%; width:0%; background:#fff; border-radius:2px;
+  transition:width 1.05s cubic-bezier(.4,0,.2,1);
+}
+.intro-progress-fill.run{ width:100%; }
+/* 結束時不是直接淡出消失，而是從中間長出一個白色圓圈，
    撐大到蓋滿整個畫面（變成全白），再讓整個開場動畫淡出，
    銜接到首頁，感覺比較像「展開進入」而不是硬切換 */
 .intro-expand{
@@ -886,20 +921,18 @@ body.has-fullbody-bg footer{ border-top:none; }
   transition:transform .9s cubic-bezier(.5,0,.2,1);
 }
 .intro-expand.grow{ transform:scale(1); }
-.intro-dot{
-  opacity:0; transform-origin:center; transform-box:fill-box;
-  transform:scale(.2);
-  animation:introDotIn .35s cubic-bezier(.2,.8,.2,1) forwards;
-}
-@keyframes introDotIn{ to{ opacity:1; transform:scale(1); } }
-@keyframes introSpin{ from{ transform:rotate(0deg); } to{ transform:rotate(360deg); } }
 </style>
 </head>
 <body>
 
-<!-- 進站的圓點地球開場動畫，第一次載入網站時會先蓋在最上面，
+<!-- 進站的讀取動畫（圓點轉圈＋進度條），第一次載入網站時會先蓋在最上面，
      動畫跑完（或使用者按一下跳過）之後淡出消失，才看到首頁內容 -->
-<div id="intro-splash"><div class="intro-globe-wrap"></div><div class="intro-expand"></div></div>
+<div id="intro-splash">
+  <div class="intro-loader"></div>
+  <div class="intro-label">LOADING</div>
+  <div class="intro-progress"><div class="intro-progress-fill"></div></div>
+  <div class="intro-expand"></div>
+</div>
 
 <div id="wipe"><span>LOADING RECORD</span></div>
 
@@ -1052,37 +1085,22 @@ window.addEventListener('DOMContentLoaded', ()=>{
   runIntroSplash();
 });
 
-/* 用小圓點排成一顆球，模擬「地球」的開場動畫；
-   點的位置用數學算（緯線一圈一圈往下切），不用手動排 */
+/* 用幾個圓點平均排成一個大圓圈，依序一顆一顆亮起來（像常見的
+   loading spinner），角度用數學算，不用手動排 */
 function buildIntroGlobe(container){
-  const svgNS = 'http://www.w3.org/2000/svg';
-  const size = 220, R = 96, cx = size/2, cy = size/2;
-  const svg = document.createElementNS(svgNS, 'svg');
-  svg.setAttribute('viewBox', `0 0 ${size} ${size}`);
-  const rows = 19;
-  const dots = [];
-  for(let row=0; row<rows; row++){
-    const y = -R + (row/(rows-1))*2*R;
-    const rowHalf = Math.sqrt(Math.max(0, R*R - y*y));
-    const count = Math.max(1, Math.round(rowHalf/6.4));
-    for(let i=0; i<count; i++){
-      const x = count>1 ? -rowHalf + (i/(count-1))*2*rowHalf : 0;
-      if(Math.sqrt(x*x+y*y) > R) continue;
-      dots.push({x:cx+x, y:cy+y});
-    }
+  const count = 10;
+  const radius = 42; // % of container
+  for(let i=0; i<count; i++){
+    const angle = (i/count) * Math.PI * 2 - Math.PI/2;
+    const x = 50 + Math.cos(angle) * radius;
+    const y = 50 + Math.sin(angle) * radius;
+    const dot = document.createElement('div');
+    dot.className = 'intro-dot';
+    dot.style.left = x.toFixed(2) + '%';
+    dot.style.top = y.toFixed(2) + '%';
+    dot.style.animationDelay = (i/count * 1.15).toFixed(2) + 's';
+    container.appendChild(dot);
   }
-  dots.forEach(d=>{
-    const c = document.createElementNS(svgNS, 'circle');
-    c.setAttribute('cx', d.x.toFixed(1));
-    c.setAttribute('cy', d.y.toFixed(1));
-    c.setAttribute('r', '2.3');
-    c.setAttribute('fill', '#fff');
-    c.setAttribute('class', 'intro-dot');
-    const dist = Math.hypot(d.x-cx, d.y-cy) / R;
-    c.style.animationDelay = (dist*0.28 + Math.random()*0.12).toFixed(2) + 's';
-    svg.appendChild(c);
-  });
-  container.appendChild(svg);
 }
 
 /* 開場動畫：圓點地球跑一輪之後，從地球位置「長出」一個白色圓圈撐滿全螢幕，
@@ -1091,7 +1109,9 @@ function buildIntroGlobe(container){
 function runIntroSplash(){
   const el = document.getElementById('intro-splash');
   if(!el) return;
-  buildIntroGlobe(el.querySelector('.intro-globe-wrap'));
+  buildIntroGlobe(el.querySelector('.intro-loader'));
+  const progressFill = el.querySelector('.intro-progress-fill');
+  requestAnimationFrame(()=>{ requestAnimationFrame(()=>{ if(progressFill) progressFill.classList.add('run'); }); });
   const expand = el.querySelector('.intro-expand');
   /* 白色圓圈蓋滿畫面的那一刻，底下的首頁其實已經整個渲染好了，
      只是被蓋住看不到——所以先把它透明度設 0，等圓圈蓋滿之後
@@ -1328,12 +1348,12 @@ function initNodeField(){
 /* ---------------- ABOUT / CONTACT ---------------- */
 /* 聯絡方式清單，之後要換成自己的連結，直接改這裡的 url 就好 */
 const CONTACT_LINKS = [
-  { label:'Twitter / X', url:'#' },
-  { label:'Plurk', url:'#' },
+  { label:'Twitter / X', url:'https://x.com/liil11lilm' },
+  { label:'Plurk', url:'https://www.plurk.com/tiyalxx__' },
 ];
 
-/* About 頁的頭像圖片，先留空顯示佔位圓圈，之後換成你自己的照片路徑，例如 "images/about-avatar.jpg" */
-const ABOUT_AVATAR = '';
+/* About 頁的頭像圖片 */
+const ABOUT_AVATAR = 'images/about-avatar.jpg';
 
 function renderAbout(){
   setCrumb([{label:'Home',hash:'#/index'},{label:'About'}]);
