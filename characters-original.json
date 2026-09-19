@@ -2,12 +2,12 @@
   "characters": [
     {
       "height": "180→181",
-      "bio": "出身於純血古老的黑棘家，家族作風嚴謹高傲，\n但是他卻個性古怪，對魔法研究與知識探索極為癡狂。\n不看場合和臉色、我行我素的個性被視為家族中的異類。\n\n患有述情障礙，畢業後離家出走，四處旅遊，遇上了一名常人女子後，開始學習魔法以外的事物。\n\n特質魔法： [樞紐解構]\n使魔： 白堊",
+      "bio": "出身於純血古老的<b>黑棘家<b>，家族作風嚴謹高傲，\n但是他卻個性古怪，對魔法研究與知識探索極為癡狂。\n不看場合和臉色、我行我素的個性被視為家族中的異類。\n\n患有述情障礙，畢業後離家出走，四處旅遊，遇上了一名常人女子後，開始學習魔法以外的事物。\n\n特質魔法為<b>樞紐解構<b>，能看見魔法結構中的關鍵節點，在短時間內讓其失效或鬆動。應用方式可以用來破解詛咒、破壞防禦、削弱攻擊、分析未知元素融合等等。\n\n有一隻叫做<b>白堊<b>的使魔，平時保持雪貂的模樣，背上有淺藍色八芒星。脾氣暴躁，可以稱得上是凶殘，喜歡咬人。",
       "realname": "—",
       "avatarImg": "/images/uploads/010000.jpg",
       "cp": "菲洛梅娜·斯托亞諾夫斯基",
-      "affiliation": "(2026) 霍洛伊魔法學院",
-      "skill": "—",
+      "affiliation": "霍洛伊魔法學院 (2026)",
+      "skill": "樞紐解構",
       "fullbodyImg": "/images/uploads/052515157111.png",
       "gallery": [
         {
@@ -69,6 +69,163 @@
       "id": "ORIG-01",
       "birthday": "6.6",
       "age": "18→20→25"
+    },
+    {
+      "height": "155",
+      "bio": "瓦萊麗出身於火山礦區，沒有顯赫的血統，只是一個由放逐精靈撫養長大的孤兒。對而言，生活就是一場永無止境的決鬥，這造就了她火爆、熱愛戰鬥的狂熱性格。\n\n與養母兼師傅的席格琳·星輝的感情十分深厚。\n特質魔法為<b>涅槃焦土<b>，能夠吸收、重新利用發散的火元素，讓火分子在空氣中漂浮，形成一個火元素力場。\n\n<i>在本家亞卡塞什世界觀中，為希塞爾登小隊的魔法師——火焰鳥。<i>",
+      "realname": "—",
+      "avatarImg": "/images/uploads/7788832211.jpg",
+      "affiliation": "霍洛伊魔法學院 (2026)",
+      "skill": "涅槃焦土",
+      "fullbodyImg": "/images/uploads/15167171-1-.png",
+      "gallery": [
+        {
+          "thumb": "/images/uploads/人設圖-瓦萊麗.jpg",
+          "full": "/images/uploads/人設圖-瓦萊麗.jpg"
+        },
+        {
+          "thumb": "/images/uploads/091992-2.jpg",
+          "full": "/images/uploads/091992-2.jpg"
+        },
+        {
+          "thumb": "/images/uploads/262622.jpg",
+          "full": "/images/uploads/262622.jpg"
+        },
+        {
+          "thumb": "/images/uploads/2672722.jpg",
+          "full": "/images/uploads/2672722.jpg"
+        },
+        {
+          "thumb": "/images/uploads/526262.jpg",
+          "full": "/images/uploads/526262.jpg"
+        },
+        {
+          "thumb": "/images/uploads/插圖-20260914-2.jpg",
+          "full": "/images/uploads/插圖-20260914-2.jpg"
+        },
+        {
+          "thumb": "/images/uploads/05133.png",
+          "full": "/images/uploads/05133.png"
+        },
+        {
+          "thumb": "/images/uploads/08044.jpg",
+          "full": "/images/uploads/08044.jpg"
+        }
+      ],
+      "status": "alive",
+      "role": "巫師 / 精靈",
+      "codename": "瓦萊麗",
+      "id": "orig-02",
+      "birthday": "4.10",
+      "age": "30"
+    },
+    {
+      "height": "182",
+      "bio": "朝霧望被身邊的人視為<i>詛咒<i>、帶來霉運之人，所有事情在他身上都會往最壞的事情發展。\n\n外表是個不修邊幅的男人，一頭黑髮中穿插不少參差的白髮，身上總是帶著大大小小的傷口。現與姪女小春相依為命。\n\n<i>■■■????<i>",
+      "realname": "—",
+      "avatarImg": "/images/uploads/hbz1uihauaaqrxe11.jpg",
+      "affiliation": "血祭之里 (2026)",
+      "skill": "—",
+      "fullbodyImg": "/images/uploads/09981111.png",
+      "gallery": [
+        {
+          "thumb": "/images/uploads/望叔人設.jpg",
+          "full": "/images/uploads/望叔人設.jpg"
+        },
+        {
+          "thumb": "/images/uploads/21671711.jpg",
+          "full": "/images/uploads/21671711.jpg"
+        },
+        {
+          "thumb": "/images/uploads/32777.jpg",
+          "full": "/images/uploads/32777.jpg"
+        },
+        {
+          "thumb": "/images/uploads/3525262727.jpg",
+          "full": "/images/uploads/3525262727.jpg"
+        },
+        {
+          "thumb": "/images/uploads/6382892.jpg",
+          "full": "/images/uploads/6382892.jpg"
+        },
+        {
+          "thumb": "/images/uploads/望_1.jpg",
+          "full": "/images/uploads/望_1.jpg"
+        },
+        {
+          "thumb": "/images/uploads/望_122-1.jpg",
+          "full": "/images/uploads/望_122-1.jpg"
+        },
+        {
+          "thumb": "/images/uploads/望_122-2.jpg",
+          "full": "/images/uploads/望_122-2.jpg"
+        },
+        {
+          "thumb": "/images/uploads/望_223_1.jpg",
+          "full": "/images/uploads/望_223_1.jpg"
+        },
+        {
+          "thumb": "/images/uploads/望_223_2.jpg",
+          "full": "/images/uploads/望_223_2.jpg"
+        },
+        {
+          "thumb": "/images/uploads/363773.jpg",
+          "full": "/images/uploads/363773.jpg"
+        }
+      ],
+      "status": "dead",
+      "role": "待業",
+      "codename": "朝霧 望",
+      "id": "orig-03",
+      "articles": [
+        {
+          "title": "在告別之地初次見面",
+          "url": "https://www.plurk.com/p/3ihqwzb7rr",
+          "src": "Plurk"
+        },
+        {
+          "title": "第一輪 - 車站",
+          "url": "https://www.plurk.com/p/3iivihe88t",
+          "src": "Plurk"
+        },
+        {
+          "title": "第二輪前",
+          "url": "https://www.plurk.com/p/3ikfi5390m",
+          "src": "Plurk"
+        },
+        {
+          "title": "第二輪 - 拘留所內",
+          "url": "https://www.plurk.com/p/3ijp4k9p8t",
+          "src": "Plurk"
+        },
+        {
+          "title": "^口^",
+          "url": "https://www.plurk.com/p/3ijpxymz48",
+          "src": "Plurk"
+        },
+        {
+          "title": "第三輪前",
+          "url": "https://www.plurk.com/p/3ilo2vkvi2",
+          "src": "Plurk"
+        },
+        {
+          "title": "第三輪 - 河間總合學舍",
+          "url": "https://www.plurk.com/p/3iloyya774",
+          "src": "Plurk"
+        },
+        {
+          "title": "第四輪 - 火野家住宅",
+          "url": "https://www.plurk.com/p/3in8ybnacn",
+          "src": "Plurk"
+        },
+        {
+          "title": "最終輪 - 古井",
+          "url": "https://www.plurk.com/p/3intbsoqa7",
+          "src": "Plurk"
+        }
+      ],
+      "birthday": "",
+      "age": "38"
     }
   ]
 }
