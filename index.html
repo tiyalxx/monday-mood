@@ -158,6 +158,7 @@ body.is-gate{overflow:hidden;}
   .brand small{display:none;}
   .topbar-right{width:100%; flex-wrap:wrap; row-gap:8px;}
   .about-link{padding-right:0; border-right:none;}
+  .back-btn{padding-right:0; border-right:none;}
   .crumb{
     width:100%; justify-content:flex-start;
     overflow-x:auto; white-space:nowrap;
@@ -324,6 +325,34 @@ body.is-gate{overflow:hidden;}
   transition:color .2s ease;
 }
 .about-link:hover{color:var(--ink);}
+
+/* 上一頁按鈕：除了首頁，每個頁面都會出現，回到麵包屑上一層 */
+.back-btn{
+  display:none;
+  align-items:center; gap:6px;
+  font-family:var(--font-mono); font-size:12.5px; letter-spacing:.03em;
+  color:var(--ink-soft); background:none; border:none; cursor:pointer;
+  padding-right:20px; border-right:1px solid var(--line);
+  transition:color .2s ease;
+}
+.back-btn:hover{color:var(--ink);}
+
+/* 角色頁往下捲動時出現的「回到最頂」按鈕 */
+.to-top-btn{
+  position:fixed; right:24px; bottom:24px; z-index:60;
+  width:44px; height:44px; border-radius:50%;
+  background:var(--brand); color:#fff; border:none; cursor:pointer;
+  font-family:var(--font-mono); font-size:17px; line-height:1;
+  display:flex; align-items:center; justify-content:center;
+  opacity:0; transform:translateY(12px); pointer-events:none;
+  transition:opacity .3s ease, transform .3s ease, background .2s ease;
+  box-shadow:0 10px 26px rgba(30,30,34,.24);
+}
+.to-top-btn.show{opacity:1; transform:translateY(0); pointer-events:auto;}
+.to-top-btn:hover{filter:brightness(1.1);}
+@media (max-width:640px){
+  .to-top-btn{right:16px; bottom:16px; width:40px; height:40px; font-size:15px;}
+}
 
 /* ---------------- app / view container ---------------- */
 #app{
@@ -537,6 +566,10 @@ body.is-gate{overflow:hidden;}
   display:flex; align-items:center;
   -ms-overflow-style:none; scrollbar-width:none;
   max-width:560px; margin:0 auto;
+  /* 邊緣用漸層遮罩淡出，取代生硬的裁切邊界：卡片本身不會被切一半，
+     只是靠邊的卡片會自然變透明，看起來像是自然消失在畫面外而不是被切斷 */
+  -webkit-mask-image:linear-gradient(to right, transparent 0, #000 48px, #000 calc(100% - 48px), transparent 100%);
+  mask-image:linear-gradient(to right, transparent 0, #000 48px, #000 calc(100% - 48px), transparent 100%);
 }
 .arc-stage::-webkit-scrollbar{ display:none; }
 /* 用 flex-end（底部對齊）而不是置中：手機版每張卡片下面接了一段說明文字，
@@ -666,20 +699,27 @@ body.is-gate{overflow:hidden;}
 .pf-bio p:last-child{margin-bottom:0;}
 
 /* 立繪：固定貼在畫面左側當背景，疊在內容下方（z-index 較低），
-   不會隨內容捲動而消失，但文字/頭像一定蓋在它上面，不會被立繪擋住 */
+   不會隨內容捲動而消失，但文字/頭像一定蓋在它上面，不會被立繪擋住。
+   圖片本身大小完全不變，只是隨著捲動上下平移：
+   一開始（頁面最上面）看得到頭，捲到畫廊底部時平移到看得到腳。 */
 .pf-bg-fullbody{
   display:none;
-  position:fixed; left:clamp(16px,4vw,64px); bottom:28px;
-  width:min(34vw,480px); height:calc(100vh - 90px);
+  position:fixed; left:clamp(0px,2vw,32px); top:74px; bottom:0;
+  width:min(42vw,600px);
   overflow:hidden;
   z-index:0; pointer-events:none;
   opacity:0; filter:blur(24px);
-  transform:scale(.92) translateY(14px);
+  transform:translateY(14px);
   transition:opacity 1.8s ease, filter 1.8s ease, transform 1.8s cubic-bezier(.2,.7,.2,1);
 }
 .pf-bg-fullbody.show{display:block;}
-.pf-bg-fullbody.in-view{opacity:1; filter:blur(0); transform:scale(1) translateY(0);}
-.pf-bg-fullbody img{width:100%; height:100%; object-fit:contain; object-position:left bottom; display:block;}
+.pf-bg-fullbody.in-view{opacity:1; filter:blur(0); transform:translateY(0);}
+.pf-bg-fullbody img{
+  position:absolute; top:0; left:0;
+  width:100%; height:auto; display:block;
+  transform:translateY(0);
+  will-change:transform;
+}
 .pf-fullbody-mobile{ display:none; }
 @media (max-width:900px){
   .pf-bg-fullbody{display:none !important;}
@@ -696,8 +736,14 @@ body.is-gate{overflow:hidden;}
 @media (min-width:901px){
   body.has-fullbody-bg #app{ max-width:none; }
   body.has-fullbody-bg .profile-view{
-    margin-left:min(28vw,400px);
+    margin-left:min(26vw,360px);
     padding-left:clamp(12px,2vw,28px);
+  }
+  /* 立繪放大之後，內容區塊要蓋在它上面才看得到文字，
+     所以文章／畫廊這幾個區塊要給不透明背景，疊在立繪上層也不會被看穿 */
+  body.has-fullbody-bg .profile-view > .pf-reveal{
+    position:relative; z-index:1;
+    background:var(--bg);
   }
 }
 
@@ -827,7 +873,7 @@ body.has-fullbody-bg footer{ border-top:none; }
   background:#404aff;
   display:flex; align-items:center; justify-content:center;
   cursor:pointer;
-  transition:opacity .6s ease;
+  transition:opacity .9s ease;
 }
 #intro-splash.hide{ opacity:0; pointer-events:none; }
 .intro-globe-wrap{
@@ -870,12 +916,16 @@ body.has-fullbody-bg footer{ border-top:none; }
 <path d="M174.09,15.23h-29.18c-.36,0-.66.3-.66.66v6.86h-7.69c-.36,0-.66.3-.66.66v11.42c0,.36.3.66.66.66h5.58v5.01c0,.36.3.66.66.66h22.28v8.12h-28.52c-.36,0-.66.3-.66.66v7.59c0,.36.3.66.66.66h29.18c.36,0,.66-.3.66-.66v-6.93h7.69c.36,0,.66-.3.66-.66v-11.35c0-.36-.3-.66-.66-.66h-7.69v-5.01c0-.36-.3-.66-.66-.66h-20.17v-8.18h28.52c.36,0,.66-.3.66-.66v-7.52c0-.36-.3-.66-.66-.66Z"/>
 </svg> <small>CHARACTER ARCHIVE</small></div>
   <div class="topbar-right">
+    <button class="back-btn" id="back-btn" type="button">← Back</button>
     <a href="#/about" class="about-link">About</a>
     <div class="crumb" id="crumb"></div>
   </div>
 </div>
 
 <div id="app"></div>
+
+<!-- 角色頁往下捲動時出現的「回到最頂」按鈕 -->
+<button id="to-top-btn" class="to-top-btn" type="button" aria-label="Back to top">↑</button>
 
 <div id="lightbox">
   <button class="lb-close" onclick="closeLightbox()">CLOSE ✕</button>
@@ -1048,14 +1098,24 @@ function runIntroSplash(){
   if(!el) return;
   buildIntroGlobe(el.querySelector('.intro-globe-wrap'));
   const expand = el.querySelector('.intro-expand');
+  /* 白色圓圈蓋滿畫面的那一刻，底下的首頁其實已經整個渲染好了，
+     只是被蓋住看不到——所以先把它透明度設 0，等圓圈蓋滿之後
+     直接拿掉開場動畫（此時整個畫面已經是白的，拿掉不會有跳動感），
+     再讓首頁內容自己淡入，這樣才會是「真的淡出銜接」而不是硬切。
+     （如果只是把開場動畫整個淡出，因為底色都是白的，視覺上幾乎看不出來在變化。） */
+  const topbar = document.querySelector('.topbar');
+  const appEl = document.getElementById('app');
+  if(topbar) topbar.style.opacity = '0';
+  if(appEl) appEl.style.opacity = '0';
   let dismissed = false;
   const dismiss = ()=>{
     if(dismissed) return;
     dismissed = true;
     expand.classList.add('grow');
     setTimeout(()=>{
-      el.classList.add('hide');
-      setTimeout(()=>{ el.remove(); }, 500);
+      el.remove();
+      if(topbar){ topbar.style.transition = 'opacity .8s ease'; topbar.style.opacity = '1'; }
+      if(appEl){ appEl.style.transition = 'opacity .8s ease'; appEl.style.opacity = '1'; }
     }, 900);
   };
   el.addEventListener('click', dismiss);
@@ -1114,12 +1174,30 @@ function showDataWarning(){
   document.body.appendChild(bar);
 }
 
-function setCrumb(parts){
+function setCrumb(parts, opts){
+  opts = opts || {};
   const el = document.getElementById('crumb');
   el.innerHTML = parts.map((p,i)=>{
     const isLast = i===parts.length-1;
     return `<span class="seg" ${p.hash?`onclick="location.hash='${p.hash}'"`:''} style="${isLast?'color:var(--ink)':''}">${p.label}</span>` + (isLast?'':'<span class="sep">/</span>');
   }).join('');
+
+  /* 上一頁按鈕：除了首頁，其他頁面都會顯示，回到麵包屑往前一個有連結的層級 */
+  const backBtn = document.getElementById('back-btn');
+  let backHash = null;
+  if(opts.showBack !== false){
+    for(let i=parts.length-2; i>=0; i--){
+      if(parts[i].hash){ backHash = parts[i].hash; break; }
+    }
+  }
+  if(backHash){
+    backBtn.style.display = 'inline-flex';
+    backBtn.onclick = ()=>{ location.hash = backHash; };
+  } else {
+    backBtn.style.display = 'none';
+    backBtn.onclick = null;
+  }
+  updateToTopButton();
 }
 
 function setWorldTheme(world){
@@ -1134,14 +1212,15 @@ function route(){
   const hash = location.hash || '#/';
   const parts = hash.replace(/^#\//,'').split('/').filter(Boolean);
 
-  if(parts.length===0){ document.body.classList.add('is-gate'); hideFullbodyBackground(); setWorldTheme(null); return renderGate(); }
+  if(parts.length===0){ document.body.classList.add('is-gate'); document.body.classList.remove('is-profile'); hideFullbodyBackground(); setWorldTheme(null); return renderGate(); }
   document.body.classList.remove('is-gate');
-  if(parts[0]==='index'){ hideFullbodyBackground(); setWorldTheme(null); return renderHome(); }
-  if(parts[0]==='coop' && parts.length===1){ hideFullbodyBackground(); setWorldTheme(null); return renderCoopWorlds(); }
-  if(parts[0]==='grid' && parts[1]==='original'){ hideFullbodyBackground(); setWorldTheme(null); return renderGrid('original'); }
-  if(parts[0]==='grid' && parts[1]==='coop' && parts[2]){ hideFullbodyBackground(); setWorldTheme(parts[2]); return renderGrid('coop', parts[2]); }
-  if(parts[0]==='about'){ hideFullbodyBackground(); setWorldTheme(null); return renderAbout(); }
-  if(parts[0]==='char' && parts[1]){ return renderProfile(parts[1]); }
+  if(parts[0]==='index'){ document.body.classList.remove('is-profile'); hideFullbodyBackground(); setWorldTheme(null); return renderHome(); }
+  if(parts[0]==='coop' && parts.length===1){ document.body.classList.remove('is-profile'); hideFullbodyBackground(); setWorldTheme(null); return renderCoopWorlds(); }
+  if(parts[0]==='grid' && parts[1]==='original'){ document.body.classList.remove('is-profile'); hideFullbodyBackground(); setWorldTheme(null); return renderGrid('original'); }
+  if(parts[0]==='grid' && parts[1]==='coop' && parts[2]){ document.body.classList.remove('is-profile'); hideFullbodyBackground(); setWorldTheme(parts[2]); return renderGrid('coop', parts[2]); }
+  if(parts[0]==='about'){ document.body.classList.remove('is-profile'); hideFullbodyBackground(); setWorldTheme(null); return renderAbout(); }
+  if(parts[0]==='char' && parts[1]){ document.body.classList.add('is-profile'); return renderProfile(parts[1]); }
+  document.body.classList.remove('is-profile');
   hideFullbodyBackground();
   setWorldTheme(null);
   return renderHome();
@@ -1192,7 +1271,7 @@ function gateKeyHandler(e){
 
 /* ---------------- HOME (分類頁) ---------------- */
 function renderHome(){
-  setCrumb([{label:'Home',hash:'#/index'},{label:'Index'}]);
+  setCrumb([{label:'Home',hash:'#/index'},{label:'Index'}], {showBack:false});
   app.innerHTML = `
   <div class="view node-view">
     <div class="node-field" id="node-field">
@@ -1427,6 +1506,12 @@ function initArcStage(){
   const stage = document.getElementById('arc-stage');
   if(!stage) return;
   const track = document.getElementById('arc-track');
+  /* 讓第一張／最後一張卡片也能被捲到正中間：
+     左右各留舞台一半寬度的空白，不然「01 號角色置中」在 01 剛好是
+     第一張卡片時會因為捲軸無法往左捲出負值而被迫貼齊最左邊 */
+  const sidePad = Math.max(24, stage.clientWidth/2);
+  track.style.paddingLeft = sidePad + 'px';
+  track.style.paddingRight = sidePad + 'px';
   if(window.innerWidth > 820){
     stage.addEventListener('wheel', (e)=>{
       e.preventDefault();
@@ -1444,8 +1529,21 @@ function initArcStage(){
   requestAnimationFrame(()=>{
     const cardsEls = track.querySelectorAll('.arc-card');
     if(!cardsEls.length) return;
-    const peakEl = cardsEls[Math.round((cardsEls.length-1)/2)];
-    const target = peakEl.offsetLeft + peakEl.offsetWidth/2 - stage.clientWidth/2;
+    /* 預設置中的角色改成每個世界編號 01 的角色（例如 coop-mafia-01），
+       找不到才退回原本「陣列正中間」的邏輯當備案 */
+    let peakEl = null;
+    cardsEls.forEach(el=>{
+      const href = el.getAttribute('href') || '';
+      if(/-01$/.test(href)){ peakEl = el; }
+    });
+    if(!peakEl){ peakEl = cardsEls[Math.round((cardsEls.length-1)/2)]; }
+    /* 用 getBoundingClientRect 換算捲動距離，而不是 offsetLeft：
+       offsetLeft 是相對最近的「有定位」祖先元素（可能是整個頁面），
+       跟 stage 實際的捲動座標系不是同一套，算出來的置中位置會不準 */
+    const stageRect = stage.getBoundingClientRect();
+    const cardRect = peakEl.getBoundingClientRect();
+    const cardCenter = (cardRect.left - stageRect.left) + stage.scrollLeft + cardRect.width/2;
+    const target = cardCenter - stage.clientWidth/2;
     stage.scrollLeft = Math.max(0, target);
     updateArcFocus(stage);
   });
@@ -1555,11 +1653,14 @@ function setupFullbodyBackground(ch){
   bg.classList.remove('in-view');
   if(ch.fullbodyImg){
     const img = document.getElementById('pf-bg-fullbody-img');
+    img.style.transform = 'translateY(0)';
+    img.onload = updateFullbodyParallax;
     img.src = ch.fullbodyImg;
     img.alt = ch.codename + ' full body art';
     bg.classList.add('show');
     document.body.classList.add('has-fullbody-bg');
     requestAnimationFrame(()=>{ requestAnimationFrame(()=>{ bg.classList.add('in-view'); }); });
+    updateFullbodyParallax();
   } else {
     bg.classList.remove('show');
     document.body.classList.remove('has-fullbody-bg');
@@ -1570,6 +1671,45 @@ function hideFullbodyBackground(){
   if(bg){ bg.classList.remove('show','in-view'); }
   document.body.classList.remove('has-fullbody-bg');
 }
+
+/* 立繪隨頁面捲動平移（大小完全不變）：一開始（頁面最上面）看得到頭，
+   捲到最下面（畫廊底部）時往上平移，換成看得到腳 */
+function updateFullbodyParallax(){
+  if(!document.body.classList.contains('has-fullbody-bg')) return;
+  const bg = document.getElementById('pf-bg-fullbody');
+  const img = document.getElementById('pf-bg-fullbody-img');
+  if(!bg || !img || !img.naturalWidth) return;
+  const boxH = bg.clientHeight;
+  const renderedH = bg.clientWidth * (img.naturalHeight / img.naturalWidth);
+  const maxTranslate = Math.max(0, renderedH - boxH);
+  const scrollable = document.documentElement.scrollHeight - window.innerHeight;
+  const progress = scrollable > 0 ? Math.min(1, Math.max(0, window.scrollY / scrollable)) : 0;
+  img.style.transform = `translateY(${(-progress * maxTranslate).toFixed(1)}px)`;
+}
+let fullbodyParallaxTicking = false;
+window.addEventListener('scroll', ()=>{
+  if(fullbodyParallaxTicking) return;
+  fullbodyParallaxTicking = true;
+  requestAnimationFrame(()=>{ updateFullbodyParallax(); fullbodyParallaxTicking = false; });
+}, {passive:true});
+
+/* 角色頁往下捲動一段距離後才出現「回到最頂」按鈕，點下去平滑捲回頂端 */
+const TO_TOP_SHOW_AFTER = 480;
+function updateToTopButton(){
+  const btn = document.getElementById('to-top-btn');
+  if(!btn) return;
+  const show = document.body.classList.contains('is-profile') && window.scrollY > TO_TOP_SHOW_AFTER;
+  btn.classList.toggle('show', show);
+}
+document.getElementById('to-top-btn').addEventListener('click', ()=>{
+  window.scrollTo({top:0, behavior:'smooth'});
+});
+let toTopTicking = false;
+window.addEventListener('scroll', ()=>{
+  if(toTopTicking) return;
+  toTopTicking = true;
+  requestAnimationFrame(()=>{ updateToTopButton(); toTopTicking = false; });
+}, {passive:true});
 
 /* 角色頁的捲動淡入：進入畫面的區塊才觸發淡入＋上移，觸發過一次就不再重複 */
 function initProfileReveal(){
