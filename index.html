@@ -560,29 +560,29 @@ body.is-gate{overflow:hidden;}
 /* 角色列表：橫向重疊排列的弧形卡片牆（電腦滾輪橫向瀏覽，手機直接上下滑）。
    每張卡片的寬度／垂直位移都是 JS 算好、用 inline style 帶進來的（弧線公式），
    這裡的 class 只負責視覺樣式，不負責排版數值。 */
+/* 角色列表恢復成橫向重疊卡片牆，但取消原本的弧形高低起伏：
+   每張卡片統一寬度／高度，排成一直線，只靠中間淡出/降飽和＋滑鼠放大來做重點 */
 .arc-stage{
   height:clamp(380px, 56vh, 600px);
   overflow-x:auto; overflow-y:hidden;
   display:flex; align-items:center;
   -ms-overflow-style:none; scrollbar-width:none;
   max-width:560px; margin:0 auto;
-  /* 邊緣用漸層遮罩淡出，取代生硬的裁切邊界：卡片本身不會被切一半，
-     只是靠邊的卡片會自然變透明，看起來像是自然消失在畫面外而不是被切斷 */
+  -webkit-overflow-scrolling:touch;
+  /* 吸附置中改由 JS 自己算＋動畫做（見 initArcStage 的 snapToNearest），
+     不用 CSS scroll-snap，避免瀏覽器原生吸附跟我們的慣性動畫互相打架，
+     導致「看起來停了但其實還在偷偷滑」讓點擊踩不準頭像 */
+  /* 邊緣用漸層遮罩淡出，取代生硬的裁切邊界 */
   -webkit-mask-image:linear-gradient(to right, transparent 0, #000 48px, #000 calc(100% - 48px), transparent 100%);
   mask-image:linear-gradient(to right, transparent 0, #000 48px, #000 calc(100% - 48px), transparent 100%);
 }
 .arc-stage::-webkit-scrollbar{ display:none; }
-/* 用 flex-end（底部對齊）而不是置中：手機版每張卡片下面接了一段說明文字，
-   底部對齊才能讓所有卡片的文字對在同一條水平線上，不會因為圖片高矮不同而東倒西歪 */
-.arc-track{ display:flex; align-items:flex-end; margin:0 auto; padding:0 6vw; }
+.arc-track{ display:flex; align-items:center; margin:0 auto; padding:0 6vw; }
 .arc-card{
   position:relative; flex:0 0 auto;
   cursor:pointer;
   transition:filter .35s ease, opacity .35s ease;
 }
-/* 卡片本身的視覺（圖片/色塊/陰影/圓角/弧線位移）都收在 media 這層，
-   這樣底下可以另外接一段「一直顯示」的說明文字，不會跟著弧線上下移動，
-   每張卡片的文字才能對齊在同一條水平線上，不會互相重疊 */
 .arc-card-media{
   position:relative; aspect-ratio:4/5;
   background:var(--brand); border-radius:var(--radius-sm); overflow:hidden;
@@ -595,7 +595,6 @@ body.is-gate{overflow:hidden;}
   display:flex; align-items:center; justify-content:center;
   font-family:var(--font-disp); font-size:26px; color:rgba(255,255,255,.9);
 }
-/* 電腦版：滑過去才浮現的名字條，蓋在圖片下緣 */
 .arc-card .name-bar{
   position:absolute; left:0; right:0; bottom:0; padding:12px 10px 10px;
   background:linear-gradient(to top, rgba(0,0,0,.62), transparent);
@@ -609,7 +608,7 @@ body.is-gate{overflow:hidden;}
   filter:none !important; opacity:1 !important; z-index:99 !important;
 }
 .arc-card:hover .arc-card-media{
-  transform:translateY(calc(var(--y, 0px) - 16px)) scale(1.06) !important;
+  transform:scale(1.1) !important;
   box-shadow:0 36px 70px rgba(30,30,34,.26);
 }
 .arc-card:hover .name-bar{opacity:1; transform:translateY(0);}
@@ -639,16 +638,12 @@ body.is-gate{overflow:hidden;}
 .world-brief p{ margin:0; font-size:13px; line-height:1.8; color:var(--ink); }
 
 @media (max-width:820px){
-  /* 手機版：跟電腦一樣是橫向的弧形卡片牆，用手指左右滑動瀏覽；
-     卡片本身用 JS 算得比電腦版小一點，這裡只需要調整舞台高度跟字級。
-     因為手機沒有 hover，圖片上蓋的名字條直接隱藏，改成一直顯示在圖片「下面」的小字說明。 */
   .arc-stage{
     height:clamp(290px, 47vh, 430px);
     -webkit-overflow-scrolling:touch;
   }
   .arc-hint{ padding-top:10px; }
   .arc-card .name-bar{ display:none; }
-  .arc-card:hover .arc-card-media{ transform:translateY(var(--y, 0px)) !important; box-shadow:0 26px 50px rgba(30,30,34,.16); }
   .name-caption{
     display:block; text-align:center; padding:6px 4px 0;
   }
@@ -1414,53 +1409,32 @@ function renderGrid(category, world){
   initArcStage();
 }
 
-/* 角色列表的弧形卡片牆：電腦是橫向一排、重疊、中間拱起、滾輪橫向瀏覽；
-   手機是直向一排、置中、上下滑，寬度跟著弧線公式起伏。
-   兩種版面共用同一組角色資料跟弧線公式，只是電腦用「橫向位移＋寬度」，
-   手機用「純寬度起伏」（不做左右歪斜，保持置中，之前試過交錯版但不好看）。 */
+/* 角色列表恢復成橫向重疊卡片牆，但取消弧線起伏：
+   每張卡片統一寬度／高度排成一直線，中間淡出效果改成即時算「目前哪張在舞台正中間」 */
 function buildArcStage(list){
   if(!list.length){ return `<div class="empty-note">No characters recorded yet.</div>`; }
 
   const isMobile = window.innerWidth <= 820;
   const n = list.length;
   const peakIdx = (n-1)/2;
-  /* 手機因為圖片下面現在有文字說明，重疊不能像電腦那麼多，
-     不然旁邊卡片的名字會擠在一起看不清楚 */
   const OVERLAP = isMobile ? 0.22 : 0.46;
-
-  /* 手機跟電腦現在用同一套「橫向弧形卡片牆」邏輯，用手指/滾輪左右瀏覽，
-     只有卡片尺寸（vw 數值）跟拱起幅度依螢幕縮小，排版公式完全一樣 */
-  const baseW = isMobile ? 20 : 9.2;    // vw
-  const wRange = isMobile ? 11 : 5.4;   // vw
-  const yRange = isMobile ? 40 : 74;    // px
+  const w = isMobile ? 26 : 12; // vw，統一寬度／高度，不再有弧線起伏
 
   let html = '';
   list.forEach((ch,i)=>{
-    const t = n>1 ? i/(n-1) : 0.5;
-    const arc = Math.sin(Math.PI * t);
-    const wobble = Math.sin(t*Math.PI*2.4 + i*0.7)*0.12;
-    const k = Math.min(1, Math.max(0, arc + wobble));
-    const w = +(baseW + wRange * k).toFixed(2);
-    const y = -Math.round(yRange * k);
     const dist = Math.abs(i - peakIdx);
     const z = Math.round(100 - dist*10);
-    /* 手機沒有 hover，名字條在 CSS 裡改成一直顯示；
-       淡出/降飽和拿來凸顯「最中間那張最清楚」，電腦手機都保留同樣效果 */
     const fade = Math.max(0, 1 - dist*0.09);
     const sat = Math.max(35, 100 - dist*13);
 
-    /* --y／translateY 只放在 arc-card-media（圖片本身）上，
-       這樣下面的說明文字才不會跟著弧線一起被拉高拉低，
-       每張卡片的文字可以對齊在同一條水平線上 */
     const cardStyle = [
       `width:${w}vw`, `z-index:${z}`, `opacity:${fade.toFixed(2)}`, `filter:saturate(${sat}%)`,
       `margin-left:${i===0 ? 0 : '-'+(w*OVERLAP).toFixed(2)+'vw'}`,
     ].join('; ');
-    const mediaStyle = [`--y:${y}px`, `transform:translateY(${y}px)`].join('; ');
 
     html += `
     <a class="arc-card" href="#/char/${ch.id}" style="${cardStyle}">
-      <div class="arc-card-media" style="${mediaStyle}">
+      <div class="arc-card-media">
         ${avatarBlock(ch)}
         <div class="name-bar">
           <div class="cn">${ch.codename}</div>
@@ -1479,12 +1453,7 @@ function buildArcStage(list){
   <div class="arc-hint"><span class="dot"></span> ${hintLabel}</div>`;
 }
 
-/* 電腦滾輪轉成橫向捲動（手機直接用手指滑就好，不用另外處理）；
-   不論手機電腦，一開始都自動把畫面對準弧線最高點（最中間那張） */
-/* 卡片淡出/降飽和原本是照「資料清單裡的順序」算好、寫死成 inline style，
-   一開始置中的那張剛好也是清單正中間那張，所以看起來對。
-   但滑鼠滾輪／手指滑動之後，畫面正中間的卡片會變成別張，樣式卻不會跟著動，
-   所以要改成即時算「目前哪張在舞台正中間」，動態更新透明度/飽和度。 */
+/* 即時算「目前哪張在舞台正中間」，動態更新透明度/飽和度 */
 function updateArcFocus(stage){
   const cards = stage.querySelectorAll('.arc-card');
   if(!cards.length) return;
@@ -1494,7 +1463,7 @@ function updateArcFocus(stage){
   cards.forEach(card=>{
     const r = card.getBoundingClientRect();
     const cardCenter = r.left + r.width/2;
-    const dist = Math.abs(cardCenter - centerX) / half; // 0（正中間）往外變大
+    const dist = Math.abs(cardCenter - centerX) / half;
     const fade = Math.max(0.32, 1 - dist*1.15);
     const sat = Math.max(35, 100 - dist*115);
     card.style.opacity = fade.toFixed(2);
@@ -1506,18 +1475,93 @@ function initArcStage(){
   const stage = document.getElementById('arc-stage');
   if(!stage) return;
   const track = document.getElementById('arc-track');
-  /* 讓第一張／最後一張卡片也能被捲到正中間：
-     左右各留舞台一半寬度的空白，不然「01 號角色置中」在 01 剛好是
-     第一張卡片時會因為捲軸無法往左捲出負值而被迫貼齊最左邊 */
+  /* 讓第一張／最後一張卡片也能被捲到正中間 */
   const sidePad = Math.max(24, stage.clientWidth/2);
   track.style.paddingLeft = sidePad + 'px';
   track.style.paddingRight = sidePad + 'px';
+  /* 一般滑鼠滾輪只會送出一段一段的 deltaY，直接加到 scrollLeft 上會很卡、
+     一格一格跳。改成「慣性」：滾輪只負責加一點速度，實際捲動靠 rAF
+     每一格慢慢把速度用掉（乘上摩擦力），滑起來才會像觸控板/手機那樣
+     滑順地衝出去再慢慢停下來。停下來之後改由我們自己算「最近的卡片」
+     並用 rAF 慢慢動畫過去，取代 CSS scroll-snap——因為讓瀏覽器原生吸附
+     跟我們自己的慣性動畫同時搶著改 scrollLeft，會讓畫面「看起來停了」
+     但其實還在偷偷位移，點擊會因此踩不準卡片中間的頭像。自己算的話，
+     動畫跑完那一刻的位置就是最終停下來的位置，點哪裡看到的就是哪裡。
+     觸控板本身送出的 deltaX（左右滑）已經很滑順，直接放行給瀏覽器原生處理，
+     結束後一樣交給我們的「捲動停止後自動吸附」邏輯去對齊置中。 */
+  let momentum = 0;
+  let momentumRAF = null;
+  let snapRAF = null;
+  let scrollEndTimer = null;
+
+  function cancelSnap(){
+    if(snapRAF){ cancelAnimationFrame(snapRAF); snapRAF = null; }
+  }
+
+  function getNearestCardTarget(){
+    const cards = stage.querySelectorAll('.arc-card');
+    if(!cards.length) return null;
+    const stageRectC = stage.getBoundingClientRect();
+    const centerX = stageRectC.left + stageRectC.width/2;
+    let best = null, bestDist = Infinity;
+    cards.forEach(card=>{
+      const r = card.getBoundingClientRect();
+      const cardCenter = r.left + r.width/2;
+      const dist = Math.abs(cardCenter - centerX);
+      if(dist < bestDist){ bestDist = dist; best = card; }
+    });
+    if(!best) return null;
+    const cardRect = best.getBoundingClientRect();
+    const cardCenter = (cardRect.left - stageRectC.left) + stage.scrollLeft + cardRect.width/2;
+    return cardCenter - stage.clientWidth/2;
+  }
+
+  function snapToNearest(){
+    cancelSnap();
+    const target = getNearestCardTarget();
+    if(target == null) return;
+    const start = stage.scrollLeft;
+    const dist = target - start;
+    if(Math.abs(dist) < 0.5) return;
+    const duration = 300;
+    const startTime = performance.now();
+    function easeOutCubic(t){ return 1 - Math.pow(1-t, 3); }
+    function tick(now){
+      const t = Math.min(1, (now - startTime) / duration);
+      stage.scrollLeft = start + dist * easeOutCubic(t);
+      updateArcFocus(stage);
+      if(t < 1){ snapRAF = requestAnimationFrame(tick); }
+      else { snapRAF = null; }
+    }
+    snapRAF = requestAnimationFrame(tick);
+  }
+
+  function scheduleSnap(){
+    if(scrollEndTimer) clearTimeout(scrollEndTimer);
+    scrollEndTimer = setTimeout(()=>{
+      if(!momentumRAF && !snapRAF){ snapToNearest(); }
+    }, 130);
+  }
+
+  function stepMomentum(){
+    stage.scrollLeft += momentum;
+    momentum *= 0.9;
+    if(Math.abs(momentum) < 0.5){
+      momentum = 0; momentumRAF = null;
+      snapToNearest();
+      return;
+    }
+    momentumRAF = requestAnimationFrame(stepMomentum);
+  }
+
   if(window.innerWidth > 820){
     stage.addEventListener('wheel', (e)=>{
+      if(Math.abs(e.deltaX) > Math.abs(e.deltaY)) return; // 觸控板橫滑，交給原生捲動
       e.preventDefault();
-      /* 滑鼠滾輪多半只會送出 deltaY，觸控板左右滑則是送 deltaX，
-         兩種都要接住，不然用觸控板橫滑會完全沒反應 */
-      stage.scrollLeft += Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+      cancelSnap();
+      momentum += e.deltaY * 0.65;
+      momentum = Math.max(-90, Math.min(90, momentum));
+      if(!momentumRAF){ momentumRAF = requestAnimationFrame(stepMomentum); }
     }, {passive:false});
   }
   let ticking = false;
@@ -1525,21 +1569,18 @@ function initArcStage(){
     if(ticking) return;
     ticking = true;
     requestAnimationFrame(()=>{ updateArcFocus(stage); ticking = false; });
+    if(!momentumRAF && !snapRAF){ scheduleSnap(); }
   }, {passive:true});
   requestAnimationFrame(()=>{
     const cardsEls = track.querySelectorAll('.arc-card');
     if(!cardsEls.length) return;
-    /* 預設置中的角色改成每個世界編號 01 的角色（例如 coop-mafia-01），
-       找不到才退回原本「陣列正中間」的邏輯當備案 */
+    /* 預設置中的角色是每個世界編號 01 的角色，找不到才退回陣列正中間 */
     let peakEl = null;
     cardsEls.forEach(el=>{
       const href = el.getAttribute('href') || '';
       if(/-01$/.test(href)){ peakEl = el; }
     });
     if(!peakEl){ peakEl = cardsEls[Math.round((cardsEls.length-1)/2)]; }
-    /* 用 getBoundingClientRect 換算捲動距離，而不是 offsetLeft：
-       offsetLeft 是相對最近的「有定位」祖先元素（可能是整個頁面），
-       跟 stage 實際的捲動座標系不是同一套，算出來的置中位置會不準 */
     const stageRect = stage.getBoundingClientRect();
     const cardRect = peakEl.getBoundingClientRect();
     const cardCenter = (cardRect.left - stageRect.left) + stage.scrollLeft + cardRect.width/2;
