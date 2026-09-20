@@ -326,6 +326,57 @@ body.is-gate{overflow:hidden;}
 }
 .about-link:hover{color:var(--ink);}
 
+/* Index 導覽：滑鼠移過去會出現下拉選單，列出所有分類（世界觀／企劃底下每個世界），
+   這樣瀏覽的時候可以直接跳到別的分類，不用一直按「上一頁」回去 */
+.nav-index{
+  position:relative;
+  padding-right:20px; border-right:1px solid var(--line);
+}
+.index-link{
+  font-family:var(--font-mono); font-size:12.5px; letter-spacing:.03em;
+  color:var(--ink-soft);
+  transition:color .2s ease;
+  display:inline-flex; align-items:center; gap:4px;
+}
+.index-link::after{content:'▾'; font-size:9px; opacity:.7;}
+.nav-index:hover .index-link, .nav-index.open .index-link{color:var(--ink);}
+.index-dropdown{
+  position:absolute; top:100%; left:0; margin-top:16px;
+  background:var(--bg); border:1px solid var(--line); border-radius:var(--radius);
+  box-shadow:0 22px 48px rgba(42,42,46,.14);
+  padding:20px 24px; display:flex; gap:36px;
+  opacity:0; transform:translateY(-6px);
+  pointer-events:none;
+  transition:opacity .2s ease, transform .2s ease;
+  z-index:80; white-space:nowrap;
+}
+.nav-index:hover .index-dropdown, .nav-index.open .index-dropdown{
+  opacity:1; transform:translateY(0); pointer-events:auto;
+}
+.index-dd-label{
+  font-family:var(--font-mono); font-size:10px; letter-spacing:.1em; color:var(--ink-faint);
+  margin-bottom:10px;
+}
+.index-dd-col a{
+  display:block; font-size:13px; color:var(--ink); padding:5px 0;
+  transition:color .2s ease;
+}
+.index-dd-col a:hover{color:var(--brand);}
+@media (max-width:640px){
+  .nav-index{padding-right:0; border-right:none;}
+  .index-dropdown{left:auto; right:0;}
+}
+
+/* 首頁入口（ENTER 那頁）平常是把整個導覽列藏起來的，
+   但 About 還是要能點到，所以另外放一個獨立的連結在右上角 */
+.gate-about{
+  position:absolute; top:26px; right:clamp(20px,4vw,56px); z-index:3;
+  font-family:var(--font-mono); font-size:12.5px; letter-spacing:.05em;
+  color:var(--ink-soft);
+  transition:color .2s ease;
+}
+.gate-about:hover{color:var(--ink);}
+
 /* 上一頁按鈕：除了首頁，每個頁面都會出現，回到麵包屑上一層 */
 .back-btn{
   display:none;
@@ -705,15 +756,37 @@ body.is-gate{overflow:hidden;}
   z-index:0; pointer-events:none;
   opacity:0; filter:blur(24px);
   transform:translateY(14px);
-  transition:opacity 1.8s ease, filter 1.8s ease, transform 1.8s cubic-bezier(.2,.7,.2,1);
+  transition:opacity .9s ease, filter .9s ease, transform .9s cubic-bezier(.2,.7,.2,1);
 }
-.pf-bg-fullbody.show{display:block;}
+.pf-bg-fullbody.show{display:block; opacity:1; filter:blur(0); transform:translateY(0);}
 .pf-bg-fullbody.in-view{opacity:1; filter:blur(0); transform:translateY(0);}
 .pf-bg-fullbody img{
   position:absolute; top:0; left:0;
   width:100%; height:auto; display:block;
   transform:translateY(0);
-  will-change:transform, width, height;
+  opacity:0;
+  will-change:transform, width, height, opacity;
+  transition:opacity .5s ease;
+}
+.pf-bg-fullbody img.loaded{opacity:1;}
+/* 立繪圖片本身還在載入時，用一個淡淡的閃光骨架占位，
+   這樣切換角色的當下畫面不會整塊空白、感覺卡住不動 */
+.pf-bg-fullbody::before{
+  content:'';
+  position:absolute; inset:0;
+  background:linear-gradient(100deg,
+    color-mix(in srgb, var(--ink) 5%, transparent) 30%,
+    color-mix(in srgb, var(--ink) 11%, transparent) 50%,
+    color-mix(in srgb, var(--ink) 5%, transparent) 70%);
+  background-size:200% 100%;
+  animation:pfSkeletonShimmer 1.4s ease-in-out infinite;
+  opacity:1;
+  transition:opacity .35s ease;
+}
+.pf-bg-fullbody.in-view::before{opacity:0;}
+@keyframes pfSkeletonShimmer{
+  0%{background-position:200% 0;}
+  100%{background-position:-200% 0;}
 }
 .pf-fullbody-mobile{ display:none; }
 @media (max-width:900px){
@@ -947,6 +1020,18 @@ body.has-fullbody-bg footer{ border-top:none; }
 </svg> <small>CHARACTER ARCHIVE</small></div>
   <div class="topbar-right">
     <button class="back-btn" id="back-btn" type="button">← Back</button>
+    <div class="nav-index" id="nav-index">
+      <a href="#/index" class="index-link">Index</a>
+      <div class="index-dropdown" id="index-dropdown">
+        <div class="index-dd-col">
+          <div class="index-dd-label">世界觀</div>
+          <a href="#/grid/original">ORIGINAL</a>
+        </div>
+        <div class="index-dd-col" id="index-dd-coop">
+          <div class="index-dd-label">企劃</div>
+        </div>
+      </div>
+    </div>
     <a href="#/about" class="about-link">About</a>
     <div class="crumb" id="crumb"></div>
   </div>
@@ -1083,9 +1168,41 @@ function runWipe(renderFn){
 window.addEventListener('hashchange', ()=> runWipe(route));
 window.addEventListener('DOMContentLoaded', ()=>{
   document.getElementById('foot-time').textContent = 'REV. ' + new Date().toISOString().slice(0,10);
-  loadWorldMeta().then(loadCharacters);
+  loadWorldMeta().then(()=>{ loadCharacters(); populateIndexDropdown(); });
   runIntroSplash();
+  initIndexNav();
 });
+
+/* Index 下拉選單：把「企劃」底下每個世界觀都列出來，滑鼠移到 Index 就能直接跳過去，
+   不用先進 Collab 選單頁再點一次 */
+function populateIndexDropdown(){
+  const col = document.getElementById('index-dd-coop');
+  if(!col) return;
+  const links = Object.entries(WORLD_META).map(([key,w])=>
+    `<a href="#/grid/coop/${key}">${w.name || key.toUpperCase()}</a>`
+  ).join('');
+  col.innerHTML = `<div class="index-dd-label">企劃</div>${links}`;
+}
+
+/* 觸控裝置沒有滑鼠移過去（hover）這件事，所以點第一下先展開選單，
+   點選單以外的地方或選了項目之後再收起來 */
+function initIndexNav(){
+  const nav = document.getElementById('nav-index');
+  if(!nav) return;
+  const isTouch = window.matchMedia('(hover:none)').matches;
+  if(!isTouch) return;
+  const link = nav.querySelector('.index-link');
+  link.addEventListener('click', (e)=>{
+    if(!nav.classList.contains('open')){
+      e.preventDefault();
+      nav.classList.add('open');
+      const closeOnce = (ev)=>{
+        if(!nav.contains(ev.target)){ nav.classList.remove('open'); document.removeEventListener('click', closeOnce); }
+      };
+      setTimeout(()=> document.addEventListener('click', closeOnce), 0);
+    }
+  });
+}
 
 /* 用幾個圓點平均排成一個大圓圈，依序一顆一顆亮起來（像常見的
    loading spinner），角度用數學算，不用手動排 */
@@ -1131,7 +1248,15 @@ function runIntroSplash(){
     expand.classList.add('grow');
     setTimeout(()=>{
       el.remove();
-      if(topbar){ topbar.style.transition = 'opacity .8s ease'; topbar.style.opacity = '1'; }
+      /* 首頁入口（ENTER 那頁）本來就要把導覽列藏起來。這裡不能無腦把
+         topbar 透明度寫死成 1，那樣會蓋掉「入口頁要藏起來」的設計
+         （變成看得到但點不到，因為 pointer-events:none 還在）；
+         但也不能寫死成 0，不然使用者離開入口頁、切換到其他頁面之後，
+         topbar 會永遠卡在藏起來的狀態（因為這段淡入的程式碼只會執行一次）。
+         正確做法是把這裡設定的 inline opacity 拿掉，交還給 CSS 的
+         body.is-gate 規則自己去接手判斷──之後每次切換頁面，
+         是不是入口頁都會即時反映在 topbar 該不該顯示上。 */
+      if(topbar){ topbar.style.transition = 'opacity .8s ease'; topbar.style.removeProperty('opacity'); }
       if(appEl){ appEl.style.transition = 'opacity .8s ease'; appEl.style.opacity = '1'; }
     }, 900);
   };
@@ -1247,6 +1372,7 @@ function route(){
 function renderGate(){
   app.innerHTML = `
   <div class="gate">
+    <a href="#/about" class="gate-about">About</a>
     <div class="gate-media">
       <!-- 換成你自己的片頭影片：把下面 video 的 src 換成你的影片路徑（例如 videos/intro.mp4），
            就會取代目前的白色背景。若不需要影片，留空即可。 -->
@@ -1710,29 +1836,44 @@ function setupFullbodyBackground(ch){
     bg = document.createElement('div');
     bg.id = 'pf-bg-fullbody';
     bg.className = 'pf-bg-fullbody';
-    bg.innerHTML = '<img id="pf-bg-fullbody-img" alt="">';
     document.body.appendChild(bg);
   }
   bg.classList.remove('in-view');
   if(ch.fullbodyImg){
-    const img = document.getElementById('pf-bg-fullbody-img');
     const targetSrc = ch.fullbodyImg;
-    /* 切換角色時，img 標籤是共用的：如果直接改 img.src，在新圖片載入完成之前，
-       畫面會繼續顯示「上一個角色」的舊圖，看起來就像先閃一下錯的立繪才切換過來。
-       改成先把圖片藏起來，用一個看不見的 Image() 物件在背景把新圖片載入完，
-       確定載入完成才把它套上去、重新淡入——這樣就不會有閃到別人立繪的問題。
+    /* 切換角色時，直接改舊 <img> 的 src 有兩個問題：
+       1) 畫面會先繼續顯示「上一個角色」的舊圖，看起來像先閃一下錯的立繪才切換過來。
+       2) 就算先在背景用一個獨立的 Image() 物件把新圖片完整載入完，
+          再把同一個網址設回舊的 <img> 標籤，瀏覽器不一定會直接沿用剛剛
+          已經下載好的內容，有機會等於又重新要求下載一次，反而更慢。
+       改成：讓這個獨立載入的 Image() 物件（載入完成、瀏覽器已經解碼好內容的
+       那一個）直接就是最後顯示用的 <img> 標籤本身，載入完成後把它整個接到
+       畫面上、把舊的移除——不用再指定第二次 src，也就不會有重複下載的問題。
        bg.dataset.pendingSrc 用來記錄「目前應該顯示哪張圖」，避免使用者切換得
        很快時，比較慢載入完的舊請求反而蓋掉後來才點的新角色。 */
-    img.style.visibility = 'hidden';
     bg.dataset.pendingSrc = targetSrc;
+    delete bg.dataset.natW;
+    delete bg.dataset.natH;
+    /* 立刻把「目前畫面上舊角色的立繪」整個拿掉，不要等新的載入完才處理：
+       不然新角色的文字內容都已經換過去了，舊角色的立繪卻還留在畫面上，
+       看起來就會像是「先跑出別人的立繪，才切回正確的」——這正是先前修過、
+       這裡絕對不能再犯的問題。拿掉之後底下留白的區塊，交給下面的
+       ::before 骨架閃光去墊著，而不是空白或錯的圖。 */
+    const existingImg = document.getElementById('pf-bg-fullbody-img');
+    if(existingImg) existingImg.remove();
     const preload = new Image();
+    preload.id = 'pf-bg-fullbody-img';
+    preload.alt = ch.codename + ' full body art';
     preload.onload = ()=>{
       if(bg.dataset.pendingSrc !== targetSrc) return; // 使用者已經切到別的角色，這張圖過期了
-      img.src = targetSrc;
-      img.alt = ch.codename + ' full body art';
-      img.style.transform = 'translateY(0)';
-      img.style.visibility = 'visible';
+      /* 用這個 Image() 物件本身剛剛量到的原始尺寸，存起來給
+         updateFullbodyParallax() 用，避免有任何時間差風險。 */
+      bg.dataset.natW = preload.naturalWidth;
+      bg.dataset.natH = preload.naturalHeight;
+      preload.style.transform = 'translateY(0)';
+      bg.appendChild(preload);
       updateFullbodyParallax();
+      requestAnimationFrame(()=>{ preload.classList.add('loaded'); });
       requestAnimationFrame(()=>{ requestAnimationFrame(()=>{ bg.classList.add('in-view'); }); });
     };
     preload.src = targetSrc;
@@ -1742,6 +1883,10 @@ function setupFullbodyBackground(ch){
     bg.classList.remove('show');
     document.body.classList.remove('has-fullbody-bg');
     bg.dataset.pendingSrc = '';
+    delete bg.dataset.natW;
+    delete bg.dataset.natH;
+    const leftover = document.getElementById('pf-bg-fullbody-img');
+    if(leftover) leftover.remove();
   }
 }
 function hideFullbodyBackground(){
@@ -1756,9 +1901,12 @@ function updateFullbodyParallax(){
   if(!document.body.classList.contains('has-fullbody-bg')) return;
   const bg = document.getElementById('pf-bg-fullbody');
   const img = document.getElementById('pf-bg-fullbody-img');
-  if(!bg || !img || !img.naturalWidth) return;
+  if(!bg || !img) return;
+  const natW = Number(bg.dataset.natW) || img.naturalWidth;
+  const natH = Number(bg.dataset.natH) || img.naturalHeight;
+  if(!natW || !natH) return;
   const boxW = bg.clientWidth, boxH = bg.clientHeight;
-  const naturalRatio = img.naturalWidth / img.naturalHeight; // 寬/高
+  const naturalRatio = natW / natH; // 寬/高
   const boxRatio = boxW / boxH;
   if(naturalRatio < boxRatio){
     /* 圖片比盒子還「瘦長」（直式立繪）：撐滿盒子寬度，圖片自然會比盒子高，
