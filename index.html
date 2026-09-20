@@ -354,15 +354,20 @@ body.is-gate{overflow:hidden;}
      這段空隙路上，等於暫時離開了 .nav-index／.index-dropdown 的範圍，
      :hover 就會斷掉，選單也就跟著收起來，根本來不及移到選單上。
      改成 padding-top，這段空隙本身還是算在 .index-dropdown 的範圍裡，
-     滑鼠全程都在「可以觸發 hover」的區域內移動，選單才不會提早收回去。 */
+     滑鼠全程都在「可以觸發 hover」的區域內移動，選單才不會提早收回去。
+     --dd-x 是水平位移量，桌面版不用位移（0px），手機版會在下面的
+     media query 改成 -50%，讓選單以「Index」文字為中心左右置中展開，
+     這裡用 CSS 變數是因為淡入動畫也會動到 transform，兩處都要套用
+     同一個水平位移，不然選單一展開位置就會跳掉。 */
+  --dd-x:0px;
   padding-top:16px;
-  opacity:0; transform:translateY(-6px);
+  opacity:0; transform:translate(var(--dd-x), -6px);
   pointer-events:none;
   transition:opacity .2s ease, transform .2s ease;
   z-index:80;
 }
 .nav-index:hover .index-dropdown, .nav-index.open .index-dropdown{
-  opacity:1; transform:translateY(0); pointer-events:auto;
+  opacity:1; transform:translate(var(--dd-x), 0); pointer-events:auto;
 }
 .index-dropdown-card{
   background:var(--bg); border:1px solid var(--line); border-radius:var(--radius);
@@ -381,7 +386,17 @@ body.is-gate{overflow:hidden;}
 .index-dd-col a:hover{color:var(--brand);}
 @media (max-width:640px){
   .nav-index{padding-right:0; border-right:none;}
-  .index-dropdown{left:auto; right:0;}
+  /* 手機上「Index」這個字通常在畫面偏左的位置，如果選單用 right:0 對齊，
+     選單本身的寬度會往左邊撐出螢幕外，變成只看得到右邊一小截、
+     左邊被切掉看不到——改成以觸發文字為中心左右置中展開，
+     並限制最大寬度不超過螢幕，兩欄選單才不會超出畫面。 */
+  .index-dropdown{
+    left:50%; right:auto; --dd-x:-50%;
+    max-width:calc(100vw - 32px);
+  }
+  .index-dropdown-card{
+    gap:20px; padding:18px 20px;
+  }
 }
 
 /* 首頁入口（ENTER 那頁）平常是把整個導覽列藏起來的，
@@ -1057,11 +1072,11 @@ body.has-fullbody-bg footer{ border-top:none; }
       <div class="index-dropdown" id="index-dropdown">
         <div class="index-dropdown-card">
           <div class="index-dd-col">
-            <div class="index-dd-label">世界觀</div>
-            <a href="#/grid/original">ORIGINAL</a>
+            <div class="index-dd-label">企劃</div>
+            <a href="#/grid/original">Plurk Project</a>
           </div>
           <div class="index-dd-col" id="index-dd-coop">
-            <div class="index-dd-label">企劃</div>
+            <div class="index-dd-label">共構</div>
           </div>
         </div>
       </div>
@@ -1207,7 +1222,7 @@ window.addEventListener('DOMContentLoaded', ()=>{
   initIndexNav();
 });
 
-/* Index 下拉選單：把「企劃」底下每個世界觀都列出來，滑鼠移到 Index 就能直接跳過去，
+/* Index 下拉選單：把「共構」底下每個世界觀都列出來，滑鼠移到 Index 就能直接跳過去，
    不用先進 Collab 選單頁再點一次 */
 function populateIndexDropdown(){
   const col = document.getElementById('index-dd-coop');
@@ -1215,7 +1230,7 @@ function populateIndexDropdown(){
   const links = Object.entries(WORLD_META).map(([key,w])=>
     `<a href="#/grid/coop/${key}">${w.name || key.toUpperCase()}</a>`
   ).join('');
-  col.innerHTML = `<div class="index-dd-label">企劃</div>${links}`;
+  col.innerHTML = `<div class="index-dd-label">共構</div>${links}`;
 }
 
 /* 觸控裝置沒有滑鼠移過去（hover）這件事，所以點第一下先展開選單，
@@ -1453,8 +1468,8 @@ function renderHome(){
   <div class="view node-view">
     <div class="node-field" id="node-field">
       <svg class="node-svg" id="node-svg"><line x1="0" y1="0" x2="0" y2="0"/></svg>
-      <a href="#/grid/original" class="node-circle" id="node-a" style="left:32%; top:40%;"><span>ORIGINAL</span></a>
-      <a href="#/coop" class="node-circle" id="node-b" style="left:68%; top:60%;"><span>COLLAB</span></a>
+      <a href="#/grid/original" class="node-circle" id="node-a" style="left:32%; top:40%;"><span>Plurk Project</span></a>
+      <a href="#/coop" class="node-circle" id="node-b" style="left:68%; top:60%;"><span>Co-creation</span></a>
     </div>
   </div>`;
   initNodeField();
@@ -1533,7 +1548,7 @@ function renderAbout(){
 }
 
 function renderCoopWorlds(){
-  setCrumb([{label:'Home',hash:'#/index'},{label:'Collab'}]);
+  setCrumb([{label:'Home',hash:'#/index'},{label:'Co-creation'}]);
   const rows = Object.entries(WORLD_META).map(([key,w])=>{
     return `<a class="world-tile" href="#/grid/coop/${key}">
       <div class="wt-code">${w.code}</div>
@@ -1557,13 +1572,13 @@ function renderGrid(category, world){
   let list, title, crumbParts, worldBrief = '';
   if(category==='original'){
     list = CHARACTERS.filter(c=>c.category==='original');
-    title = 'ORIGINAL';
-    crumbParts = [{label:'Home',hash:'#/index'},{label:'ORIGINAL'}];
+    title = 'Plurk Project';
+    crumbParts = [{label:'Home',hash:'#/index'},{label:'Plurk Project'}];
   } else {
     const w = WORLD_META[world];
     list = CHARACTERS.filter(c=>c.category==='coop' && c.world===world);
-    title = w ? w.name : 'COLLAB';
-    crumbParts = [{label:'Home',hash:'#/index'},{label:'Collab',hash:'#/coop'},{label:title}];
+    title = w ? w.name : 'Co-creation';
+    crumbParts = [{label:'Home',hash:'#/index'},{label:'Co-creation',hash:'#/coop'},{label:title}];
     if(w && w.brief){
       worldBrief = `
       <div class="world-brief">
@@ -1800,8 +1815,8 @@ function renderProfile(id){
   setWorldTheme(ch.category==='coop' ? ch.world : null);
 
   const crumbParts = [{label:'Home',hash:'#/index'}];
-  if(ch.category==='original'){ crumbParts.push({label:'ORIGINAL',hash:'#/grid/original'}); }
-  else{ crumbParts.push({label:'Collab',hash:'#/coop'}, {label:WORLD_META[ch.world].name, hash:`#/grid/coop/${ch.world}`}); }
+  if(ch.category==='original'){ crumbParts.push({label:'Plurk Project',hash:'#/grid/original'}); }
+  else{ crumbParts.push({label:'Co-creation',hash:'#/coop'}, {label:WORLD_META[ch.world].name, hash:`#/grid/coop/${ch.world}`}); }
   crumbParts.push({label:ch.codename});
   setCrumb(crumbParts);
 
