@@ -766,23 +766,25 @@ body.is-gate{overflow:hidden;}
 }
 .field .v{text-align:right; max-width:60%;}
 
-/* articles */
-.article-list{display:flex; flex-direction:column;}
+/* articles：改成一顆一顆的標籤，可以自動換行、同一行擺很多個，
+   不用像以前一樣每篇文章都獨占一整行，列表太長 */
+.article-list{display:flex; flex-wrap:wrap; gap:10px;}
 .article-row{
-  display:flex; align-items:center; justify-content:space-between; gap:16px;
-  padding:16px 0; border-bottom:1px solid var(--line);
-  transition:padding-left .25s ease;
-}
-.article-row:hover{padding-left:8px;}
-.article-row .a-main .a-title{font-size:15px; font-weight:500;}
-.article-row .a-main .a-src{font-family:var(--font-mono); font-size:11.5px; color:var(--ink-soft); margin-top:3px;}
-.article-row .a-go{
-  font-family:var(--font-mono); font-size:12px; color:var(--ink-soft);
-  border:1px solid var(--line); border-radius:50%; width:28px; height:28px;
-  display:flex; align-items:center; justify-content:center; flex:none;
+  display:inline-flex; align-items:center; gap:9px;
+  padding:10px 16px; border:1px solid var(--line); border-radius:999px;
   transition:all .25s ease;
 }
-.article-row:hover .a-go{border-color:var(--accent); color:#fff; background:var(--accent);}
+.article-row:hover{border-color:var(--accent); background:var(--accent);}
+.article-row .a-main{display:flex; align-items:baseline; gap:7px; white-space:nowrap;}
+.article-row .a-main .a-title{font-size:13.5px; font-weight:500;}
+.article-row .a-main .a-src{font-family:var(--font-mono); font-size:10.5px; color:var(--ink-soft);}
+.article-row:hover .a-main .a-title, .article-row:hover .a-main .a-src{color:#fff;}
+.article-row .a-go{
+  font-family:var(--font-mono); font-size:11px; color:var(--ink-soft);
+  display:flex; align-items:center; justify-content:center; flex:none;
+  transition:color .25s ease;
+}
+.article-row:hover .a-go{color:#fff;}
 
 /* gallery */
 .gallery-grid{
@@ -1656,7 +1658,7 @@ function renderProfile(id){
 
   const articles = ch.articles && ch.articles.length ? ch.articles.map(a=>`
     <a class="article-row" href="${a.url}" target="_blank" rel="noopener">
-      <div class="a-main"><div class="a-title">${a.title}</div><div class="a-src">${a.src}</div></div>
+      <div class="a-main"><div class="a-title">${a.title}</div>${a.src ? `<div class="a-src">${a.src}</div>` : ''}</div>
       <div class="a-go">↗</div>
     </a>
   `).join('') : `<div class="empty-note">No articles yet.</div>`;
