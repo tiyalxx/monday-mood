@@ -5,7 +5,7 @@
       "name": "MAFIA",
       "code": "W-01",
       "desc": "A criminal underworld built on power, contracts, and family loyalty.",
-      "brief": "現代黑手黨世界觀，三大黑幫家族佔據了西西里，分別是坎圖家族、羅西家族與馬拉斯家族。這裡訴說的是他們的故事。"
+      "brief": "現代黑手黨世界觀，三大黑幫家族分割並佔據了西西里島，分別為坎圖家族、羅西家族與馬拉斯家族。這裡訴說的是他們的故事。"
     },
     {
       "slug": "ancient",
@@ -19,7 +19,7 @@
       "name": "HERO",
       "code": "W-03",
       "desc": "A contemporary order of licensed superhumans.",
-      "brief": "Placeholder text — replace with your own worldbuilding. Powers were legalized eleven years ago and immediately turned into a ranking system. Every hero answers to a division; not every division agrees on what \"answer to\" means."
+      "brief": "2118 年的日本，是世界上最成熟的超都市國家之一，一個已經走入未來，卻依然保有人類生活感，科技早已全面融入社會。異能已成為社會常態，大部分人都擁有某種程度的能力，只是強弱差異極大。英雄不再只是「擁有力量的人」，而是能夠控制力量、並願意承擔責任的人。"
     },
     {
       "slug": "fantasy",
