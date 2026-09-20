@@ -333,25 +333,42 @@ body.is-gate{overflow:hidden;}
   padding-right:20px; border-right:1px solid var(--line);
 }
 .index-link{
+  /* 這裡故意不用 display:inline-flex——那會讓瀏覽器用另一套「置中」演算法
+     計算文字的垂直位置，跟旁邊 Back／About／Home 這些普通文字的置中方式
+     不一樣，兩者的文字基準線會對不齊，看起來「Index」會比其他幾個字往下偏一點。
+     改成跟其他導覽文字一樣的普通行內文字，箭頭符號用 vertical-align 微調位置，
+     這樣文字基準線才會跟其他項目對齊。 */
   font-family:var(--font-mono); font-size:12.5px; letter-spacing:.03em;
   color:var(--ink-soft);
   transition:color .2s ease;
-  display:inline-flex; align-items:center; gap:4px;
 }
-.index-link::after{content:'▾'; font-size:9px; opacity:.7;}
+.index-link::after{
+  content:'▾'; font-size:9px; opacity:.7;
+  display:inline-block; margin-left:4px; vertical-align:1px;
+}
 .nav-index:hover .index-link, .nav-index.open .index-link{color:var(--ink);}
 .index-dropdown{
-  position:absolute; top:100%; left:0; margin-top:16px;
-  background:var(--bg); border:1px solid var(--line); border-radius:var(--radius);
-  box-shadow:0 22px 48px rgba(42,42,46,.14);
-  padding:20px 24px; display:flex; gap:36px;
+  position:absolute; top:100%; left:0;
+  /* 這裡故意用 padding-top 而不是 margin-top 留出跟連結之間的空隙：
+     margin 不算在這個元素的範圍內，滑鼠從「Index」文字往下移到選單的
+     這段空隙路上，等於暫時離開了 .nav-index／.index-dropdown 的範圍，
+     :hover 就會斷掉，選單也就跟著收起來，根本來不及移到選單上。
+     改成 padding-top，這段空隙本身還是算在 .index-dropdown 的範圍裡，
+     滑鼠全程都在「可以觸發 hover」的區域內移動，選單才不會提早收回去。 */
+  padding-top:16px;
   opacity:0; transform:translateY(-6px);
   pointer-events:none;
   transition:opacity .2s ease, transform .2s ease;
-  z-index:80; white-space:nowrap;
+  z-index:80;
 }
 .nav-index:hover .index-dropdown, .nav-index.open .index-dropdown{
   opacity:1; transform:translateY(0); pointer-events:auto;
+}
+.index-dropdown-card{
+  background:var(--bg); border:1px solid var(--line); border-radius:var(--radius);
+  box-shadow:0 22px 48px rgba(42,42,46,.14);
+  padding:20px 24px; display:flex; gap:36px;
+  white-space:nowrap;
 }
 .index-dd-label{
   font-family:var(--font-mono); font-size:10px; letter-spacing:.1em; color:var(--ink-faint);
@@ -789,6 +806,18 @@ body.is-gate{overflow:hidden;}
   0%{background-position:200% 0;}
   100%{background-position:-200% 0;}
 }
+/* 立繪還在下載時，先用同一位角色的頭像小圖（檔案通常小很多，幾乎秒開）
+   放大、模糊當作預覽墊底，讓等待的當下至少看得出「是這個角色」，
+   而不是乾等一片閃光；正式立繪載入完成後這層會淡出。 */
+.pf-bg-placeholder{
+  position:absolute; inset:0;
+  background-size:cover; background-position:center 20%;
+  filter:blur(28px) saturate(1.05);
+  transform:scale(1.15);
+  opacity:.6;
+  transition:opacity .5s ease;
+}
+.pf-bg-fullbody.in-view .pf-bg-placeholder{opacity:0;}
 .pf-fullbody-mobile{ display:none; }
 @media (max-width:900px){
   .pf-bg-fullbody{display:none !important;}
@@ -1026,12 +1055,14 @@ body.has-fullbody-bg footer{ border-top:none; }
     <div class="nav-index" id="nav-index">
       <a href="#/index" class="index-link">Index</a>
       <div class="index-dropdown" id="index-dropdown">
-        <div class="index-dd-col">
-          <div class="index-dd-label">世界觀</div>
-          <a href="#/grid/original">ORIGINAL</a>
-        </div>
-        <div class="index-dd-col" id="index-dd-coop">
-          <div class="index-dd-label">企劃</div>
+        <div class="index-dropdown-card">
+          <div class="index-dd-col">
+            <div class="index-dd-label">世界觀</div>
+            <a href="#/grid/original">ORIGINAL</a>
+          </div>
+          <div class="index-dd-col" id="index-dd-coop">
+            <div class="index-dd-label">企劃</div>
+          </div>
         </div>
       </div>
     </div>
@@ -1842,6 +1873,15 @@ function setupFullbodyBackground(ch){
     document.body.appendChild(bg);
   }
   bg.classList.remove('in-view');
+  /* 用頭像小圖當作立繪還沒載入完成前的模糊預覽——檔案通常小很多，
+     幾乎是秒開，讓等待時至少看得出是哪個角色 */
+  let placeholder = bg.querySelector('.pf-bg-placeholder');
+  if(!placeholder){
+    placeholder = document.createElement('div');
+    placeholder.className = 'pf-bg-placeholder';
+    bg.insertBefore(placeholder, bg.firstChild);
+  }
+  placeholder.style.backgroundImage = ch.avatarImg ? `url("${ch.avatarImg}")` : 'none';
   if(ch.fullbodyImg){
     const targetSrc = ch.fullbodyImg;
     /* 切換角色時，直接改舊 <img> 的 src 有兩個問題：
@@ -1867,6 +1907,8 @@ function setupFullbodyBackground(ch){
     const preload = new Image();
     preload.id = 'pf-bg-fullbody-img';
     preload.alt = ch.codename + ' full body art';
+    /* 提示瀏覽器優先下載這張圖（部分瀏覽器支援，沒支援也不影響其他功能） */
+    try{ preload.fetchPriority = 'high'; }catch(e){}
     preload.onload = ()=>{
       if(bg.dataset.pendingSrc !== targetSrc) return; // 使用者已經切到別的角色，這張圖過期了
       /* 用這個 Image() 物件本身剛剛量到的原始尺寸，存起來給
