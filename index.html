@@ -744,22 +744,23 @@ body.is-gate{overflow:hidden;}
 .pf-bio p{margin:0 0 18px;}
 .pf-bio p:last-child{margin-bottom:0;}
 
-/* 立繪：固定貼在畫面左側當背景，疊在內容下方（z-index 較低），
-   不會隨內容捲動而消失，但文字/頭像一定蓋在它上面，不會被立繪擋住。
+/* 立繪：固定貼在畫面左側、疊在文字內容下方（z-index 較低）當放大版的背景，
+   不會隨內容捲動而消失；文字／資訊改成用毛玻璃卡片的方式浮貼在它上面
+   （見下方 body.has-fullbody-bg 那段），所以立繪可以比之前放大不少，
+   但還是貼在左邊，不是整個置中。
    圖片本身大小完全不變，只是隨著捲動上下平移：
    一開始（頁面最上面）看得到頭，捲到畫廊底部時平移到看得到腳。 */
 .pf-bg-fullbody{
   display:none;
-  position:fixed; left:clamp(0px,2vw,32px); top:74px; bottom:0;
-  width:min(42vw,600px);
+  position:fixed; left:clamp(0px,2vw,24px); top:74px; bottom:0;
+  width:min(56vw,820px);
   overflow:hidden;
   z-index:0; pointer-events:none;
   opacity:0; filter:blur(24px);
-  transform:translateY(14px);
-  transition:opacity .9s ease, filter .9s ease, transform .9s cubic-bezier(.2,.7,.2,1);
+  transition:opacity .9s ease, filter .9s ease;
 }
-.pf-bg-fullbody.show{display:block; opacity:1; filter:blur(0); transform:translateY(0);}
-.pf-bg-fullbody.in-view{opacity:1; filter:blur(0); transform:translateY(0);}
+.pf-bg-fullbody.show{display:block; opacity:1; filter:blur(0);}
+.pf-bg-fullbody.in-view{opacity:1; filter:blur(0);}
 .pf-bg-fullbody img{
   position:absolute; top:0; left:0;
   width:100%; height:auto; display:block;
@@ -800,7 +801,9 @@ body.is-gate{overflow:hidden;}
   }
 }
 /* 有立繪背景時，整個角色頁內容往右挪，空間讓給左側的立繪；
-   同時取消 #app 自己的置中最大寬度限制，避免寬螢幕時兩層留白疊加、間距過大 */
+   同時取消 #app 自己的置中最大寬度限制，避免寬螢幕時兩層留白疊加、間距過大。
+   （這段刻意維持原本的樣子——角色資訊／基本資料不套用毛玻璃、不疊在立繪上，
+   只有 Articles／Gallery 這兩個區塊會疊上去，跟立繪還沒放大之前的行為一樣。） */
 @media (min-width:901px){
   body.has-fullbody-bg #app{ max-width:none; }
   body.has-fullbody-bg .profile-view{
@@ -1895,8 +1898,13 @@ function hideFullbodyBackground(){
   document.body.classList.remove('has-fullbody-bg');
 }
 
-/* 立繪隨頁面捲動平移（大小完全不變）：一開始（頁面最上面）看得到頭，
-   捲到最下面（畫廊底部）時往上平移，換成看得到腳 */
+/* 立繪固定撐滿盒子寬度（扣掉四周留白），絕對不裁切——整張圖永遠都在畫面上：
+   如果圖片本身比較瘦長（撐滿寬度後比盒子還高），就用捲動位置把多出來的
+   部分往上平移，做出「頭到腳」的效果；如果圖片比較寬扁／偏方（撐滿寬度
+   後反而沒有盒子高），就直接把它上下置中，兩側/上下都不會留白過頭，
+   也不需要再捲動——寧可留一點空白，也不會有任何一小塊角色圖被切掉。
+   四周留一點點固定的留白（INSET），這樣角色伸出去的手腳/披風邊緣不會
+   剛好貼在盒子邊界上，看起來才不會有「好像還是被切到」的錯覺。 */
 function updateFullbodyParallax(){
   if(!document.body.classList.contains('has-fullbody-bg')) return;
   const bg = document.getElementById('pf-bg-fullbody');
@@ -1905,29 +1913,23 @@ function updateFullbodyParallax(){
   const natW = Number(bg.dataset.natW) || img.naturalWidth;
   const natH = Number(bg.dataset.natH) || img.naturalHeight;
   if(!natW || !natH) return;
-  const boxW = bg.clientWidth, boxH = bg.clientHeight;
+  const INSET = 22;
+  const boxW = bg.clientWidth - INSET*2, boxH = bg.clientHeight - INSET*2;
   const naturalRatio = natW / natH; // 寬/高
-  const boxRatio = boxW / boxH;
-  if(naturalRatio < boxRatio){
-    /* 圖片比盒子還「瘦長」（直式立繪）：撐滿盒子寬度，圖片自然會比盒子高，
-       用捲動位置去平移，做出頭到腳的效果——這是原本設計好的行為 */
-    img.style.width = '100%';
-    img.style.height = 'auto';
-    img.style.left = '0';
-    const renderedH = boxW / naturalRatio;
-    const maxTranslate = Math.max(0, renderedH - boxH);
+  img.style.width = boxW.toFixed(1) + 'px';
+  img.style.height = 'auto';
+  img.style.left = INSET + 'px';
+  const renderedH = boxW / naturalRatio;
+  if(renderedH > boxH){
+    // 瘦長立繪：撐滿寬度後比盒子高，捲動時往上平移露出頭到腳
+    img.style.top = INSET + 'px';
+    const maxTranslate = renderedH - boxH;
     const scrollable = document.documentElement.scrollHeight - window.innerHeight;
     const progress = scrollable > 0 ? Math.min(1, Math.max(0, window.scrollY / scrollable)) : 0;
     img.style.transform = `translateY(${(-progress * maxTranslate).toFixed(1)}px)`;
   } else {
-    /* 圖片比盒子還「矮胖／偏方」：如果還是照寬度縮放，圖片的高度會填不滿
-       整個盒子，看起來就會變成一小塊、也沒有東西可以捲動平移。
-       改成撐滿盒子的高度、左右置中裁切，這樣立繪才不會看起來縮小，
-       而且因為高度已經填滿盒子，本來就不需要再上下捲動 */
-    const renderedW = boxH * naturalRatio;
-    img.style.height = '100%';
-    img.style.width = 'auto';
-    img.style.left = ((boxW - renderedW) / 2).toFixed(1) + 'px';
+    // 寬扁／偏方立繪：撐滿寬度後比盒子矮，直接整張置中，不裁切也不用捲動
+    img.style.top = (INSET + (boxH - renderedH) / 2).toFixed(1) + 'px';
     img.style.transform = 'translateY(0)';
   }
 }
