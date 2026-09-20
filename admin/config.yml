@@ -81,7 +81,6 @@ collections:
                 required: false
                 fields:
                   - {label: "標題 Title", name: "title", widget: "string"}
-                  - {label: "來源 Source", name: "src", widget: "string"}
                   - {label: "連結 URL", name: "url", widget: "string"}
               - label: "圖片 Gallery"
                 name: "gallery"
@@ -127,7 +126,6 @@ collections:
                 required: false
                 fields:
                   - {label: "標題 Title", name: "title", widget: "string"}
-                  - {label: "來源 Source", name: "src", widget: "string"}
                   - {label: "連結 URL", name: "url", widget: "string"}
               - label: "圖片 Gallery"
                 name: "gallery"
@@ -170,7 +168,6 @@ collections:
                 required: false
                 fields:
                   - {label: "標題 Title", name: "title", widget: "string"}
-                  - {label: "來源 Source", name: "src", widget: "string"}
                   - {label: "連結 URL", name: "url", widget: "string"}
               - label: "圖片 Gallery"
                 name: "gallery"
@@ -213,7 +210,6 @@ collections:
                 required: false
                 fields:
                   - {label: "標題 Title", name: "title", widget: "string"}
-                  - {label: "來源 Source", name: "src", widget: "string"}
                   - {label: "連結 URL", name: "url", widget: "string"}
               - label: "圖片 Gallery"
                 name: "gallery"
@@ -256,7 +252,6 @@ collections:
                 required: false
                 fields:
                   - {label: "標題 Title", name: "title", widget: "string"}
-                  - {label: "來源 Source", name: "src", widget: "string"}
                   - {label: "連結 URL", name: "url", widget: "string"}
               - label: "圖片 Gallery"
                 name: "gallery"
@@ -299,7 +294,6 @@ collections:
                 required: false
                 fields:
                   - {label: "標題 Title", name: "title", widget: "string"}
-                  - {label: "來源 Source", name: "src", widget: "string"}
                   - {label: "連結 URL", name: "url", widget: "string"}
               - label: "圖片 Gallery"
                 name: "gallery"
@@ -342,7 +336,6 @@ collections:
                 required: false
                 fields:
                   - {label: "標題 Title", name: "title", widget: "string"}
-                  - {label: "來源 Source", name: "src", widget: "string"}
                   - {label: "連結 URL", name: "url", widget: "string"}
               - label: "圖片 Gallery"
                 name: "gallery"
@@ -385,7 +378,6 @@ collections:
                 required: false
                 fields:
                   - {label: "標題 Title", name: "title", widget: "string"}
-                  - {label: "來源 Source", name: "src", widget: "string"}
                   - {label: "連結 URL", name: "url", widget: "string"}
               - label: "圖片 Gallery"
                 name: "gallery"
