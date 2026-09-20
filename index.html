@@ -713,7 +713,7 @@ body.is-gate{overflow:hidden;}
   position:absolute; top:0; left:0;
   width:100%; height:auto; display:block;
   transform:translateY(0);
-  will-change:transform;
+  will-change:transform, width, height;
 }
 .pf-fullbody-mobile{ display:none; }
 @media (max-width:900px){
@@ -1716,17 +1716,32 @@ function setupFullbodyBackground(ch){
   bg.classList.remove('in-view');
   if(ch.fullbodyImg){
     const img = document.getElementById('pf-bg-fullbody-img');
-    img.style.transform = 'translateY(0)';
-    img.onload = updateFullbodyParallax;
-    img.src = ch.fullbodyImg;
-    img.alt = ch.codename + ' full body art';
+    const targetSrc = ch.fullbodyImg;
+    /* 切換角色時，img 標籤是共用的：如果直接改 img.src，在新圖片載入完成之前，
+       畫面會繼續顯示「上一個角色」的舊圖，看起來就像先閃一下錯的立繪才切換過來。
+       改成先把圖片藏起來，用一個看不見的 Image() 物件在背景把新圖片載入完，
+       確定載入完成才把它套上去、重新淡入——這樣就不會有閃到別人立繪的問題。
+       bg.dataset.pendingSrc 用來記錄「目前應該顯示哪張圖」，避免使用者切換得
+       很快時，比較慢載入完的舊請求反而蓋掉後來才點的新角色。 */
+    img.style.visibility = 'hidden';
+    bg.dataset.pendingSrc = targetSrc;
+    const preload = new Image();
+    preload.onload = ()=>{
+      if(bg.dataset.pendingSrc !== targetSrc) return; // 使用者已經切到別的角色，這張圖過期了
+      img.src = targetSrc;
+      img.alt = ch.codename + ' full body art';
+      img.style.transform = 'translateY(0)';
+      img.style.visibility = 'visible';
+      updateFullbodyParallax();
+      requestAnimationFrame(()=>{ requestAnimationFrame(()=>{ bg.classList.add('in-view'); }); });
+    };
+    preload.src = targetSrc;
     bg.classList.add('show');
     document.body.classList.add('has-fullbody-bg');
-    requestAnimationFrame(()=>{ requestAnimationFrame(()=>{ bg.classList.add('in-view'); }); });
-    updateFullbodyParallax();
   } else {
     bg.classList.remove('show');
     document.body.classList.remove('has-fullbody-bg');
+    bg.dataset.pendingSrc = '';
   }
 }
 function hideFullbodyBackground(){
@@ -1742,12 +1757,31 @@ function updateFullbodyParallax(){
   const bg = document.getElementById('pf-bg-fullbody');
   const img = document.getElementById('pf-bg-fullbody-img');
   if(!bg || !img || !img.naturalWidth) return;
-  const boxH = bg.clientHeight;
-  const renderedH = bg.clientWidth * (img.naturalHeight / img.naturalWidth);
-  const maxTranslate = Math.max(0, renderedH - boxH);
-  const scrollable = document.documentElement.scrollHeight - window.innerHeight;
-  const progress = scrollable > 0 ? Math.min(1, Math.max(0, window.scrollY / scrollable)) : 0;
-  img.style.transform = `translateY(${(-progress * maxTranslate).toFixed(1)}px)`;
+  const boxW = bg.clientWidth, boxH = bg.clientHeight;
+  const naturalRatio = img.naturalWidth / img.naturalHeight; // 寬/高
+  const boxRatio = boxW / boxH;
+  if(naturalRatio < boxRatio){
+    /* 圖片比盒子還「瘦長」（直式立繪）：撐滿盒子寬度，圖片自然會比盒子高，
+       用捲動位置去平移，做出頭到腳的效果——這是原本設計好的行為 */
+    img.style.width = '100%';
+    img.style.height = 'auto';
+    img.style.left = '0';
+    const renderedH = boxW / naturalRatio;
+    const maxTranslate = Math.max(0, renderedH - boxH);
+    const scrollable = document.documentElement.scrollHeight - window.innerHeight;
+    const progress = scrollable > 0 ? Math.min(1, Math.max(0, window.scrollY / scrollable)) : 0;
+    img.style.transform = `translateY(${(-progress * maxTranslate).toFixed(1)}px)`;
+  } else {
+    /* 圖片比盒子還「矮胖／偏方」：如果還是照寬度縮放，圖片的高度會填不滿
+       整個盒子，看起來就會變成一小塊、也沒有東西可以捲動平移。
+       改成撐滿盒子的高度、左右置中裁切，這樣立繪才不會看起來縮小，
+       而且因為高度已經填滿盒子，本來就不需要再上下捲動 */
+    const renderedW = boxH * naturalRatio;
+    img.style.height = '100%';
+    img.style.width = 'auto';
+    img.style.left = ((boxW - renderedW) / 2).toFixed(1) + 'px';
+    img.style.transform = 'translateY(0)';
+  }
 }
 let fullbodyParallaxTicking = false;
 window.addEventListener('scroll', ()=>{
