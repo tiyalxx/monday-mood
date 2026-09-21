@@ -650,7 +650,7 @@ body.is-gate{overflow:hidden;}
   overflow-x:auto; overflow-y:hidden;
   display:flex; align-items:center;
   -ms-overflow-style:none; scrollbar-width:none;
-  max-width:560px; margin:0 auto;
+  max-width:800px; margin:0 auto;
   -webkit-overflow-scrolling:touch;
   /* 吸附置中改由 JS 自己算＋動畫做（見 initArcStage 的 snapToNearest），
      不用 CSS scroll-snap，避免瀏覽器原生吸附跟我們的慣性動畫互相打架，
@@ -867,6 +867,10 @@ body.is-gate{overflow:hidden;}
     border-radius:22px;
     padding:26px clamp(16px,3vw,34px);
     margin-left:-8px; margin-right:-8px;
+    margin-bottom:18px;
+  }
+  body.has-fullbody-bg .profile-view > .pf-reveal:not(.pf-basic):not(.pf-fullbody-mobile):last-child{
+    margin-bottom:0;
   }
 }
 
@@ -908,13 +912,12 @@ body.is-gate{overflow:hidden;}
 
 /* gallery */
 .gallery-grid{
-  display:grid; grid-template-columns:repeat(4,1fr); gap:1px;
+  display:grid; grid-template-columns:repeat(auto-fill, minmax(140px, 220px)); gap:1px;
+  justify-content:start;
   background:var(--line); border:1px solid var(--line);
   border-radius:var(--radius);
   overflow:hidden;
 }
-@media (max-width:800px){.gallery-grid{grid-template-columns:repeat(3,1fr);}}
-@media (max-width:520px){.gallery-grid{grid-template-columns:repeat(2,1fr);}}
 .gallery-thumb{
   aspect-ratio:1/1; position:relative; cursor:zoom-in; overflow:hidden; border-radius:var(--radius-sm); background:var(--panel);
 }
