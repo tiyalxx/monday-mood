@@ -87,9 +87,9 @@ collections:
                 widget: "list"
                 required: false
                 fields:
-                  - {label: "縮圖 Thumbnail", name: "thumb", widget: "image"}
-                  - {label: "原圖 Full Image", name: "full", widget: "image"}
+                  - {label: "圖片 Image", name: "image", widget: "image", hint: "只要上傳一張圖，網站會自動當縮圖和放大圖使用，不用另外做縮圖"}
                   - {label: "說明 Caption", name: "caption", widget: "string", required: false}
+                  - {label: "R18／血腥等敏感內容（縮圖先模糊遮蔽）", name: "sensitive", widget: "boolean", default: false, required: false}
 
   - name: "coop"
     label: "共構 Collab"
@@ -132,9 +132,9 @@ collections:
                 widget: "list"
                 required: false
                 fields:
-                  - {label: "縮圖 Thumbnail", name: "thumb", widget: "image"}
-                  - {label: "原圖 Full Image", name: "full", widget: "image"}
+                  - {label: "圖片 Image", name: "image", widget: "image", hint: "只要上傳一張圖，網站會自動當縮圖和放大圖使用，不用另外做縮圖"}
                   - {label: "說明 Caption", name: "caption", widget: "string", required: false}
+                  - {label: "R18／血腥等敏感內容（縮圖先模糊遮蔽）", name: "sensitive", widget: "boolean", default: false, required: false}
 
       - file: "characters-ancient.json"
         label: "ANCIENT"
@@ -174,9 +174,9 @@ collections:
                 widget: "list"
                 required: false
                 fields:
-                  - {label: "縮圖 Thumbnail", name: "thumb", widget: "image"}
-                  - {label: "原圖 Full Image", name: "full", widget: "image"}
+                  - {label: "圖片 Image", name: "image", widget: "image", hint: "只要上傳一張圖，網站會自動當縮圖和放大圖使用，不用另外做縮圖"}
                   - {label: "說明 Caption", name: "caption", widget: "string", required: false}
+                  - {label: "R18／血腥等敏感內容（縮圖先模糊遮蔽）", name: "sensitive", widget: "boolean", default: false, required: false}
 
       - file: "characters-hero.json"
         label: "HERO"
@@ -216,9 +216,9 @@ collections:
                 widget: "list"
                 required: false
                 fields:
-                  - {label: "縮圖 Thumbnail", name: "thumb", widget: "image"}
-                  - {label: "原圖 Full Image", name: "full", widget: "image"}
+                  - {label: "圖片 Image", name: "image", widget: "image", hint: "只要上傳一張圖，網站會自動當縮圖和放大圖使用，不用另外做縮圖"}
                   - {label: "說明 Caption", name: "caption", widget: "string", required: false}
+                  - {label: "R18／血腥等敏感內容（縮圖先模糊遮蔽）", name: "sensitive", widget: "boolean", default: false, required: false}
 
       - file: "characters-fantasy.json"
         label: "FANTASY"
@@ -258,9 +258,9 @@ collections:
                 widget: "list"
                 required: false
                 fields:
-                  - {label: "縮圖 Thumbnail", name: "thumb", widget: "image"}
-                  - {label: "原圖 Full Image", name: "full", widget: "image"}
+                  - {label: "圖片 Image", name: "image", widget: "image", hint: "只要上傳一張圖，網站會自動當縮圖和放大圖使用，不用另外做縮圖"}
                   - {label: "說明 Caption", name: "caption", widget: "string", required: false}
+                  - {label: "R18／血腥等敏感內容（縮圖先模糊遮蔽）", name: "sensitive", widget: "boolean", default: false, required: false}
 
       - file: "characters-football.json"
         label: "FOOTBALL"
@@ -300,9 +300,9 @@ collections:
                 widget: "list"
                 required: false
                 fields:
-                  - {label: "縮圖 Thumbnail", name: "thumb", widget: "image"}
-                  - {label: "原圖 Full Image", name: "full", widget: "image"}
+                  - {label: "圖片 Image", name: "image", widget: "image", hint: "只要上傳一張圖，網站會自動當縮圖和放大圖使用，不用另外做縮圖"}
                   - {label: "說明 Caption", name: "caption", widget: "string", required: false}
+                  - {label: "R18／血腥等敏感內容（縮圖先模糊遮蔽）", name: "sensitive", widget: "boolean", default: false, required: false}
 
       - file: "characters-victorian.json"
         label: "VICTORIAN"
@@ -342,9 +342,9 @@ collections:
                 widget: "list"
                 required: false
                 fields:
-                  - {label: "縮圖 Thumbnail", name: "thumb", widget: "image"}
-                  - {label: "原圖 Full Image", name: "full", widget: "image"}
+                  - {label: "圖片 Image", name: "image", widget: "image", hint: "只要上傳一張圖，網站會自動當縮圖和放大圖使用，不用另外做縮圖"}
                   - {label: "說明 Caption", name: "caption", widget: "string", required: false}
+                  - {label: "R18／血腥等敏感內容（縮圖先模糊遮蔽）", name: "sensitive", widget: "boolean", default: false, required: false}
 
       - file: "characters-other.json"
         label: "OTHER"
@@ -384,6 +384,6 @@ collections:
                 widget: "list"
                 required: false
                 fields:
-                  - {label: "縮圖 Thumbnail", name: "thumb", widget: "image"}
-                  - {label: "原圖 Full Image", name: "full", widget: "image"}
+                  - {label: "圖片 Image", name: "image", widget: "image", hint: "只要上傳一張圖，網站會自動當縮圖和放大圖使用，不用另外做縮圖"}
                   - {label: "說明 Caption", name: "caption", widget: "string", required: false}
+                  - {label: "R18／血腥等敏感內容（縮圖先模糊遮蔽）", name: "sensitive", widget: "boolean", default: false, required: false}
