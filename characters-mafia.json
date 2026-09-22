@@ -118,6 +118,26 @@
           "thumb": "images/beppe/beppe-gallery-17.jpg",
           "full": "images/beppe/beppe-gallery-17.jpg",
           "caption": ""
+        },
+        {
+          "sensitive": false,
+          "image": "/images/uploads/04111-1-.jpg"
+        },
+        {
+          "sensitive": true,
+          "image": "/images/uploads/0024.png"
+        },
+        {
+          "sensitive": true,
+          "image": "/images/uploads/09333.png"
+        },
+        {
+          "sensitive": true,
+          "image": "/images/uploads/11355455.png"
+        },
+        {
+          "sensitive": true,
+          "image": "/images/uploads/07699.png"
         }
       ],
       "status": "alive",
@@ -234,8 +254,12 @@
           "caption": "希臘PARO"
         },
         {
-          "thumb": "/images/uploads/089303.jpg",
+          "thumb": "",
           "full": "/images/uploads/089303.jpg"
+        },
+        {
+          "sensitive": true,
+          "image": "/images/uploads/06333.png"
         }
       ],
       "status": "alive",
@@ -422,7 +446,11 @@
           "full": "/images/uploads/04322.jpg",
           "caption": "希臘PARO"
         },
-        {}
+        {},
+        {
+          "sensitive": true,
+          "image": "/images/uploads/06333-1.png"
+        }
       ],
       "status": "alive",
       "role": "眾議院議員→羅馬市長",
@@ -538,7 +566,10 @@
           "thumb": "/images/uploads/0922662.jpg",
           "full": "/images/uploads/0922662.jpg"
         },
-        {}
+        {
+          "image": "/images/uploads/63636272.jpg",
+          "sensitive": true
+        }
       ],
       "status": "alive",
       "role": "指揮官→二老闆",
@@ -732,10 +763,46 @@
     },
     {
       "height": "185",
+      "bio": "其父曾是斯福爾察家族的成員，與當時首領的兒子（基蘭）從小一起長大，但在幫派瓦解後與人分散。\n\n後跟著父親加入其友人的傭兵生意，在退役特種部隊殺手「貝納西」身上學到很多，在父親過世後成為獨當一面的殺手。\n\n後再度與竹馬聯繫，由對方介紹至羅西家族。行跡難以掌握，安靜又精準的行動讓他擁有「幽靈」之稱。\n對竹馬以外的事大多不感興趣，在分開時也沒有一刻放棄過與對方重逢。<i>但真是如此嗎……？</i>",
       "realname": "—",
+      "avatarImg": "/images/uploads/0317177.jpg",
       "cp": "基蘭·斯福爾察",
       "affiliation": "羅西家族",
       "skill": "—",
+      "gallery": [
+        {
+          "sensitive": false,
+          "image": "/images/uploads/0317178.jpg"
+        },
+        {
+          "sensitive": false,
+          "image": "/images/uploads/09558.jpg"
+        },
+        {
+          "sensitive": false,
+          "image": "/images/uploads/0528.jpg"
+        },
+        {
+          "sensitive": false,
+          "image": "/images/uploads/0205.jpg"
+        },
+        {
+          "sensitive": false,
+          "image": "/images/uploads/08473.jpg"
+        },
+        {
+          "sensitive": false,
+          "image": "/images/uploads/3738326252553.jpg"
+        },
+        {
+          "sensitive": true,
+          "image": "/images/uploads/12020202-1.jpg"
+        },
+        {
+          "sensitive": true,
+          "image": "/images/uploads/12020202-2.jpg"
+        }
+      ],
       "status": "alive",
       "role": "殺手→暴力專家",
       "codename": "費利切·奧蘭迪",
@@ -744,10 +811,47 @@
     },
     {
       "height": "187",
+      "bio": "諾埃米同父異母的哥哥。\n\n從小有音樂天賦，喜歡彈琴，卻因為是黑手黨老闆的長子，而被迫捨去自己的興趣，將自己壓抑在完全不適合自己的位置上。\n\n嫉妒諾埃米的天賦，在兩人的父親過世後，立刻進行洗清的動作。\n\n在成長過程中不停被父親與叔叔進行斯巴達式的黑幫教育，而造就他扭曲的性格，並患有嚴重的躁鬱症。",
       "realname": "—",
+      "avatarImg": "/images/uploads/0349997.jpg",
       "cp": "喬凡尼·馬拉斯",
       "affiliation": "馬拉斯家族",
       "skill": "—",
+      "fullbodyImg": "/images/uploads/0308887.png",
+      "gallery": [
+        {
+          "sensitive": false,
+          "image": "/images/uploads/09111.png"
+        },
+        {
+          "sensitive": false,
+          "image": "/images/uploads/105888.png"
+        },
+        {
+          "sensitive": false,
+          "image": "/images/uploads/0421100-1.png"
+        },
+        {
+          "sensitive": false,
+          "image": "/images/uploads/0421100-2.png"
+        },
+        {
+          "sensitive": false,
+          "image": "/images/uploads/02205.png",
+          "caption": "轉世PARO"
+        },
+        {
+          "sensitive": false,
+          "image": "/images/uploads/105255555.jpg"
+        },
+        {
+          "sensitive": false,
+          "image": "/images/uploads/1116663.jpg"
+        },
+        {
+          "sensitive": false
+        }
+      ],
       "status": "dead",
       "role": "首領",
       "codename": "里卡多·馬拉斯",
@@ -756,10 +860,50 @@
     },
     {
       "height": "187",
+      "bio": "諾埃米的幼年玩伴，在諾埃米投靠坎圖後，持續與對方聯絡，並成為對方勢力在馬拉斯的暗樁。\n\n一張臉興致淡淡，其實還蠻愛管閒事的。從以前就給自己留了很多後路，直覺很強，一旦決定就會做到最後，也沒有對馬拉斯的人感到絲毫愧疚。\n\n奇怪的迷因仔。",
       "realname": "—",
+      "avatarImg": "/images/uploads/01188-1114.jpg",
       "cp": "約書亞·科司塔",
       "affiliation": "馬拉斯家族→坎圖家族",
       "skill": "—",
+      "gallery": [
+        {
+          "sensitive": false,
+          "image": "/images/uploads/08333.png"
+        },
+        {
+          "sensitive": false,
+          "image": "/images/uploads/04499911.png"
+        },
+        {
+          "sensitive": false,
+          "image": "/images/uploads/imported_image.png"
+        },
+        {
+          "sensitive": false,
+          "image": "/images/uploads/1122.png"
+        },
+        {
+          "sensitive": false,
+          "image": "/images/uploads/10006.png"
+        },
+        {
+          "sensitive": false,
+          "image": "/images/uploads/087666.jpg"
+        },
+        {
+          "sensitive": false,
+          "image": "/images/uploads/12211.jpg"
+        },
+        {
+          "sensitive": false,
+          "image": "/images/uploads/26278181.jpg"
+        },
+        {
+          "sensitive": true,
+          "image": "/images/uploads/05533.png"
+        }
+      ],
       "status": "alive",
       "role": "指揮官",
       "codename": "塞謬爾·法維諾",
@@ -768,10 +912,29 @@
     },
     {
       "height": "190",
+      "bio": "西爾瓦諾曾為專門辯護刑事案件的律師，後因某件事對自己的工作逐漸沒有目標，毅然決然找上了僱傭兵團的狄龍·阿比斯，共同成立了新興黑手黨<b>阿比斯家族</b>。\n\n知識淵博，充滿好奇，具有頑皮的幽默感，有太多的點子和主意，是阿比斯家族的夢想家，並由首領狄龍將他的計劃實踐。",
       "realname": "—",
+      "avatarImg": "/images/uploads/095050505.jpg",
       "cp": "狄龍·阿比斯",
       "affiliation": "阿比斯家族",
       "skill": "—",
+      "gallery": [
+        {
+          "sensitive": false,
+          "image": "/images/uploads/11188.png"
+        },
+        {
+          "sensitive": false,
+          "image": "/images/uploads/11105.png"
+        },
+        {
+          "sensitive": false,
+          "image": "/images/uploads/18189333.jpg"
+        },
+        {
+          "sensitive": false
+        }
+      ],
       "status": "alive",
       "role": "法律顧問",
       "codename": "西爾瓦諾·傑瑪",
