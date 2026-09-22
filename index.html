@@ -776,6 +776,16 @@ body.is-gate{overflow:hidden;}
 .pf-bio p{margin:0 0 18px;}
 .pf-bio p:last-child{margin-bottom:0;}
 
+/* Articles／Gallery 沒有立繪背景可以毛玻璃時，維持完全透明、不加灰底卡片——
+   只保留 body.has-fullbody-bg 那段的半透明毛玻璃效果，其餘情況不額外加背景。
+   （這裡只留 Articles／Gallery 上下的間距，避免兩塊內容黏在一起） */
+.profile-view > .pf-reveal:not(.pf-basic):not(.pf-fullbody-mobile){
+  margin-bottom:18px;
+}
+.profile-view > .pf-reveal:not(.pf-basic):not(.pf-fullbody-mobile):last-child{
+  margin-bottom:0;
+}
+
 /* 立繪：固定貼在畫面左側、疊在文字內容下方（z-index 較低）當放大版的背景，
    不會隨內容捲動而消失；文字／資訊改成用毛玻璃卡片的方式浮貼在它上面
    （見下方 body.has-fullbody-bg 那段），所以立繪可以比之前放大不少，
@@ -918,12 +928,30 @@ body.is-gate{overflow:hidden;}
   border-radius:var(--radius);
   overflow:hidden;
 }
+@media (max-width:640px){
+  .gallery-grid{ grid-template-columns:repeat(3, 1fr); }
+}
 .gallery-thumb{
   aspect-ratio:1/1; position:relative; cursor:zoom-in; overflow:hidden; border-radius:var(--radius-sm); background:var(--panel);
 }
-.gallery-thumb img{width:100%; height:100%; object-fit:cover; display:block; transition:transform .4s ease;}
+.gallery-thumb img{width:100%; height:100%; object-fit:cover; display:block; transition:transform .4s ease, filter .4s ease;}
 .gallery-thumb:hover img{transform:scale(1.05);}
 .gallery-thumb .avatar-fill{position:absolute; inset:0; color:#fff; font-family:var(--font-mono); font-size:12px;}
+
+/* R18／血腥等敏感圖片：縮圖預設模糊＋警告字，點一下先解除模糊看縮圖，
+   要看大圖再點第二下（避免不小心點到直接看到原圖） */
+.gallery-thumb.is-sensitive img{ filter:blur(22px) saturate(1.05); }
+.gallery-thumb.is-sensitive.revealed img{ filter:none; }
+.gallery-thumb .sensitive-badge{
+  position:absolute; inset:0; z-index:2;
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px;
+  background:rgba(20,20,22,.4);
+  color:#fff; text-align:center; padding:10px;
+  font-family:var(--font-mono); font-size:10.5px; letter-spacing:.05em; line-height:1.6;
+  transition:opacity .25s ease;
+}
+.gallery-thumb .sensitive-badge .icon{font-size:18px;}
+.gallery-thumb.revealed .sensitive-badge{opacity:0; pointer-events:none;}
 
 .empty-note{
   color:var(--ink-faint); font-family:var(--font-mono); font-size:12.5px; padding:20px 0;
@@ -1186,7 +1214,7 @@ function placeholderStyle(seed, sat, light1, light2){
   return `background:var(--brand);`;
 }
 function avatarBlock(ch, size){
-  if(ch.avatarImg){ return `<img src="${ch.avatarImg}" alt="${ch.codename}">`; }
+  if(ch.avatarImg){ return `<img src="${ch.avatarImg}" alt="${ch.codename}" decoding="async">`; }
   return `<div class="avatar-fill" style="${placeholderStyle(ch.id)}">${ch.codename.slice(0,1)}</div>`;
 }
 function fullbodyBlock(ch){
@@ -1194,7 +1222,10 @@ function fullbodyBlock(ch){
   return `<div class="avatar-fill" style="${placeholderStyle(ch.id+'fb')}; display:flex; align-items:center; justify-content:center; color:rgba(255,255,255,.85); font-family:var(--font-mono); font-size:12px;">Full body art not uploaded</div>`;
 }
 function galleryThumb(item, ch, idx){
-  if(item.thumb){ return `<img src="${item.thumb}" alt="">`; }
+  /* 新的 CMS 欄位只要傳一張「圖片 image」；舊角色資料如果還是用以前的
+     「縮圖 thumb／原圖 full」分開兩張，也繼續相容、不會壞掉 */
+  const src = item.thumb || item.image;
+  if(src){ return `<img src="${src}" alt="" loading="lazy" decoding="async">`; }
   return `<div class="avatar-fill" style="${placeholderStyle(ch.id+'g'+idx,24,70,86)}">IMG_${String(idx+1).padStart(2,'0')}</div>`;
 }
 
@@ -1842,8 +1873,9 @@ function renderProfile(id){
   `).join('') : `<div class="empty-note">No articles yet.</div>`;
 
   const gallery = ch.gallery && ch.gallery.length ? ch.gallery.map((g,i)=>`
-    <div class="gallery-thumb" onclick="openLightbox('${ch.id}', ${i})">
+    <div class="gallery-thumb${g.sensitive ? ' is-sensitive' : ''}" onclick="handleGalleryThumbClick(this, '${ch.id}', ${i})">
       ${galleryThumb(g, ch, i)}
+      ${g.sensitive ? `<div class="sensitive-badge"><div class="icon">⚠</div>敏感內容<br>點擊查看</div>` : ''}
     </div>
   `).join('') : `<div class="empty-note">No images yet.</div>`;
 
@@ -1863,7 +1895,7 @@ function renderProfile(id){
 
     ${ch.fullbodyImg ? `
     <div class="pf-reveal pf-fullbody-mobile">
-      <img src="${ch.fullbodyImg}" alt="${ch.codename} full body art">
+      <img src="${ch.fullbodyImg}" alt="${ch.codename} full body art" decoding="async">
     </div>` : ''}
 
     <div class="pf-reveal">
@@ -2036,6 +2068,15 @@ function initProfileReveal(){
 /* ============================================================
    燈箱 Lightbox
 ============================================================ */
+/* 敏感縮圖第一次點擊只是解除模糊、看清楚縮圖本身，
+   不會直接跳出大圖；已經解除模糊了再點一次，才會真的打開大圖 */
+function handleGalleryThumbClick(el, charId, index){
+  if(el.classList.contains('is-sensitive') && !el.classList.contains('revealed')){
+    el.classList.add('revealed');
+    return;
+  }
+  openLightbox(charId, index);
+}
 let lbState = { charId:null, index:0 };
 function openLightbox(charId, index){
   lbState = { charId, index };
@@ -2061,10 +2102,11 @@ function lbKeyHandler(e){
 function renderLightbox(){
   const ch = CHARACTERS.find(c=>c.id===lbState.charId);
   const item = ch.gallery[lbState.index];
+  const full = item.full || item.image;
   const img = document.getElementById('lb-img');
-  if(item.full){
+  if(full){
     img.style.display='block';
-    img.src = item.full;
+    img.src = full;
   } else {
     img.style.display='none';
   }
@@ -2074,7 +2116,7 @@ function renderLightbox(){
   /* 若無真實圖片，顯示放大版佔位色塊 */
   let ph = document.getElementById('lb-placeholder');
   if(ph) ph.remove();
-  if(!item.full){
+  if(!full){
     ph = document.createElement('div');
     ph.id='lb-placeholder';
     ph.style.cssText = `width:min(70vw,640px); height:min(70vh,640px); ${placeholderStyle(ch.id+'g'+lbState.index,24,68,84)} display:flex; align-items:center; justify-content:center; color:#fff; font-family:'IBM Plex Mono',monospace; font-size:14px;`;
