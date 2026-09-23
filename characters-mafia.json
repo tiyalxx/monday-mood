@@ -148,6 +148,26 @@
         {
           "target": "克里斯蒂亞諾·坎圖",
           "label": "上司、形同父子"
+        },
+        {
+          "target": "杜契·坎圖",
+          "label": "上司、朋友"
+        },
+        {
+          "target": "艾尼亞斯·坎圖",
+          "label": "恨、執著、愛人"
+        },
+        {
+          "target": "coop-mafia-02",
+          "label": "上司"
+        },
+        {
+          "target": "coop-mafia-03",
+          "label": "下屬"
+        },
+        {
+          "target": "coop-mafia-06",
+          "label": "同事、朋友"
         }
       ],
       "articles": [],
@@ -261,7 +281,8 @@
         },
         {
           "thumb": "",
-          "full": "/images/uploads/089303.jpg"
+          "full": "",
+          "image": "/images/uploads/089303.jpg"
         },
         {
           "sensitive": true,
@@ -272,6 +293,56 @@
       "role": "法律顧問",
       "codename": "拉涅里·桑托魯姆",
       "id": "coop-mafia-02",
+      "relationships": [
+        {
+          "target": "克里斯蒂亞諾·坎圖",
+          "label": "竹馬、摯友"
+        },
+        {
+          "target": "克勞迪奧·馬利亞",
+          "label": "愛人、下屬"
+        },
+        {
+          "target": "萊昂內·羅西",
+          "label": "朋友"
+        },
+        {
+          "target": "杜喬·羅西",
+          "label": "朋友"
+        },
+        {
+          "target": "coop-mafia-01",
+          "label": "下屬"
+        },
+        {
+          "target": "coop-mafia-03",
+          "label": "下屬"
+        },
+        {
+          "target": "coop-mafia-04",
+          "label": "互看不順眼"
+        },
+        {
+          "target": "coop-mafia-05",
+          "label": "培養者"
+        },
+        {
+          "target": "coop-mafia-06",
+          "label": "朋友"
+        },
+        {
+          "target": "coop-mafia-13",
+          "label": "朋友"
+        },
+        {
+          "target": "coop-mafia-17",
+          "label": "惡劣、合作對象"
+        },
+        {
+          "target": "科里·馬寧",
+          "label": "下屬"
+        }
+      ],
       "age": "42→48"
     },
     {
@@ -358,6 +429,36 @@
       "role": "士兵→指揮官",
       "codename": "米凱萊·羅貝托",
       "id": "coop-mafia-03",
+      "relationships": [
+        {
+          "target": "維藍‧海沃涅",
+          "label": "愛人"
+        },
+        {
+          "target": "coop-mafia-02",
+          "label": "上司"
+        },
+        {
+          "target": "coop-mafia-02",
+          "label": "崇拜"
+        },
+        {
+          "target": "克里斯蒂亞諾·坎圖",
+          "label": "前上司"
+        },
+        {
+          "target": "coop-mafia-05",
+          "label": "現上司"
+        },
+        {
+          "target": "coop-mafia-12",
+          "label": "同事"
+        },
+        {
+          "target": "科里·馬寧",
+          "label": "同事"
+        }
+      ],
       "age": "25→30"
     },
     {
@@ -462,6 +563,28 @@
       "role": "眾議院議員→羅馬市長",
       "codename": "恩里科·佩龍",
       "id": "coop-mafia-04",
+      "relationships": [
+        {
+          "target": "克里斯蒂亞諾·坎圖",
+          "label": "永遠的摯愛"
+        },
+        {
+          "target": "coop-mafia-02",
+          "label": "互看不順眼"
+        },
+        {
+          "target": "coop-mafia-05",
+          "label": "愛人的養子"
+        },
+        {
+          "target": "coop-mafia-16",
+          "label": "兄長"
+        },
+        {
+          "target": "coop-mafia-17",
+          "label": "合作關係"
+        }
+      ],
       "age": "37→42"
     },
     {
@@ -556,6 +679,44 @@
       "role": "逃亡→士兵→首領",
       "codename": "諾埃米·奧爾薩蒂·坎圖",
       "id": "coop-mafia-05",
+      "relationships": [
+        {
+          "target": "慕尼夫·哈什米·羅西",
+          "label": "愛人"
+        },
+        {
+          "target": "克里斯蒂亞諾·坎圖",
+          "label": "養父"
+        },
+        {
+          "target": "coop-mafia-04",
+          "label": "養父的愛人"
+        },
+        {
+          "target": "coop-mafia-02",
+          "label": "導師"
+        },
+        {
+          "target": "里卡多·馬拉斯",
+          "label": "同父異母兄長、敵對"
+        },
+        {
+          "target": "coop-mafia-12",
+          "label": "竹馬、摯友"
+        },
+        {
+          "target": "coop-mafia-06",
+          "label": "同事、下屬"
+        },
+        {
+          "target": "coop-mafia-03",
+          "label": "同事、下屬"
+        },
+        {
+          "target": "科里·馬寧",
+          "label": "下屬"
+        }
+      ],
       "birthday": "",
       "age": "23→28"
     },
@@ -581,6 +742,44 @@
       "role": "指揮官→二老闆",
       "codename": "法斯托·比索尼",
       "id": "coop-mafia-06",
+      "relationships": [
+        {
+          "target": "蘿札·阿萊莫·斯帕塔羅",
+          "label": "愛人、妻子"
+        },
+        {
+          "target": "杜契·坎圖",
+          "label": "養父"
+        },
+        {
+          "target": "艾尼亞斯·坎圖",
+          "label": "兄弟"
+        },
+        {
+          "target": "克里斯蒂亞諾·坎圖",
+          "label": "上司、家人"
+        },
+        {
+          "target": "coop-mafia-02",
+          "label": "朋友"
+        },
+        {
+          "target": "coop-mafia-01",
+          "label": "同事、朋友"
+        },
+        {
+          "target": "coop-mafia-03",
+          "label": "同事、下屬"
+        },
+        {
+          "target": "coop-mafia-05",
+          "label": "同事、上司"
+        },
+        {
+          "target": "科里·馬寧",
+          "label": "下屬"
+        }
+      ],
       "age": "33→38"
     },
     {
@@ -630,6 +829,44 @@
       "role": "首領",
       "codename": "萊昂內·羅西",
       "id": "coop-mafia-07",
+      "relationships": [
+        {
+          "target": "維維安娜·羅西",
+          "label": "妻子"
+        },
+        {
+          "target": "coop-mafia-08",
+          "label": "兒子"
+        },
+        {
+          "target": "coop-mafia-09",
+          "label": "弟弟"
+        },
+        {
+          "target": "慕尼夫·哈什米·羅西",
+          "label": "養子"
+        },
+        {
+          "target": "克里斯蒂亞諾·坎圖",
+          "label": "摯友"
+        },
+        {
+          "target": "coop-mafia-02",
+          "label": "摯友"
+        },
+        {
+          "target": "coop-mafia-10",
+          "label": "下屬"
+        },
+        {
+          "target": "coop-mafia-15",
+          "label": "敵對"
+        },
+        {
+          "target": "coop-mafia-10",
+          "label": "屬下"
+        }
+      ],
       "age": "42→48"
     },
     {
@@ -719,6 +956,36 @@
       "role": "首領繼承人",
       "codename": "維托里奧·羅西",
       "id": "coop-mafia-08",
+      "relationships": [
+        {
+          "target": "李判頌",
+          "label": "醫生、愛人"
+        },
+        {
+          "target": "coop-mafia-07",
+          "label": "父親"
+        },
+        {
+          "target": "維維安娜·羅西",
+          "label": "母親"
+        },
+        {
+          "target": "慕尼夫·哈什米·羅西",
+          "label": "義兄"
+        },
+        {
+          "target": "coop-mafia-09",
+          "label": "叔叔"
+        },
+        {
+          "target": "coop-mafia-10",
+          "label": "下屬"
+        },
+        {
+          "target": "coop-mafia-15",
+          "label": "敵對"
+        }
+      ],
       "age": "15"
     },
     {
@@ -765,6 +1032,48 @@
       "role": "二老闆",
       "codename": "杜喬·羅西",
       "id": "coop-mafia-09",
+      "relationships": [
+        {
+          "target": "拉法埃洛·德拉",
+          "label": "愛人、下屬"
+        },
+        {
+          "target": "coop-mafia-07",
+          "label": "兄長"
+        },
+        {
+          "target": "維維安娜·羅西",
+          "label": "嫂子"
+        },
+        {
+          "target": "克里斯蒂亞諾·坎圖",
+          "label": "摯友"
+        },
+        {
+          "target": "coop-mafia-02",
+          "label": "摯友"
+        },
+        {
+          "target": "coop-mafia-08",
+          "label": "姪子"
+        },
+        {
+          "target": "慕尼夫·哈什米·羅西",
+          "label": "義姪"
+        },
+        {
+          "target": "coop-mafia-10",
+          "label": "下屬"
+        },
+        {
+          "target": "coop-mafia-13",
+          "label": "朋友"
+        },
+        {
+          "target": "coop-mafia-15",
+          "label": "敵對"
+        }
+      ],
       "age": "38→43"
     },
     {
@@ -813,6 +1122,24 @@
       "role": "殺手→暴力專家",
       "codename": "費利切·奧蘭迪",
       "id": "coop-mafia-10",
+      "relationships": [
+        {
+          "target": "基蘭·斯福爾察",
+          "label": "竹馬、恨、愛人"
+        },
+        {
+          "target": "coop-mafia-07",
+          "label": "上司"
+        },
+        {
+          "target": "coop-mafia-08",
+          "label": "上司"
+        },
+        {
+          "target": "coop-mafia-09",
+          "label": "上司"
+        }
+      ],
       "age": "27"
     },
     {
@@ -957,7 +1284,65 @@
       "role": "指揮官",
       "codename": "米哈伊·阿伽利",
       "id": "coop-mafia-14",
+      "relationships": [
+        {
+          "target": "科里·馬寧",
+          "label": "愛人"
+        },
+        {}
+      ],
       "age": "35"
+    },
+    {
+      "height": "186",
+      "bio": "出身於貧困家庭，父母因賭博欠債，將他獻給邪教「黑色救贖修會」。自幼接受命令制、  體罰與人格抹除式教育，身上有大量的鞭痕及刀疤。\n\n盧基諾習慣用示弱掩蓋真實意圖。將痛苦視為秩序與存在證明，他在疼痛中找到自我意義，至今仍追求這種塑造他的人格特質的虐待刺激，渴望被命令與懲罰。  \n\n耐痛與耐壓異常高，近身戰與武器運用偏實用派，\n\n10 年前由狄龍·阿比斯帶離黑色救贖修會，將對方視為恩人，並成為傭兵。\n後作為阿比斯家族的指揮官，專做善後處理。",
+      "realname": "—",
+      "avatarImg": "/images/uploads/103288277.jpg",
+      "cp": "馬西默·拉札里",
+      "affiliation": "阿比斯家族",
+      "skill": "—",
+      "gallery": [
+        {
+          "sensitive": false,
+          "image": "/images/uploads/16161722.jpg"
+        },
+        {
+          "sensitive": false,
+          "image": "/images/uploads/038828282.jpg"
+        },
+        {
+          "sensitive": false,
+          "image": "/images/uploads/041177.jpg"
+        },
+        {
+          "sensitive": false,
+          "image": "/images/uploads/066373.jpg",
+          "caption": "PARO"
+        }
+      ],
+      "status": "alive",
+      "role": "指揮官",
+      "codename": "盧基諾・費蘭特",
+      "id": "coop-mafia-22",
+      "relationships": [
+        {
+          "target": "馬西默·拉札里",
+          "label": "崇拜、愛人、信仰"
+        },
+        {
+          "target": "狄龍·阿比斯",
+          "label": "恩人、上司"
+        },
+        {
+          "target": "coop-mafia-13",
+          "label": "上司"
+        },
+        {
+          "target": "coop-mafia-14",
+          "label": "同事"
+        }
+      ],
+      "age": "28"
     },
     {
       "realname": "—",
