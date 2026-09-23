@@ -144,6 +144,12 @@
       "role": "指揮官→卸任",
       "codename": "貝佩·馬爾塔奇",
       "id": "coop-mafia-01",
+      "relationships": [
+        {
+          "target": "克里斯蒂亞諾·坎圖",
+          "label": "上司、形同父子"
+        }
+      ],
       "articles": [],
       "age": "30→35"
     },
