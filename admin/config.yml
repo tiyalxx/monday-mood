@@ -92,6 +92,13 @@ collections:
                   - {label: "R18／血腥等敏感內容（縮圖先模糊遮蔽）", name: "sensitive", widget: "boolean", default: false, required: false}
                   - {label: "縮圖 Thumbnail（舊照片用，新照片不用填）", name: "thumb", widget: "image", required: false}
                   - {label: "原圖 Full Image（舊照片用，新照片不用填）", name: "full", widget: "image", required: false}
+              - label: "關係 Relationships（會顯示在角色關係圖上）"
+                name: "relationships"
+                widget: "list"
+                required: false
+                fields:
+                  - {label: "對方的角色 ID（到對方的角色資料裡複製 ID 欄位貼過來，例如 coop-mafia-03）", name: "target", widget: "string"}
+                  - {label: "關係稱呼（例如：戀人、上司、宿敵、青梅竹馬）", name: "label", widget: "string"}
 
   - name: "coop"
     label: "共構 Collab"
@@ -139,6 +146,13 @@ collections:
                   - {label: "R18／血腥等敏感內容（縮圖先模糊遮蔽）", name: "sensitive", widget: "boolean", default: false, required: false}
                   - {label: "縮圖 Thumbnail（舊照片用，新照片不用填）", name: "thumb", widget: "image", required: false}
                   - {label: "原圖 Full Image（舊照片用，新照片不用填）", name: "full", widget: "image", required: false}
+              - label: "關係 Relationships（會顯示在角色關係圖上）"
+                name: "relationships"
+                widget: "list"
+                required: false
+                fields:
+                  - {label: "對方的角色 ID（到對方的角色資料裡複製 ID 欄位貼過來，例如 coop-mafia-03）", name: "target", widget: "string"}
+                  - {label: "關係稱呼（例如：戀人、上司、宿敵、青梅竹馬）", name: "label", widget: "string"}
 
       - file: "characters-ancient.json"
         label: "ANCIENT"
@@ -183,6 +197,13 @@ collections:
                   - {label: "R18／血腥等敏感內容（縮圖先模糊遮蔽）", name: "sensitive", widget: "boolean", default: false, required: false}
                   - {label: "縮圖 Thumbnail（舊照片用，新照片不用填）", name: "thumb", widget: "image", required: false}
                   - {label: "原圖 Full Image（舊照片用，新照片不用填）", name: "full", widget: "image", required: false}
+              - label: "關係 Relationships（會顯示在角色關係圖上）"
+                name: "relationships"
+                widget: "list"
+                required: false
+                fields:
+                  - {label: "對方的角色 ID（到對方的角色資料裡複製 ID 欄位貼過來，例如 coop-mafia-03）", name: "target", widget: "string"}
+                  - {label: "關係稱呼（例如：戀人、上司、宿敵、青梅竹馬）", name: "label", widget: "string"}
 
       - file: "characters-hero.json"
         label: "HERO"
@@ -227,6 +248,13 @@ collections:
                   - {label: "R18／血腥等敏感內容（縮圖先模糊遮蔽）", name: "sensitive", widget: "boolean", default: false, required: false}
                   - {label: "縮圖 Thumbnail（舊照片用，新照片不用填）", name: "thumb", widget: "image", required: false}
                   - {label: "原圖 Full Image（舊照片用，新照片不用填）", name: "full", widget: "image", required: false}
+              - label: "關係 Relationships（會顯示在角色關係圖上）"
+                name: "relationships"
+                widget: "list"
+                required: false
+                fields:
+                  - {label: "對方的角色 ID（到對方的角色資料裡複製 ID 欄位貼過來，例如 coop-mafia-03）", name: "target", widget: "string"}
+                  - {label: "關係稱呼（例如：戀人、上司、宿敵、青梅竹馬）", name: "label", widget: "string"}
 
       - file: "characters-fantasy.json"
         label: "FANTASY"
@@ -271,6 +299,13 @@ collections:
                   - {label: "R18／血腥等敏感內容（縮圖先模糊遮蔽）", name: "sensitive", widget: "boolean", default: false, required: false}
                   - {label: "縮圖 Thumbnail（舊照片用，新照片不用填）", name: "thumb", widget: "image", required: false}
                   - {label: "原圖 Full Image（舊照片用，新照片不用填）", name: "full", widget: "image", required: false}
+              - label: "關係 Relationships（會顯示在角色關係圖上）"
+                name: "relationships"
+                widget: "list"
+                required: false
+                fields:
+                  - {label: "對方的角色 ID（到對方的角色資料裡複製 ID 欄位貼過來，例如 coop-mafia-03）", name: "target", widget: "string"}
+                  - {label: "關係稱呼（例如：戀人、上司、宿敵、青梅竹馬）", name: "label", widget: "string"}
 
       - file: "characters-football.json"
         label: "FOOTBALL"
@@ -315,6 +350,13 @@ collections:
                   - {label: "R18／血腥等敏感內容（縮圖先模糊遮蔽）", name: "sensitive", widget: "boolean", default: false, required: false}
                   - {label: "縮圖 Thumbnail（舊照片用，新照片不用填）", name: "thumb", widget: "image", required: false}
                   - {label: "原圖 Full Image（舊照片用，新照片不用填）", name: "full", widget: "image", required: false}
+              - label: "關係 Relationships（會顯示在角色關係圖上）"
+                name: "relationships"
+                widget: "list"
+                required: false
+                fields:
+                  - {label: "對方的角色 ID（到對方的角色資料裡複製 ID 欄位貼過來，例如 coop-mafia-03）", name: "target", widget: "string"}
+                  - {label: "關係稱呼（例如：戀人、上司、宿敵、青梅竹馬）", name: "label", widget: "string"}
 
       - file: "characters-victorian.json"
         label: "VICTORIAN"
@@ -359,6 +401,13 @@ collections:
                   - {label: "R18／血腥等敏感內容（縮圖先模糊遮蔽）", name: "sensitive", widget: "boolean", default: false, required: false}
                   - {label: "縮圖 Thumbnail（舊照片用，新照片不用填）", name: "thumb", widget: "image", required: false}
                   - {label: "原圖 Full Image（舊照片用，新照片不用填）", name: "full", widget: "image", required: false}
+              - label: "關係 Relationships（會顯示在角色關係圖上）"
+                name: "relationships"
+                widget: "list"
+                required: false
+                fields:
+                  - {label: "對方的角色 ID（到對方的角色資料裡複製 ID 欄位貼過來，例如 coop-mafia-03）", name: "target", widget: "string"}
+                  - {label: "關係稱呼（例如：戀人、上司、宿敵、青梅竹馬）", name: "label", widget: "string"}
 
       - file: "characters-other.json"
         label: "OTHER"
@@ -403,3 +452,10 @@ collections:
                   - {label: "R18／血腥等敏感內容（縮圖先模糊遮蔽）", name: "sensitive", widget: "boolean", default: false, required: false}
                   - {label: "縮圖 Thumbnail（舊照片用，新照片不用填）", name: "thumb", widget: "image", required: false}
                   - {label: "原圖 Full Image（舊照片用，新照片不用填）", name: "full", widget: "image", required: false}
+              - label: "關係 Relationships（會顯示在角色關係圖上）"
+                name: "relationships"
+                widget: "list"
+                required: false
+                fields:
+                  - {label: "對方的角色 ID（到對方的角色資料裡複製 ID 欄位貼過來，例如 coop-mafia-03）", name: "target", widget: "string"}
+                  - {label: "關係稱呼（例如：戀人、上司、宿敵、青梅竹馬）", name: "label", widget: "string"}

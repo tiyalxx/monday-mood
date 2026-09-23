@@ -640,6 +640,69 @@ body.is-gate{overflow:hidden;}
 .section-head h2.brand-title{color:var(--brand);}
 .section-count{font-family:var(--font-mono); font-size:12px; color:var(--ink-soft);}
 
+/* ---------------- 角色頁面：這個角色的關係（只顯示自己填過的對象） ---------------- */
+/* 本人頭像放在正中間，填過的關係人平均分散在四周一圈，不會全部擠在同一邊 */
+.pf-rel-stage{
+  position:relative; width:100%; max-width:300px; aspect-ratio:1/1;
+  margin:20px auto 8px;
+}
+.pf-rel-stage.is-medium{max-width:380px;}
+.pf-rel-stage.is-dense{max-width:460px;}
+.pf-rel-lines{position:absolute; inset:0; width:100%; height:100%; overflow:visible;}
+.pf-rel-line{stroke:var(--line); stroke-width:.4;}
+.pf-rel-edge-label{
+  position:absolute; transform:translate(-50%,-50%);
+  background:var(--bg); border:1px solid var(--line);
+  padding:3px 9px; border-radius:999px;
+  font-family:var(--font-mono); font-size:10.5px; letter-spacing:.02em; color:var(--ink-soft);
+  white-space:nowrap; pointer-events:none;
+}
+.pf-rel-hub{
+  position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+  width:66px; height:66px; border-radius:50%; overflow:hidden;
+  border:2px solid var(--brand); background:var(--brand);
+  box-shadow:0 8px 22px rgba(30,30,34,.18);
+}
+.pf-rel-hub img{width:100%; height:100%; object-fit:cover; display:block;}
+.pf-rel-hub .avatar-fill{width:100%; height:100%; display:flex; align-items:center; justify-content:center; color:#fff; font-family:var(--font-disp); font-size:20px;}
+.pf-rel-node{
+  position:absolute; transform:translate(-50%,-50%);
+  display:flex; flex-direction:column; align-items:center; gap:6px;
+  width:78px; text-decoration:none;
+}
+.pf-rel-avatar{
+  width:52px; height:52px; border-radius:50%; overflow:hidden;
+  border:2px solid var(--line); background:var(--brand);
+  transition:transform .25s cubic-bezier(.2,.8,.2,1), box-shadow .25s ease, border-color .25s ease;
+}
+.pf-rel-avatar img{width:100%; height:100%; object-fit:cover; display:block;}
+.pf-rel-avatar .avatar-fill{width:100%; height:100%; display:flex; align-items:center; justify-content:center; color:#fff; font-family:var(--font-disp); font-size:16px;}
+.pf-rel-node:hover .pf-rel-avatar{transform:scale(1.14); box-shadow:0 12px 26px rgba(30,30,34,.2); border-color:var(--brand);}
+.pf-rel-name{
+  font-family:var(--font-cjk); font-size:11.5px; color:var(--ink); text-align:center;
+  white-space:nowrap; max-width:84px; overflow:hidden; text-overflow:ellipsis;
+}
+/* 填的關係人比較多的時候，頭像／名字縮小一點，避免彼此疊在一起 */
+.pf-rel-stage.is-medium .pf-rel-node{width:64px; gap:5px;}
+.pf-rel-stage.is-medium .pf-rel-avatar{width:44px; height:44px;}
+.pf-rel-stage.is-medium .pf-rel-name{font-size:10px; max-width:68px;}
+.pf-rel-stage.is-medium .pf-rel-edge-label{font-size:9.5px; padding:2px 7px;}
+.pf-rel-stage.is-dense .pf-rel-hub{width:56px; height:56px;}
+.pf-rel-stage.is-dense .pf-rel-node{width:52px; gap:4px;}
+.pf-rel-stage.is-dense .pf-rel-avatar{width:38px; height:38px; border-width:1.5px;}
+.pf-rel-stage.is-dense .pf-rel-name{font-size:9px; max-width:56px;}
+.pf-rel-stage.is-dense .pf-rel-edge-label{font-size:8.5px; padding:2px 6px;}
+@media (max-width:640px){
+  .pf-rel-stage{max-width:min(84vw,300px);}
+  .pf-rel-stage.is-medium{max-width:min(92vw,360px);}
+  .pf-rel-stage.is-dense{max-width:min(96vw,420px);}
+  .pf-rel-hub{width:52px; height:52px;}
+  .pf-rel-avatar{width:42px; height:42px; border-width:1.5px;}
+  .pf-rel-node{width:60px; gap:4px;}
+  .pf-rel-name{font-size:9.5px; max-width:64px;}
+  .pf-rel-edge-label{font-size:9px; padding:2px 7px;}
+}
+
 /* 角色列表：橫向重疊排列的弧形卡片牆（電腦滾輪橫向瀏覽，手機直接上下滑）。
    每張卡片的寬度／垂直位移都是 JS 算好、用 inline style 帶進來的（弧線公式），
    這裡的 class 只負責視覺樣式，不負責排版數值。 */
@@ -1910,6 +1973,8 @@ function renderProfile(id){
       <img src="${ch.fullbodyImg}" alt="${ch.codename} full body art" decoding="async">
     </div>` : ''}
 
+    ${buildCharRelations(ch)}
+
     <div class="pf-reveal">
       <div class="section-head"><h2>Articles</h2><div class="section-count">ARTICLES</div></div>
       <div class="article-list">${articles}</div>
@@ -1923,6 +1988,67 @@ function renderProfile(id){
 
   initProfileReveal();
   setupFullbodyBackground(ch);
+}
+
+/* ---------------- 角色頁面：這個角色的關係 ---------------- */
+/* 只顯示「這個角色自己」在後台「關係 Relationships」欄位填出來的對象——
+   原創、共構世界的角色都適用，只要有填就會顯示，不限世界。
+   本人頭像固定在正中間，填過的關係人平均分散在四周一圈（不是全部擠在同一邊），
+   人數少的時候（大部分情況）看起來會很像「幾個人頭從中間拉出去」。
+   跟世界關係圖一樣用 % 座標＋SVG viewBox 對齊，容器是正方形、隨螢幕寬度縮放，
+   不用另外寫 resize 邏輯。 */
+function buildCharRelations(ch){
+  const links = (ch.relationships||[]).map(r=>{
+    if(!r || !r.target) return null;
+    const target = CHARACTERS.find(c=>c.id===r.target && c.id!==ch.id);
+    if(!target) return null; /* 對方 ID 打錯字或還沒建立，先跳過 */
+    return { target, label: (r.label||'').trim() };
+  }).filter(Boolean);
+
+  if(!links.length) return '';
+
+  const n = links.length;
+  const sizeClass = n > 8 ? 'is-dense' : n > 5 ? 'is-medium' : '';
+  const R = 38; /* 圓的半徑，單位是 % */
+
+  const nodePos = links.map((l,i)=>{
+    const angle = (i/n) * Math.PI*2 - Math.PI/2; /* 從正上方開始，順時針平均分佈 */
+    return { x: 50 + R*Math.cos(angle), y: 50 + R*Math.sin(angle) };
+  });
+
+  const linesSvg = links.map((l,i)=>{
+    const p = nodePos[i];
+    return `<line x1="50" y1="50" x2="${p.x}" y2="${p.y}" class="pf-rel-line"/>`;
+  }).join('');
+
+  const labelsHtml = links.map((l,i)=>{
+    if(!l.label) return '';
+    const p = nodePos[i];
+    /* 標籤放在連線靠近對方頭像的那一段，不會卡在正中間擋住本人頭像 */
+    const mx = 50 + (p.x-50)*0.6;
+    const my = 50 + (p.y-50)*0.6;
+    return `<div class="pf-rel-edge-label" style="left:${mx}%; top:${my}%;">${l.label}</div>`;
+  }).join('');
+
+  const nodesHtml = links.map((l,i)=>{
+    const p = nodePos[i];
+    return `
+    <a class="pf-rel-node" href="#/char/${l.target.id}" style="left:${p.x}%; top:${p.y}%;">
+      <div class="pf-rel-avatar">${avatarBlock(l.target)}</div>
+      <div class="pf-rel-name">${l.target.codename}</div>
+    </a>`;
+  }).join('');
+
+  return `
+  <div class="pf-reveal">
+    <div class="section-head"><h2>Relationships</h2><div class="section-count">${n} LINKED</div></div>
+    <div class="pf-rel-stage ${sizeClass}">
+      <svg class="pf-rel-lines" viewBox="0 0 100 100" preserveAspectRatio="none">${linesSvg}</svg>
+      ${labelsHtml}
+      <div class="pf-rel-hub">${avatarBlock(ch)}</div>
+      ${nodesHtml}
+    </div>
+  </div>`;
 }
 
 /* 立繪固定背景：貼在畫面左側、疊在內容下方，換頁時如果沒有立繪或離開角色頁就隱藏 */
