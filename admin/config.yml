@@ -97,7 +97,7 @@ collections:
                 widget: "list"
                 required: false
                 fields:
-                  - {label: "對方的角色 ID（到對方的角色資料裡複製 ID 欄位貼過來，例如 coop-mafia-03）", name: "target", widget: "string"}
+                  - {label: "對方的角色 ID（到對方的角色資料裡複製 ID 欄位貼過來，例如 coop-mafia-03；如果對方不在這個網站的資料庫裡，直接打對方的名字也可以，只是不會有頭像、也不能點進去）", name: "target", widget: "string"}
                   - {label: "關係稱呼（例如：戀人、上司、宿敵、青梅竹馬）", name: "label", widget: "string"}
 
   - name: "coop"
@@ -151,7 +151,7 @@ collections:
                 widget: "list"
                 required: false
                 fields:
-                  - {label: "對方的角色 ID（到對方的角色資料裡複製 ID 欄位貼過來，例如 coop-mafia-03）", name: "target", widget: "string"}
+                  - {label: "對方的角色 ID（到對方的角色資料裡複製 ID 欄位貼過來，例如 coop-mafia-03；如果對方不在這個網站的資料庫裡，直接打對方的名字也可以，只是不會有頭像、也不能點進去）", name: "target", widget: "string"}
                   - {label: "關係稱呼（例如：戀人、上司、宿敵、青梅竹馬）", name: "label", widget: "string"}
 
       - file: "characters-ancient.json"
@@ -202,7 +202,7 @@ collections:
                 widget: "list"
                 required: false
                 fields:
-                  - {label: "對方的角色 ID（到對方的角色資料裡複製 ID 欄位貼過來，例如 coop-mafia-03）", name: "target", widget: "string"}
+                  - {label: "對方的角色 ID（到對方的角色資料裡複製 ID 欄位貼過來，例如 coop-mafia-03；如果對方不在這個網站的資料庫裡，直接打對方的名字也可以，只是不會有頭像、也不能點進去）", name: "target", widget: "string"}
                   - {label: "關係稱呼（例如：戀人、上司、宿敵、青梅竹馬）", name: "label", widget: "string"}
 
       - file: "characters-hero.json"
@@ -253,7 +253,7 @@ collections:
                 widget: "list"
                 required: false
                 fields:
-                  - {label: "對方的角色 ID（到對方的角色資料裡複製 ID 欄位貼過來，例如 coop-mafia-03）", name: "target", widget: "string"}
+                  - {label: "對方的角色 ID（到對方的角色資料裡複製 ID 欄位貼過來，例如 coop-mafia-03；如果對方不在這個網站的資料庫裡，直接打對方的名字也可以，只是不會有頭像、也不能點進去）", name: "target", widget: "string"}
                   - {label: "關係稱呼（例如：戀人、上司、宿敵、青梅竹馬）", name: "label", widget: "string"}
 
       - file: "characters-fantasy.json"
@@ -304,7 +304,7 @@ collections:
                 widget: "list"
                 required: false
                 fields:
-                  - {label: "對方的角色 ID（到對方的角色資料裡複製 ID 欄位貼過來，例如 coop-mafia-03）", name: "target", widget: "string"}
+                  - {label: "對方的角色 ID（到對方的角色資料裡複製 ID 欄位貼過來，例如 coop-mafia-03；如果對方不在這個網站的資料庫裡，直接打對方的名字也可以，只是不會有頭像、也不能點進去）", name: "target", widget: "string"}
                   - {label: "關係稱呼（例如：戀人、上司、宿敵、青梅竹馬）", name: "label", widget: "string"}
 
       - file: "characters-football.json"
@@ -355,7 +355,7 @@ collections:
                 widget: "list"
                 required: false
                 fields:
-                  - {label: "對方的角色 ID（到對方的角色資料裡複製 ID 欄位貼過來，例如 coop-mafia-03）", name: "target", widget: "string"}
+                  - {label: "對方的角色 ID（到對方的角色資料裡複製 ID 欄位貼過來，例如 coop-mafia-03；如果對方不在這個網站的資料庫裡，直接打對方的名字也可以，只是不會有頭像、也不能點進去）", name: "target", widget: "string"}
                   - {label: "關係稱呼（例如：戀人、上司、宿敵、青梅竹馬）", name: "label", widget: "string"}
 
       - file: "characters-victorian.json"
@@ -406,7 +406,7 @@ collections:
                 widget: "list"
                 required: false
                 fields:
-                  - {label: "對方的角色 ID（到對方的角色資料裡複製 ID 欄位貼過來，例如 coop-mafia-03）", name: "target", widget: "string"}
+                  - {label: "對方的角色 ID（到對方的角色資料裡複製 ID 欄位貼過來，例如 coop-mafia-03；如果對方不在這個網站的資料庫裡，直接打對方的名字也可以，只是不會有頭像、也不能點進去）", name: "target", widget: "string"}
                   - {label: "關係稱呼（例如：戀人、上司、宿敵、青梅竹馬）", name: "label", widget: "string"}
 
       - file: "characters-other.json"
@@ -457,5 +457,5 @@ collections:
                 widget: "list"
                 required: false
                 fields:
-                  - {label: "對方的角色 ID（到對方的角色資料裡複製 ID 欄位貼過來，例如 coop-mafia-03）", name: "target", widget: "string"}
+                  - {label: "對方的角色 ID（到對方的角色資料裡複製 ID 欄位貼過來，例如 coop-mafia-03；如果對方不在這個網站的資料庫裡，直接打對方的名字也可以，只是不會有頭像、也不能點進去）", name: "target", widget: "string"}
                   - {label: "關係稱呼（例如：戀人、上司、宿敵、青梅竹馬）", name: "label", widget: "string"}

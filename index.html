@@ -678,6 +678,12 @@ body.is-gate{overflow:hidden;}
 .pf-rel-avatar img{width:100%; height:100%; object-fit:cover; display:block;}
 .pf-rel-avatar .avatar-fill{width:100%; height:100%; display:flex; align-items:center; justify-content:center; color:#fff; font-family:var(--font-disp); font-size:16px;}
 .pf-rel-node:hover .pf-rel-avatar{transform:scale(1.14); box-shadow:0 12px 26px rgba(30,30,34,.2); border-color:var(--brand);}
+/* 不是資料庫裡角色的對象（只打了名字、沒有 ID）：虛線頭像、不能點擊 */
+.pf-rel-node.is-external{cursor:default;}
+.pf-rel-node.is-external .pf-rel-avatar{border-style:dashed; border-color:var(--ink-soft); background:transparent;}
+.pf-rel-node.is-external .pf-rel-avatar .avatar-fill{background:transparent !important; color:var(--ink-soft);}
+.pf-rel-node.is-external:hover .pf-rel-avatar{transform:none; box-shadow:none; border-color:var(--ink-soft);}
+.pf-rel-node.is-external .pf-rel-name{color:var(--ink-soft);}
 .pf-rel-name{
   font-family:var(--font-cjk); font-size:11.5px; color:var(--ink); text-align:center;
   white-space:nowrap; max-width:84px; overflow:hidden; text-overflow:ellipsis;
@@ -2000,9 +2006,11 @@ function renderProfile(id){
 function buildCharRelations(ch){
   const links = (ch.relationships||[]).map(r=>{
     if(!r || !r.target) return null;
-    const target = CHARACTERS.find(c=>c.id===r.target && c.id!==ch.id);
-    if(!target) return null; /* 對方 ID 打錯字或還沒建立，先跳過 */
-    return { target, label: (r.label||'').trim() };
+    const idMatch = CHARACTERS.find(c=>c.id===r.target && c.id!==ch.id);
+    if(idMatch) return { target: idMatch, label: (r.label||'').trim(), external: false };
+    /* 對方不是資料庫裡的角色（沒有 ID）：直接把填的文字當作名字顯示，
+       頭像用名字第一個字當預設圖、不能點進去（因為沒有角色頁可以連） */
+    return { target: { codename: r.target, avatarImg: null }, label: (r.label||'').trim(), external: true };
   }).filter(Boolean);
 
   if(!links.length) return '';
@@ -2032,11 +2040,15 @@ function buildCharRelations(ch){
 
   const nodesHtml = links.map((l,i)=>{
     const p = nodePos[i];
+    const tag = l.external ? 'div' : 'a';
+    const hrefAttr = l.external ? '' : ` href="#/char/${l.target.id}"`;
+    /* 不在資料庫裡的角色，頭像圈就留空白，不放名字縮寫 */
+    const avatarInner = l.external ? '' : avatarBlock(l.target);
     return `
-    <a class="pf-rel-node" href="#/char/${l.target.id}" style="left:${p.x}%; top:${p.y}%;">
-      <div class="pf-rel-avatar">${avatarBlock(l.target)}</div>
+    <${tag} class="pf-rel-node${l.external ? ' is-external' : ''}"${hrefAttr} style="left:${p.x}%; top:${p.y}%;">
+      <div class="pf-rel-avatar">${avatarInner}</div>
       <div class="pf-rel-name">${l.target.codename}</div>
-    </a>`;
+    </${tag}>`;
   }).join('');
 
   return `
