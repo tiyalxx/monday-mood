@@ -303,12 +303,12 @@
           "label": "愛人、下屬"
         },
         {
-          "target": "萊昂內·羅西",
-          "label": "朋友"
+          "target": "coop-mafia-07",
+          "label": "摯友"
         },
         {
-          "target": "杜喬·羅西",
-          "label": "朋友"
+          "target": "coop-mafia-09",
+          "label": "摯友"
         },
         {
           "target": "coop-mafia-01",
@@ -340,7 +340,7 @@
         },
         {
           "target": "科里·馬寧",
-          "label": "下屬"
+          "label": "下屬、司機"
         }
       ],
       "age": "42→48"
@@ -1189,6 +1189,20 @@
       "role": "首領",
       "codename": "里卡多·馬拉斯",
       "id": "coop-mafia-11",
+      "relationships": [
+        {
+          "target": "喬凡尼·馬拉斯",
+          "label": "叔叔、憎恨、執著"
+        },
+        {
+          "target": "coop-mafia-05",
+          "label": "同父異母弟弟"
+        },
+        {
+          "target": "coop-mafia-12",
+          "label": "屬下"
+        }
+      ],
       "age": "32"
     },
     {
@@ -1241,6 +1255,24 @@
       "role": "指揮官",
       "codename": "塞謬爾·法維諾",
       "id": "coop-mafia-12",
+      "relationships": [
+        {
+          "target": "約書亞·科司塔",
+          "label": "愛人、寵物(?)"
+        },
+        {
+          "target": "coop-mafia-05",
+          "label": "竹馬、摯友"
+        },
+        {
+          "target": "coop-mafia-11",
+          "label": "上司"
+        },
+        {
+          "target": "喬凡尼·馬拉斯",
+          "label": "上司"
+        }
+      ],
       "age": "25→30"
     },
     {
@@ -1263,15 +1295,38 @@
         {
           "sensitive": false,
           "image": "/images/uploads/18189333.jpg"
-        },
-        {
-          "sensitive": false
         }
       ],
       "status": "alive",
       "role": "法律顧問",
       "codename": "西爾瓦諾·傑瑪",
       "id": "coop-mafia-13",
+      "relationships": [
+        {
+          "target": "狄龍·阿比斯",
+          "label": "愛人"
+        },
+        {
+          "target": "coop-mafia-14",
+          "label": "下屬"
+        },
+        {
+          "target": "coop-mafia-22",
+          "label": "下屬"
+        },
+        {
+          "target": "馬西默·拉札里",
+          "label": "朋友"
+        },
+        {
+          "target": "coop-mafia-02",
+          "label": "朋友"
+        },
+        {
+          "target": "coop-mafia-09",
+          "label": "朋友"
+        }
+      ],
       "age": "36"
     },
     {
@@ -1289,7 +1344,18 @@
           "target": "科里·馬寧",
           "label": "愛人"
         },
-        {}
+        {
+          "target": "狄龍·阿比斯",
+          "label": "上司"
+        },
+        {
+          "target": "coop-mafia-13",
+          "label": "上司"
+        },
+        {
+          "target": "馬西默·拉札里",
+          "label": "同事"
+        }
       ],
       "age": "35"
     },
@@ -1353,6 +1419,20 @@
       "role": "首領",
       "codename": "內雷奧·維契尼",
       "id": "coop-mafia-15",
+      "relationships": [
+        {
+          "target": "卡夏諾・達爾維利",
+          "label": "同父異母兄長"
+        },
+        {
+          "target": "coop-mafia-07",
+          "label": "敵對"
+        },
+        {
+          "target": "coop-mafia-09",
+          "label": "敵對"
+        }
+      ],
       "age": "23"
     },
     {
@@ -1365,6 +1445,24 @@
       "role": "義大利外交官",
       "codename": "奎里諾·佩龍",
       "id": "coop-mafia-16",
+      "relationships": [
+        {
+          "target": "克萊芒·波略特",
+          "label": "愛人"
+        },
+        {
+          "target": "勒涅·波略特",
+          "label": "愛人的弟弟"
+        },
+        {
+          "target": "阿涅塞·佩龍",
+          "label": "女兒"
+        },
+        {
+          "target": "coop-mafia-04",
+          "label": "弟弟"
+        }
+      ],
       "age": "46"
     },
     {
@@ -1377,6 +1475,20 @@
       "role": "警察首長",
       "codename": "希西德羅·古佐",
       "id": "coop-mafia-17",
+      "relationships": [
+        {
+          "target": "帕爾米羅·德拉瓦萊",
+          "label": "下屬、狗"
+        },
+        {
+          "target": "coop-mafia-18",
+          "label": "兒子"
+        },
+        {
+          "target": "coop-mafia-02",
+          "label": "合作關係"
+        }
+      ],
       "age": "46"
     },
     {
@@ -1389,6 +1501,16 @@
       "role": "調查員",
       "codename": "曼弗雷多·古佐",
       "id": "coop-mafia-18",
+      "relationships": [
+        {
+          "target": "帕爾米羅·德拉瓦萊",
+          "label": "愛人"
+        },
+        {
+          "target": "coop-mafia-17",
+          "label": "父親"
+        }
+      ],
       "age": "20"
     },
     {
@@ -1401,6 +1523,12 @@
       "role": "舞台劇演員",
       "codename": "里希耶·托馬·珀蒂",
       "id": "coop-mafia-19",
+      "relationships": [
+        {
+          "target": "勒涅·波略特",
+          "label": "愛人"
+        }
+      ],
       "age": "22"
     },
     {
@@ -1413,6 +1541,20 @@
       "role": "副手",
       "codename": "培迪·布朗寧",
       "id": "coop-mafia-20",
+      "relationships": [
+        {
+          "target": "馬蘇德·布朗寧",
+          "label": "同父異母弟弟、愛人"
+        },
+        {
+          "target": "埃里安·奧萊森",
+          "label": "下屬"
+        },
+        {
+          "target": "艾米爾·瑟斯頓",
+          "label": "同事"
+        }
+      ],
       "age": "30"
     },
     {
@@ -1425,6 +1567,20 @@
       "role": "地盤代理",
       "codename": "埃里安·奧萊森",
       "id": "coop-mafia-21",
+      "relationships": [
+        {
+          "target": "艾米爾·瑟斯頓",
+          "label": "愛人"
+        },
+        {
+          "target": "馬蘇德·布朗寧",
+          "label": "上司"
+        },
+        {
+          "target": "coop-mafia-20",
+          "label": "上司"
+        }
+      ],
       "age": "28"
     }
   ]
