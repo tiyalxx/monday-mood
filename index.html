@@ -620,18 +620,18 @@ body.is-gate{overflow-x:hidden;}
 /* ================= INDEX：兩個漂浮節點 ================= */
 .node-view{
   min-height:66vh; display:flex; flex-direction:column; align-items:center; justify-content:center;
-  gap:0; position:relative; overflow:hidden;
+  gap:0; position:relative; overflow-x:hidden;
 }
 .node-glow{
-  position:absolute; width:clamp(260px,32vw,460px); aspect-ratio:1/1; border-radius:50%;
-  filter:blur(70px); pointer-events:none; z-index:0;
-  background:radial-gradient(circle, rgba(64,74,255,.20), transparent 70%);
+  position:absolute; width:clamp(220px,44vw,640px); aspect-ratio:1/1; border-radius:50%;
+  filter:blur(110px); pointer-events:none; z-index:0;
+  background:radial-gradient(circle, rgba(64,74,255,.15), transparent 60%);
   top:18%; left:22%;
   animation:glowDrift1 24s ease-in-out infinite;
 }
 .node-glow.g2{
-  width:clamp(220px,26vw,380px);
-  background:radial-gradient(circle, rgba(64,74,255,.14), transparent 70%);
+  width:clamp(190px,36vw,520px);
+  background:radial-gradient(circle, rgba(64,74,255,.11), transparent 60%);
   top:52%; left:66%;
   animation:glowDrift2 30s ease-in-out infinite;
   animation-delay:-8s;
@@ -2895,19 +2895,29 @@ const VIEW_SELECTOR = '.arc-card, .world-tile';
 window.addEventListener('mousemove', (e)=>{
   mouseX = e.clientX; mouseY = e.clientY;
 });
-document.addEventListener('mouseover', (e)=>{
-  if(e.target.closest(VIEW_SELECTOR)){ cursor.classList.add('is-view'); cursor.classList.remove('is-hover'); }
-  else if(e.target.closest(HOVER_SELECTOR)){ cursor.classList.add('is-hover'); }
-});
-document.addEventListener('mouseout', (e)=>{
-  if(e.target.closest(VIEW_SELECTOR)) cursor.classList.remove('is-view');
-  if(e.target.closest(HOVER_SELECTOR)) cursor.classList.remove('is-hover');
-});
+
+/* 用 mouseover/mouseout 事件判斷游標該不該變成 hover 樣式，
+   在 SPA 換頁（點卡片跳轉、innerHTML 整塊換掉）時會有問題：
+   滑鼠正停在卡片上時按下去，卡片所在的 DOM 節點瞬間被移除，
+   瀏覽器不一定會補送 mouseout，游標就會卡在放大／VIEW 的狀態出不來。
+   改成每一影格用 elementFromPoint 直接重新判斷滑鼠底下現在是什麼元素，
+   狀態每一影格都重新算一次，就不會有「卡住忘記還原」的問題。 */
+function currentHoverState(){
+  const el = document.elementFromPoint(mouseX, mouseY);
+  if(!el) return null;
+  if(el.closest(VIEW_SELECTOR)) return 'view';
+  if(el.closest(HOVER_SELECTOR)) return 'hover';
+  return null;
+}
 
 (function cursorLoop(){
   curX += (mouseX - curX) * 0.5;
   curY += (mouseY - curY) * 0.5;
   cursor.style.transform = `translate(${curX}px, ${curY}px)`;
+
+  const state = currentHoverState();
+  cursor.classList.toggle('is-view', state==='view');
+  cursor.classList.toggle('is-hover', state==='hover');
 
   let prevX = curX, prevY = curY;
   trailDots.forEach((t, i)=>{
