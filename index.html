@@ -4,6 +4,17 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Monday's Mood</title>
+<meta name="description" content="Monday's Mood — 一隻100%笨蛋白色小狗的原創角色檔案庫，收藏著獨立創作與共構世界觀裡的每一個角色。">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Monday's Mood">
+<meta property="og:title" content="Monday's Mood — Character Archive">
+<meta property="og:description" content="一隻100%笨蛋白色小狗的原創角色檔案庫，收藏著獨立創作與共構世界觀裡的每一個角色。">
+<meta property="og:image" content="https://mondaysmood.netlify.app/images/about-avatar.jpg">
+<meta property="og:url" content="https://mondaysmood.netlify.app/">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Monday's Mood — Character Archive">
+<meta name="twitter:description" content="一隻100%笨蛋白色小狗的原創角色檔案庫，收藏著獨立創作與共構世界觀裡的每一個角色。">
+<meta name="twitter:image" content="https://mondaysmood.netlify.app/images/about-avatar.jpg">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='16' fill='%23404aff'/%3E%3C/svg%3E">
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=Space+Grotesk:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
@@ -152,25 +163,45 @@ button{font-family:inherit; cursor:pointer;}
 }
 body.is-gate .topbar{opacity:0; pointer-events:none;}
 body.is-gate footer{display:none;}
-body.is-gate{overflow:hidden;}
+body.is-gate{overflow-x:hidden;}
 @media (max-width:640px){
-  .topbar{flex-wrap:wrap; row-gap:8px; padding:16px 20px;}
+  .topbar{flex-wrap:wrap; row-gap:4px; padding:9px 18px;}
   .brand small{display:none;}
-  .topbar-right{width:100%; flex-wrap:wrap; row-gap:8px;}
+  .brand-logo{height:14px;}
+  .topbar-right{width:100%; flex-wrap:wrap; row-gap:4px; gap:14px;}
+  .about-link, .back-btn, .index-link{font-size:11px;}
   .about-link{padding-right:0; border-right:none;}
-  .back-btn{padding-right:0; border-right:none;}
+  .back-btn{display:none !important;}
   .crumb{
     width:100%; justify-content:flex-start;
     overflow-x:auto; white-space:nowrap;
     -webkit-overflow-scrolling:touch;
+    font-size:11px;
   }
   .crumb .seg, .crumb .sep{white-space:nowrap; flex:none;}
 }
 
 /* ================= GATE / 首頁入口 ================= */
 .gate{
-  position:fixed; inset:0; z-index:5;
-  background:var(--bg); color:var(--ink);
+  position:relative; z-index:5;
+  color:var(--ink);
+  overflow-x:hidden;
+  /* #app 平常有 max-width + 左右內距，這裡用滿版技巧讓入口頁還是
+     整個畫面滿版（跟改版前一樣），不被 #app 的排版限制縮在中間一小條 */
+  width:100vw;
+  margin-left:calc(50% - 50vw);
+}
+/* 固定在畫面最底層的圖層：裡面疊放著一張張作品大圖（.gate-photo-layer），
+   往下捲動時 JS 會即時算出每張圖的透明度，讓畫面「捲一捲淡出隨機的完稿大圖」，
+   跟上面的內容（第一屏文字等）各自獨立捲動 */
+#gate-bg-fixed{
+  position:fixed; inset:0; z-index:0;
+  background:var(--bg);
+  overflow:hidden;
+}
+.gate-scene{position:relative; z-index:2;}
+.gate-scene-hero{
+  min-height:100vh;
   display:flex; flex-direction:column;
   overflow:hidden;
 }
@@ -238,6 +269,65 @@ body.is-gate{overflow:hidden;}
 .gate-bottom-logo svg{
   display:block;
   width:100%;
+}
+
+/* 提醒訪客這頁可以捲動的小提示，固定在左下角（避開底部的 logo 圖案），
+   一開始滾動就淡出，跟右下角的常駐 ENTER 按鈕左右呼應 */
+.gate-scroll-hint{
+  position:fixed; left:24px; bottom:26px; z-index:8;
+  display:flex; flex-direction:column; align-items:center; gap:4px;
+  font-family:var(--font-mono); font-size:10.5px; letter-spacing:.14em; color:var(--ink-faint);
+  animation:gateHintBob 1.8s ease-in-out infinite;
+  transition:opacity .3s ease;
+}
+.gate-scroll-hint span:last-child{font-size:13px;}
+.gate-scroll-hint.hide{opacity:0;}
+@keyframes gateHintBob{
+  0%,100%{ transform:translate(0,0); }
+  50%{ transform:translate(0,7px); }
+}
+@media (max-width:640px){
+  .gate-scroll-hint{left:16px; bottom:16px;}
+}
+
+/* 第一屏捲完之後，直接淡出淡入一張張滿版的完稿大圖（不會先變藍色），
+   每張圖各佔一個畫面高度的捲動距離，捲到誰、誰就淡入蓋滿整個畫面，
+   捲過去之後換下一張淡入、上一張淡出，是疊在 #gate-bg-fixed 裡的固定圖層，
+   彼此用 opacity 交叉淡化，不是卡片、不會滑動位移。 */
+.gate-scene-photos{position:relative;}
+.gate-photo-layer{
+  position:absolute; inset:0;
+  background-size:cover; background-position:center;
+  opacity:0; will-change:opacity;
+  display:flex; align-items:flex-end; justify-content:center;
+  padding-bottom:4vh;
+}
+.gate-photo-layer.is-placeholder{
+  background-image:linear-gradient(155deg, var(--ph-a), var(--ph-b));
+}
+.gate-photo-caption{
+  /* 故意貼在畫面偏下的位置，避開正中央的 ENTER 按鈕（正式圖片上線後就不會有這行字了） */
+  font-family:var(--font-mono); font-size:12px; letter-spacing:.12em; color:rgba(255,255,255,.75);
+  border:1px dashed rgba(255,255,255,.42); padding:10px 20px; border-radius:999px;
+}
+
+/* 捲離第一屏之後，右下角常駐一顆小的 ENTER，讓整個捲動過程隨時可以進站 */
+.gate-fixed-enter{
+  position:fixed; left:50%; bottom:16%; z-index:8;
+  transform:translateX(-50%) scale(.96);
+  display:inline-flex; align-items:center; gap:12px;
+  background:rgba(255,255,255,.16);
+  backdrop-filter:blur(16px) saturate(140%); -webkit-backdrop-filter:blur(16px) saturate(140%);
+  border:1px solid rgba(255,255,255,.55); border-radius:999px;
+  color:#fff; padding:15px 34px; font-family:var(--font-mono); font-size:13px; letter-spacing:.08em;
+  opacity:0; pointer-events:none;
+  transition:opacity .35s ease, transform .35s ease, background .2s ease;
+  box-shadow:0 20px 44px rgba(10,10,30,.22);
+}
+.gate-fixed-enter.show{opacity:1; transform:translateX(-50%) scale(1); pointer-events:auto;}
+.gate-fixed-enter:hover{background:rgba(255,255,255,.28);}
+@media (max-width:640px){
+  .gate-fixed-enter{padding:13px 28px;}
 }
 
 /* 首頁角色縮圖預覽（moodboard 風格，仿 offforum：小尺寸、間距寬鬆）。
@@ -402,10 +492,12 @@ body.is-gate{overflow:hidden;}
 /* 首頁入口（ENTER 那頁）平常是把整個導覽列藏起來的，
    但 About 還是要能點到，所以另外放一個獨立的連結在右上角 */
 .gate-about{
-  position:absolute; top:26px; right:clamp(20px,4vw,56px); z-index:3;
+  position:fixed; top:26px; right:clamp(20px,4vw,56px); z-index:9;
   font-family:var(--font-mono); font-size:12.5px; letter-spacing:.05em;
   color:var(--ink-soft);
-  transition:color .2s ease;
+  background:rgba(255,255,255,.72); backdrop-filter:blur(6px);
+  padding:6px 12px; border-radius:999px;
+  transition:color .2s ease, background .2s ease;
 }
 .gate-about:hover{color:var(--ink);}
 
@@ -527,10 +619,33 @@ body.is-gate{overflow:hidden;}
 
 /* ================= INDEX：兩個漂浮節點 ================= */
 .node-view{
-  min-height:66vh; display:flex; align-items:center; justify-content:center;
+  min-height:66vh; display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:0; position:relative; overflow:hidden;
+}
+.node-glow{
+  position:absolute; width:clamp(260px,32vw,460px); aspect-ratio:1/1; border-radius:50%;
+  filter:blur(70px); pointer-events:none; z-index:0;
+  background:radial-gradient(circle, rgba(64,74,255,.20), transparent 70%);
+  top:18%; left:22%;
+  animation:glowDrift1 24s ease-in-out infinite;
+}
+.node-glow.g2{
+  width:clamp(220px,26vw,380px);
+  background:radial-gradient(circle, rgba(64,74,255,.14), transparent 70%);
+  top:52%; left:66%;
+  animation:glowDrift2 30s ease-in-out infinite;
+  animation-delay:-8s;
+}
+@keyframes glowDrift1{
+  0%,100%{ transform:translate(0,0) scale(1); }
+  50%{ transform:translate(40px,-30px) scale(1.18); }
+}
+@keyframes glowDrift2{
+  0%,100%{ transform:translate(0,0) scale(1); }
+  50%{ transform:translate(-36px,26px) scale(1.12); }
 }
 .node-field{
-  position:relative; width:100%;
+  position:relative; width:100%; z-index:1;
   height:min(58vh, 520px);
 }
 .node-svg{
@@ -639,6 +754,162 @@ body.is-gate{overflow:hidden;}
 }
 .section-head h2.brand-title{color:var(--brand);}
 .section-count{font-family:var(--font-mono); font-size:12px; color:var(--ink-soft);}
+.section-head-right{display:flex; align-items:center; gap:16px;}
+.pill-link{
+  font-family:var(--font-mono); font-size:11.5px; letter-spacing:.03em;
+  color:var(--ink-soft); border:1px solid var(--line); border-radius:999px;
+  padding:6px 14px; transition:color .2s ease, border-color .2s ease;
+}
+.pill-link:hover{color:var(--brand); border-color:var(--brand);}
+
+/* ---------------- 隨機看看 Random ---------------- */
+.random-view{
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  min-height:62vh; text-align:center; gap:30px; padding-top:12px;
+}
+.dice-scene{ perspective:700px; }
+.dice{
+  width:96px; height:96px; position:relative; transform-style:preserve-3d;
+  transform:rotateX(-20deg) rotateY(25deg);
+  transition:transform 1.5s cubic-bezier(.18,.86,.24,1);
+}
+.dice-face{
+  position:absolute; inset:0; width:96px; height:96px;
+  background:var(--panel); border:1.5px solid var(--line); border-radius:16px;
+  box-shadow:0 10px 30px rgba(30,30,34,.12);
+}
+.dice-face.f1{ transform:rotateY(0deg) translateZ(48px); }
+.dice-face.f6{ transform:rotateY(180deg) translateZ(48px); }
+.dice-face.f2{ transform:rotateY(90deg) translateZ(48px); }
+.dice-face.f5{ transform:rotateY(-90deg) translateZ(48px); }
+.dice-face.f3{ transform:rotateX(90deg) translateZ(48px); }
+.dice-face.f4{ transform:rotateX(-90deg) translateZ(48px); }
+.pip-grid{
+  display:grid; grid-template-columns:repeat(3,1fr); grid-template-rows:repeat(3,1fr);
+  width:100%; height:100%; padding:15px; box-sizing:border-box;
+}
+.pip-grid span{ justify-self:center; align-self:center; }
+.pip-grid .pip{ width:13px; height:13px; border-radius:50%; background:var(--brand); }
+
+.dice-roll-btn{
+  display:inline-flex; align-items:center; gap:10px;
+  background:transparent; border:1px solid var(--ink); border-radius:999px;
+  color:var(--ink); padding:13px 30px; font-family:var(--font-mono); font-size:12.5px; letter-spacing:.08em;
+  cursor:pointer; transition:background .3s ease, color .3s ease, border-color .3s ease, opacity .2s ease;
+}
+.dice-roll-btn:hover{ background:var(--ink); color:var(--bg); }
+.dice-roll-btn:disabled{ opacity:.5; cursor:default; }
+
+.dice-result{
+  display:flex; flex-direction:column; align-items:center; gap:8px;
+  opacity:0; transform:translateY(10px); transition:opacity .4s ease, transform .4s ease;
+  min-height:150px;
+}
+.dice-result.show{ opacity:1; transform:translateY(0); }
+.dice-result-avatar{
+  width:96px; height:96px; border-radius:50%; overflow:hidden;
+  border:2px solid var(--brand); background:var(--brand);
+}
+.dice-result-avatar img{ width:100%; height:100%; object-fit:cover; display:block; }
+.dice-result-avatar .avatar-fill{ width:100%; height:100%; display:flex; align-items:center; justify-content:center; color:#fff; font-family:var(--font-disp); font-size:28px; }
+.dice-result-name{ font-family:var(--font-cjk); font-size:19px; font-weight:600; color:var(--ink); }
+.dice-result-role{ font-family:var(--font-mono); font-size:11.5px; color:var(--ink-soft); }
+.dice-result-go{
+  margin-top:4px; font-family:var(--font-mono); font-size:12px; letter-spacing:.03em;
+  color:var(--brand); border-bottom:1px solid var(--brand); padding-bottom:2px;
+}
+@media (max-width:640px){
+  .dice{width:80px; height:80px;}
+  .dice-face{width:80px; height:80px;}
+  .dice-face.f1, .dice-face.f6, .dice-face.f2, .dice-face.f5{ transform-origin:center; }
+  .dice-face.f1{ transform:rotateY(0deg) translateZ(40px); }
+  .dice-face.f6{ transform:rotateY(180deg) translateZ(40px); }
+  .dice-face.f2{ transform:rotateY(90deg) translateZ(40px); }
+  .dice-face.f5{ transform:rotateY(-90deg) translateZ(40px); }
+  .dice-face.f3{ transform:rotateX(90deg) translateZ(40px); }
+  .dice-face.f4{ transform:rotateX(-90deg) translateZ(40px); }
+}
+
+/* ---------------- 世界時間軸 Timeline ---------------- */
+.timeline-view{ max-width:900px; margin:0 auto; padding-bottom:40px; }
+.tl-track{ position:relative; margin-top:36px; }
+.tl-track::before{
+  content:''; position:absolute; left:50%; top:0; bottom:0; width:2px;
+  background:var(--line); transform:translateX(-50%);
+}
+.tl-item{ position:relative; width:50%; box-sizing:border-box; padding:0 40px 44px; }
+.tl-item.tl-left{ left:0; text-align:right; }
+.tl-item.tl-right{ left:50%; text-align:left; }
+.tl-dot{
+  position:absolute; top:4px; width:11px; height:11px; border-radius:50%;
+  background:var(--brand); box-shadow:0 0 0 3px var(--bg), 0 0 0 4px var(--brand);
+}
+.tl-item.tl-left .tl-dot{ right:-6px; }
+.tl-item.tl-right .tl-dot{ left:-6px; }
+.tl-card{
+  display:inline-block; max-width:380px; text-align:left;
+  background:var(--panel); border:1px solid var(--line); border-radius:var(--radius-sm);
+  padding:16px 18px;
+}
+.tl-item.tl-left .tl-card{ margin-left:auto; }
+.tl-item.tl-right .tl-card{ margin-right:auto; }
+.tl-date{ font-family:var(--font-mono); font-size:11px; letter-spacing:.05em; color:var(--ink-soft); margin-bottom:4px; }
+.tl-title{ font-family:var(--font-cjk); font-weight:600; font-size:16px; color:var(--ink); margin-bottom:6px; }
+.tl-desc{ font-size:13.5px; color:var(--ink-soft); line-height:1.75; white-space:pre-line; }
+.tl-chars{ display:flex; gap:9px; flex-wrap:wrap; margin-top:12px; }
+
+.tl-empty{
+  display:flex; flex-direction:column; align-items:center; text-align:center;
+  padding:56px 20px 36px; gap:16px;
+}
+.tl-empty-track{
+  position:relative; width:2px; height:64px;
+  background:repeating-linear-gradient(var(--line) 0 6px, transparent 6px 12px);
+}
+.tl-empty-dot{
+  position:absolute; left:50%; bottom:-6px; transform:translateX(-50%) scale(1);
+  width:11px; height:11px; border-radius:50%;
+  background:var(--brand); box-shadow:0 0 0 3px var(--bg), 0 0 0 4px var(--brand);
+  animation:tlEmptyPulse 2.4s ease-in-out infinite;
+}
+@keyframes tlEmptyPulse{
+  0%,100%{ transform:translateX(-50%) scale(1); opacity:1; }
+  50%{ transform:translateX(-50%) scale(1.35); opacity:.5; }
+}
+.tl-empty-text{
+  font-family:var(--font-cjk); font-size:15px; font-weight:600; color:var(--ink);
+}
+.tl-empty-hint{
+  font-family:var(--font-mono); font-size:11.5px; color:var(--ink-faint);
+  max-width:420px; line-height:1.85;
+}
+.tl-char{
+  display:flex; flex-direction:column; align-items:center; gap:3px;
+  width:44px; text-decoration:none;
+}
+.tl-char-avatar{
+  width:34px; height:34px; border-radius:50%; overflow:hidden;
+  border:1.5px solid var(--line); background:var(--brand);
+  transition:transform .2s ease, border-color .2s ease;
+}
+.tl-char-avatar img{ width:100%; height:100%; object-fit:cover; display:block; }
+.tl-char-avatar .avatar-fill{ width:100%; height:100%; display:flex; align-items:center; justify-content:center; color:#fff; font-family:var(--font-disp); font-size:13px; }
+.tl-char:hover .tl-char-avatar{ transform:scale(1.12); border-color:var(--brand); }
+.tl-char-name{
+  font-size:9px; color:var(--ink-soft); text-align:center; max-width:44px;
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+}
+.tl-char.is-external{ cursor:default; }
+.tl-char.is-external .tl-char-avatar{ border-style:dashed; border-color:var(--ink-soft); background:transparent; }
+.tl-char.is-external:hover .tl-char-avatar{ transform:none; border-color:var(--ink-soft); }
+@media (max-width:820px){
+  .tl-track::before{ left:14px; }
+  .tl-item, .tl-item.tl-left, .tl-item.tl-right{
+    width:100%; left:0; text-align:left; padding:0 0 34px 38px;
+  }
+  .tl-item.tl-left .tl-dot, .tl-item.tl-right .tl-dot{ left:9px; right:auto; }
+  .tl-item.tl-left .tl-card, .tl-item.tl-right .tl-card{ margin-left:0; margin-right:0; max-width:none; }
+}
 
 /* ---------------- 角色頁面：這個角色的關係（只顯示自己填過的對象） ---------------- */
 /* 本人頭像放在正中間，填過的關係人平均分散在四周一圈，不會全部擠在同一邊 */
@@ -1039,6 +1310,16 @@ body.is-gate{overflow:hidden;}
   color:var(--ink-faint); font-family:var(--font-mono); font-size:12.5px; padding:20px 0;
 }
 
+/* 圖片淡入：真正下載完成前保持透明，等載入好才淡入，
+   避免圖片還沒下載完就整張生硬地彈出來（尤其網路慢的時候特別明顯） */
+#app img, #lightbox img{
+  opacity:0;
+  transition:opacity .5s ease;
+}
+#app img.img-loaded, #lightbox img.img-loaded{
+  opacity:1;
+}
+
 /* ---------------- lightbox ---------------- */
 #lightbox{
   position:fixed; inset:0; z-index:200;
@@ -1094,6 +1375,18 @@ body.has-fullbody-bg footer{ border-top:none; }
   width:9px; height:9px; margin:-4.5px 0 0 -4.5px;
   background:#2a2a2e; border-color:#2a2a2e;
 }
+#cursor.is-view{
+  width:62px; height:62px; margin:-31px 0 0 -31px;
+  background:var(--brand); border-color:var(--brand);
+}
+.cursor-label{
+  position:absolute; inset:0;
+  display:flex; align-items:center; justify-content:center;
+  font-family:var(--font-mono); font-size:9px; letter-spacing:.1em;
+  color:#fff; opacity:0;
+  transition:opacity .15s ease;
+}
+#cursor.is-view .cursor-label{ opacity:1; }
 .cursor-trail{
   position:fixed; top:0; left:0; z-index:9998;
   border-radius:50%;
@@ -1194,6 +1487,7 @@ body.has-fullbody-bg footer{ border-top:none; }
         </div>
       </div>
     </div>
+    <a href="#/random" class="about-link">🎲 Random</a>
     <a href="#/about" class="about-link">About</a>
     <div class="crumb" id="crumb"></div>
   </div>
@@ -1249,7 +1543,7 @@ async function loadWorldMeta(){
     const list = Array.isArray(data) ? data : (data.worlds || []);
     if(list.length){
       const merged = {};
-      list.forEach(w=>{ if(w.slug) merged[w.slug] = { name:w.name, code:w.code, desc:w.desc, brief:w.brief }; });
+      list.forEach(w=>{ if(w.slug) merged[w.slug] = { name:w.name, code:w.code, desc:w.desc, brief:w.brief, timeline:w.timeline||[] }; });
       WORLD_META = merged;
     }
   }catch(err){
@@ -1525,6 +1819,10 @@ function route(){
   if(parts[0]==='coop' && parts.length===1){ document.body.classList.remove('is-profile'); hideFullbodyBackground(); setWorldTheme(null); return renderCoopWorlds(); }
   if(parts[0]==='grid' && parts[1]==='original'){ document.body.classList.remove('is-profile'); hideFullbodyBackground(); setWorldTheme(null); return renderGrid('original'); }
   if(parts[0]==='grid' && parts[1]==='coop' && parts[2]){ document.body.classList.remove('is-profile'); hideFullbodyBackground(); setWorldTheme(parts[2]); return renderGrid('coop', parts[2]); }
+  if(parts[0]==='random' && parts.length===1){ document.body.classList.remove('is-profile'); hideFullbodyBackground(); setWorldTheme(null); return renderRandomPage('all'); }
+  if(parts[0]==='random' && parts[1]==='original'){ document.body.classList.remove('is-profile'); hideFullbodyBackground(); setWorldTheme(null); return renderRandomPage('original'); }
+  if(parts[0]==='random' && parts[1]==='coop' && parts[2]){ document.body.classList.remove('is-profile'); hideFullbodyBackground(); setWorldTheme(parts[2]); return renderRandomPage('coop', parts[2]); }
+  if(parts[0]==='timeline' && parts[1]==='coop' && parts[2]){ document.body.classList.remove('is-profile'); hideFullbodyBackground(); setWorldTheme(parts[2]); return renderTimeline(parts[2]); }
   if(parts[0]==='about'){ document.body.classList.remove('is-profile'); hideFullbodyBackground(); setWorldTheme(null); return renderAbout(); }
   if(parts[0]==='char' && parts[1]){ document.body.classList.add('is-profile'); return renderProfile(parts[1]); }
   document.body.classList.remove('is-profile');
@@ -1534,33 +1832,77 @@ function route(){
 }
 
 /* ---------------- GATE (首頁入口) ---------------- */
+/* ============================================================
+   首頁入口往下捲動後、滿版淡出淡入的完稿大圖。
+   把你要秀出來的圖片路徑填進這個陣列就會換成真正的圖片
+   （路徑寫法跟角色圖片一樣，例如先把圖傳到 gate-art 資料夾，
+   這裡就填 './gate-art/01.jpg'）。陣列留空的話會先顯示彩色漸層的
+   佔位畫面，方便你確認捲動效果，不影響其他功能。
+   每次重新整理頁面，圖片出現的順序都會重新隨機排列一次。 */
+const GATE_SHOWCASE = [
+  // './gate-art/01.jpg',
+  // './gate-art/02.jpg',
+];
+
+function buildGatePhotos(){
+  const useReal = GATE_SHOWCASE.length > 0;
+  const n = useReal ? GATE_SHOWCASE.length : 6;
+  const order = Array.from({length:n}, (_,i)=>i);
+  for(let i=order.length-1;i>0;i--){ /* Fisher–Yates，隨機打亂出場順序 */
+    const j = Math.floor(Math.random()*(i+1));
+    [order[i],order[j]] = [order[j],order[i]];
+  }
+  let html = '';
+  order.forEach(srcIdx=>{
+    if(useReal){
+      html += `<div class="gate-photo-layer" style="background-image:url('${GATE_SHOWCASE[srcIdx]}');"></div>`;
+    } else {
+      const hue = (srcIdx*63) % 360;
+      html += `<div class="gate-photo-layer is-placeholder" style="--ph-a:hsl(${hue},70%,55%); --ph-b:hsl(${(hue+40)%360},70%,36%);">
+        <span class="gate-photo-caption">作品預留位置 PLACEHOLDER ${srcIdx+1}</span>
+      </div>`;
+    }
+  });
+  return { html, count:n };
+}
+
 function renderGate(){
+  const photos = buildGatePhotos();
   app.innerHTML = `
   <div class="gate">
     <a href="#/about" class="gate-about">About</a>
-    <div class="gate-media">
-      <!-- 換成你自己的片頭影片：把下面 video 的 src 換成你的影片路徑（例如 videos/intro.mp4），
-           就會取代目前的白色背景。若不需要影片，留空即可。 -->
-      <video autoplay muted loop playsinline id="gate-video" style="display:none;">
-        <source src="" type="video/mp4">
-      </video>
-      <div class="gate-fallback" id="gate-fallback"></div>
-    </div>
-    <div class="gate-center">
-      <blockquote class="gate-quote">
-        <p>"Every portrait that is painted with feeling is a portrait of the artist, not of the sitter."</p>
-        <cite>— Oscar Wilde,<br><i>The Picture of Dorian Gray</i></cite>
-      </blockquote>
-      <button class="gate-enter" onclick="location.hash='#/index'">ENTER<span aria-hidden="true">→</span></button>
-    </div>
-    <div class="gate-bottom-logo">
-      <svg class="logo-mark" viewBox="0 0 362.84 61.52" xmlns="http://www.w3.org/2000/svg">
+    <div id="gate-bg-fixed">${photos.html}</div>
+
+    <div class="gate-scene gate-scene-hero" id="gate-scene-hero">
+      <div class="gate-media">
+        <!-- 換成你自己的片頭影片：把下面 video 的 src 換成你的影片路徑（例如 videos/intro.mp4），
+             就會取代目前的白色背景。若不需要影片，留空即可。 -->
+        <video autoplay muted loop playsinline id="gate-video" style="display:none;">
+          <source src="" type="video/mp4">
+        </video>
+        <div class="gate-fallback" id="gate-fallback"></div>
+      </div>
+      <div class="gate-center">
+        <blockquote class="gate-quote">
+          <p>"Every portrait that is painted with feeling is a portrait of the artist, not of the sitter."</p>
+          <cite>— Oscar Wilde,<br><i>The Picture of Dorian Gray</i></cite>
+        </blockquote>
+        <button class="gate-enter" onclick="location.hash='#/index'">ENTER<span aria-hidden="true">→</span></button>
+      </div>
+      <div class="gate-bottom-logo">
+        <svg class="logo-mark" viewBox="0 0 362.84 61.52" xmlns="http://www.w3.org/2000/svg">
 <path d="M131.89,15.23h-8.53c-.72,0-1.31.58-1.31,1.31v16.58c0,2.54-3.18,3.69-4.8,1.73l-15.87-19.14c-.25-.3-.62-.47-1-.47h-7.46c-.72,0-1.31.58-1.31,1.31v9.71c-.38-2.14-1.06-4.21-2.03-6.14-.78-1.63-1.69-3.01-2.78-4.19.83-.25,1.74-.51,2.74-.77l1.92-.54c.26-.07.52-.14.79-.2.43-.1.85-.21,1.23-.32,1.23-.39,2.07-1.15,2.38-2.14.22-.63.15-1.16.12-1.28l-.04-.45c-.27-1.39-1.49-2.38-3.06-2.52-.67-.07-1.38-.02-1.92.12-1.28.25-2.52.6-3.56.91-2.55.74-4.97,1.53-7.38,2.4l-.25.11c-.1.05-.2.09-.31.13l-.92-.28c-1.42-.32-2.85-.51-4.27-.55-2.87-.04-5.68.37-8.14,1.22-4.71,1.68-8.64,4.47-11.07,7.86-1.39,1.94-2.14,3.95-2.23,5.97-.09,1.93.28,3.78,1.11,5.51-1.51,2.53-2.59,5.02-3.31,7.58-.21.71-.38,1.42-.53,2.12v-24.26c0-.72-.58-1.31-1.31-1.31h-8.4c-.39,0-.77.18-1.01.48l-12.01,14.81c-1.22,1.51-3.53,1.51-4.75,0l-11.95-14.8c-.25-.31-.62-.49-1.02-.49H1.31c-.72,0-1.31.58-1.31,1.31v40.34c0,.72.58,1.31,1.31,1.31h8.86c.72,0,1.31-.58,1.31-1.31v-14.99c0-3.34,4.22-4.8,6.28-2.18l3.04,3.86c1.02,1.29,2.57,2.04,4.21,2.04s3.19-.75,4.21-2.04l3.04-3.86c2.07-2.62,6.28-1.16,6.28,2.18v14.99c0,.72.58,1.31,1.31,1.31h8.93c.72,0,1.31-.58,1.31-1.31v-6.64c.2.79.44,1.57.75,2.31,1.04,2.62,2.88,4.88,5.31,6.52,1.3.87,2.78,1.55,4.32,1.96,1.3.33,2.72.49,4.32.49.25,0,.51,0,.77-.01,1.76-.05,3.47-.31,5.09-.77,1.67-.47,3.14-1.2,4.39-1.85,2.5-1.32,4.79-3.02,7-5.21,3.5-3.47,6.24-7.77,8.15-12.83.68-1.92,1.13-3.85,1.43-5.76v21.8c0,.72.58,1.31,1.31,1.31h8.53c.72,0,1.31-.58,1.31-1.31v-16.51c0-2.54,3.18-3.69,4.8-1.73l15.8,19.07c.25.3.62.47,1.01.47h7.53c.72,0,1.31-.58,1.31-1.31V16.54c0-.72-.58-1.31-1.31-1.31ZM84.47,30.73c0,.37.01.74-.04,1.07l-.03.8c-.12,1.23-.36,2.6-.69,3.98-.84,2.89-1.9,5.31-3.25,7.44-1.77,2.87-3.64,5.08-5.85,6.92-1.22.98-2.59,1.88-3.98,2.6-1.48.77-3.05,1.22-4.66,1.32-1.68.12-3.13-.1-4.13-.65-1.15-.6-2.13-1.42-2.84-2.39-.64-.87-1.14-1.94-1.57-3.33-.34-1.18-.48-2.41-.42-3.66.07-.7.2-1.39.33-2.1v-.05h0c.23-1.41.68-2.89,1.43-4.68.16-.38.33-.77.52-1.16.73.47,1.46.87,2.24,1.23,1.94.85,3.61,1,5.22.42,1.58-.67,2.07-1.71,2.19-2.47.12-.51.12-1.05-.01-1.56-.22-1.27-1.06-2.5-2.42-3.52-.87-.64-1.79-.95-2.77-.91,3.33-3.96,7.55-7.28,12.65-9.91.73-.42,1.52-.79,2.37-1.19.11-.06.21-.11.32-.16.99.65,1.86,1.47,2.46,2.29,1.46,2.07,2.39,4.53,2.76,7.46.11.57.17,1.18.17,1.77v.41Z"/>
 <path d="M359.84,26.37c-2-3.25-4.85-5.76-8.54-7.52-3.69-1.76-7.96-2.64-12.83-2.64h-17.59c-.72,0-1.31.58-1.31,1.31v6.67c-.17-.36-.32-.73-.51-1.07-1.61-2.83-3.89-5.03-6.79-6.55-2.87-1.5-6.11-2.26-9.64-2.26-5.31,0-10.06,1.19-14.13,3.53-2.45,1.41-4.68,3.27-6.68,5.54-.04-.08-.07-.17-.12-.25-1.61-2.83-3.89-5.03-6.79-6.55-2.86-1.5-6.11-2.26-9.64-2.26-5.31,0-10.06,1.19-14.13,3.53-4.06,2.34-7.53,5.88-10.31,10.54-.92,1.55-1.68,3.14-2.3,4.74v-15.59c0-.72-.58-1.31-1.31-1.31h-8.4c-.39,0-.77.18-1.01.48l-12.01,14.81c-1.22,1.51-3.53,1.51-4.75,0l-11.95-14.8c-.25-.31-.62-.49-1.02-.49h-8.33c-.72,0-1.31.58-1.31,1.31v40.34c0,.72.58,1.31,1.31,1.31h8.86c.72,0,1.31-.58,1.31-1.31v-14.99c0-3.34,4.22-4.8,6.28-2.18l3.04,3.86c1.02,1.29,2.57,2.04,4.21,2.04s3.19-.75,4.21-2.04l3.04-3.86c2.07-2.62,6.28-1.16,6.28,2.18v14.99c0,.72.58,1.31,1.31,1.31h8.93c.72,0,1.31-.58,1.31-1.31v-6.48c.88,1.76,2.06,3.34,3.57,4.73,3.59,3.3,8.31,4.97,14.05,4.97,4.92,0,9.46-1.2,13.51-3.57,2.41-1.41,4.6-3.24,6.57-5.47.84,1.5,1.92,2.86,3.23,4.07,3.59,3.3,8.31,4.97,14.05,4.97,4.92,0,9.46-1.2,13.51-3.57,4.03-2.36,7.48-5.89,10.25-10.51.93-1.54,1.69-3.1,2.31-4.66v15.53c0,.72.58,1.31,1.31,1.31h17.59c4.86,0,9.14-.88,12.83-2.64,3.69-1.76,6.53-4.26,8.54-7.52,2-3.25,3-7.03,3-11.32s-1-8.07-3-11.32ZM265.88,53.35c-2.29,1.53-4.75,2.31-7.29,2.31-3.43,0-6.21-1.25-8.5-3.82-2.3-2.58-3.47-6.37-3.47-11.26,0-4.37.78-8.25,2.31-11.53,1.51-3.23,3.46-5.61,5.78-7.1,2.32-1.48,4.9-2.24,7.67-2.24,3.28,0,5.97,1.2,8.22,3.66,2.26,2.46,3.4,6.01,3.4,10.53s-.79,8.56-2.34,12.02c-1.53,3.39-3.47,5.9-5.78,7.44ZM309.02,45.91c-1.53,3.39-3.47,5.9-5.78,7.44-2.29,1.53-4.75,2.31-7.29,2.31-3.43,0-6.21-1.25-8.5-3.82-2.3-2.58-3.47-6.37-3.47-11.26,0-4.37.78-8.25,2.31-11.53,1.51-3.23,3.46-5.61,5.78-7.1,2.32-1.48,4.9-2.24,7.67-2.24,3.28,0,5.97,1.2,8.22,3.66,2.26,2.46,3.4,6.01,3.4,10.53s-.79,8.56-2.34,12.02ZM347.52,46.46c-2.43,2.09-5.85,3.13-10.26,3.13h-3.46c-1.45,0-2.62-1.17-2.62-2.62v-18.57c0-1.45,1.17-2.62,2.62-2.62h3.46c4.41,0,7.83,1.04,10.26,3.13,2.43,2.09,3.64,5.01,3.64,8.77s-1.21,6.69-3.64,8.78Z"/>
 <rect x="133.19" width="11.17" height="15.23"/>
 <path d="M174.09,15.23h-29.18c-.36,0-.66.3-.66.66v6.86h-7.69c-.36,0-.66.3-.66.66v11.42c0,.36.3.66.66.66h5.58v5.01c0,.36.3.66.66.66h22.28v8.12h-28.52c-.36,0-.66.3-.66.66v7.59c0,.36.3.66.66.66h29.18c.36,0,.66-.3.66-.66v-6.93h7.69c.36,0,.66-.3.66-.66v-11.35c0-.36-.3-.66-.66-.66h-7.69v-5.01c0-.36-.3-.66-.66-.66h-20.17v-8.18h28.52c.36,0,.66-.3.66-.66v-7.52c0-.36-.3-.66-.66-.66Z"/>
 </svg>
+      </div>
+      <div class="gate-scroll-hint" id="gate-scroll-hint"><span>SCROLL</span><span aria-hidden="true">↓</span></div>
     </div>
+
+    <div class="gate-scene gate-scene-photos" id="gate-scene-photos" style="height:${photos.count*100+30}vh;"></div>
+
+    <button class="gate-fixed-enter" id="gate-fixed-enter" onclick="location.hash='#/index'">ENTER<span aria-hidden="true">→</span></button>
   </div>`;
 
   /* 若 video 有實際來源就顯示影片、隱藏白色佔位背景 */
@@ -1569,6 +1911,8 @@ function renderGate(){
   if(src){ v.style.display='block'; document.getElementById('gate-fallback').style.display='none'; }
 
   document.addEventListener('keydown', gateKeyHandler);
+
+  requestAnimationFrame(updateGateScroll);
 }
 function gateKeyHandler(e){
   if(e.key==='Enter' && (location.hash==='' || location.hash==='#/')){
@@ -1577,12 +1921,61 @@ function gateKeyHandler(e){
   }
 }
 
+/* 首頁入口捲動效果：往下捲會把 #gate-bg-fixed 的顏色從白色即時漸變成
+   品牌藍，並讓右下角常駐的小 ENTER 按鈕淡入淡出。掛在全域的 scroll
+   監聽上（跟 to-top 按鈕那組做法一樣），一離開首頁就直接跳出不做事。 */
+function updateGateScroll(){
+  if(!document.body.classList.contains('is-gate')) return;
+  const bgFixed = document.getElementById('gate-bg-fixed');
+  const heroScene = document.getElementById('gate-scene-hero');
+  const fixedEnter = document.getElementById('gate-fixed-enter');
+  const scrollHint = document.getElementById('gate-scroll-hint');
+  if(!bgFixed || !heroScene) return;
+  const heroH = heroScene.offsetHeight || window.innerHeight;
+  const y = window.scrollY || 0;
+  if(fixedEnter) fixedEnter.classList.toggle('show', y > heroH*0.35);
+  if(scrollHint) scrollHint.classList.toggle('hide', y > 40);
+
+  /* 離開第一屏之後，每捲過一個畫面高度就淡出上一張、淡入下一張大圖；
+     最後一張淡入之後就固定留在畫面上，不會再淡出變回空白 */
+  const layers = bgFixed.querySelectorAll('.gate-photo-layer');
+  const n = layers.length;
+  if(n){
+    const zoneH = window.innerHeight || 800;
+    const raw = (y - heroH) / zoneH; /* 0 = 剛捲離第一屏，1 = 再捲過一個畫面高度…以此類推 */
+    const FADE = 0.3; /* 淡入/淡出各佔一個畫面高度的 30% */
+    layers.forEach((layer,i)=>{
+      const isLast = i === n-1;
+      const inStart = i - FADE, inEnd = i + FADE;
+      let op;
+      if(raw <= inStart) op = 0;
+      else if(raw < inEnd) op = (raw - inStart) / (inEnd - inStart);
+      else if(isLast) op = 1;
+      else{
+        const outStart = i+1-FADE, outEnd = i+1+FADE;
+        if(raw > outEnd) op = 0;
+        else if(raw > outStart) op = 1 - (raw-outStart)/(outEnd-outStart);
+        else op = 1;
+      }
+      layer.style.opacity = op.toFixed(3);
+    });
+  }
+}
+let gateScrollTicking = false;
+window.addEventListener('scroll', ()=>{
+  if(gateScrollTicking) return;
+  gateScrollTicking = true;
+  requestAnimationFrame(()=>{ updateGateScroll(); gateScrollTicking = false; });
+}, {passive:true});
+
 /* ---------------- HOME (分類頁) ---------------- */
 function renderHome(){
   setCrumb([{label:'Home',hash:'#/index'},{label:'Index'}], {showBack:false});
   app.innerHTML = `
   <div class="view node-view">
     <div class="node-field" id="node-field">
+      <div class="node-glow g1" aria-hidden="true"></div>
+      <div class="node-glow g2" aria-hidden="true"></div>
       <svg class="node-svg" id="node-svg"><line x1="0" y1="0" x2="0" y2="0"/></svg>
       <a href="#/grid/original" class="node-circle" id="node-a" style="left:32%; top:40%;"><span>Plurk<br>Project</span></a>
       <a href="#/coop" class="node-circle" id="node-b" style="left:68%; top:60%;"><span>Co-creation</span></a>
@@ -1598,9 +1991,11 @@ function initNodeField(){
   const svg = document.getElementById('node-svg');
   const line = svg.querySelector('line');
   const nodes = [
-    { el:document.getElementById('node-a'), baseXPct:32, baseYPct:40, ampX:26, ampY:18, speed:0.00033, phase:0,
+    { el:document.getElementById('node-a'),
+      baseXPct:32, baseYPct:40, ampX:26, ampY:18, speed:0.00033, phase:0,
       breathSpeed:0.0009, breathPhase:0, hoverT:0, hoverC:0 },
-    { el:document.getElementById('node-b'), baseXPct:68, baseYPct:60, ampX:20, ampY:24, speed:0.00026, phase:2.4,
+    { el:document.getElementById('node-b'),
+      baseXPct:68, baseYPct:60, ampX:20, ampY:24, speed:0.00026, phase:2.4,
       breathSpeed:0.0007, breathPhase:1.8, hoverT:0, hoverC:0 },
   ];
   nodes.forEach(n=>{
@@ -1708,18 +2103,179 @@ function renderGrid(category, world){
   setCrumb(crumbParts);
 
   const stageHtml = buildArcStage(list);
+  const randomHash = category==='original' ? '#/random/original' : `#/random/coop/${world}`;
+  const hasTimeline = category==='coop' && WORLD_META[world] && (WORLD_META[world].timeline||[]).length > 0;
+  const timelineLink = hasTimeline ? `<a class="pill-link" href="#/timeline/coop/${world}">🕰 時間軸</a>` : '';
 
   app.innerHTML = `
   <div class="view">
     <div class="section-head">
       <h2 class="brand-title">${title}</h2>
-      <div class="section-count">${list.length} RECORDS</div>
+      <div class="section-head-right">
+        ${timelineLink}
+        <a class="pill-link" href="${randomHash}">🎲 隨機看看</a>
+        <div class="section-count">${list.length} RECORDS</div>
+      </div>
     </div>
     ${stageHtml}
     ${worldBrief}
   </div>`;
 
   initArcStage();
+}
+
+/* ---------------- 世界時間軸 Timeline ---------------- */
+/* 時間軸事件存在 worlds.json 每個世界觀自己底下（後台「世界觀 Worlds → 時間軸」），
+   一個事件可以標「相關角色」，作法跟角色關係圖一樣：填角色 ID 會自動抓頭像、
+   可以點進去；填的不是資料庫裡的角色，就當純文字名字顯示、不能點擊。
+   事件在畫面上左右交錯排列（電腦版），手機版全部收到同一側，中間一條直線貫穿。 */
+function renderTimeline(world){
+  const w = WORLD_META[world];
+  const events = (w && w.timeline) || [];
+  const crumbParts = [{label:'Home',hash:'#/index'},{label:'Co-creation',hash:'#/coop'},{label:w?w.name:'Co-creation',hash:`#/grid/coop/${world}`},{label:'時間軸'}];
+  setCrumb(crumbParts);
+
+  if(!events.length){
+    app.innerHTML = `
+    <div class="view">
+      <div class="section-head"><h2 class="brand-title">${w?w.name:''} · 時間軸</h2></div>
+      <div class="tl-empty">
+        <div class="tl-empty-track"><div class="tl-empty-dot"></div></div>
+        <div class="tl-empty-text">時間軸還是空的</div>
+        <div class="tl-empty-hint">到後台「世界觀 Worlds → 世界觀列表 → 時間軸」新增，填時間標籤、標題、說明，還可以選填相關角色。</div>
+      </div>
+    </div>`;
+    return;
+  }
+
+  const itemsHtml = events.map((ev,i)=>{
+    const charsHtml = (ev.characters||[]).filter(Boolean).map(ref=>{
+      const match = CHARACTERS.find(c=>c.id===ref);
+      const ch = match || { codename: ref, avatarImg: null };
+      const external = !match;
+      const tag = external ? 'div' : 'a';
+      const hrefAttr = external ? '' : ` href="#/char/${ch.id}"`;
+      const avatarInner = external ? '' : avatarBlock(ch);
+      return `
+      <${tag} class="tl-char${external?' is-external':''}"${hrefAttr}>
+        <div class="tl-char-avatar">${avatarInner}</div>
+        <div class="tl-char-name">${ch.codename}</div>
+      </${tag}>`;
+    }).join('');
+
+    const side = i%2===0 ? 'tl-left' : 'tl-right';
+    return `
+    <div class="tl-item ${side}">
+      <div class="tl-dot"></div>
+      <div class="tl-card">
+        ${ev.date ? `<div class="tl-date">${ev.date}</div>` : ''}
+        <div class="tl-title">${ev.title||''}</div>
+        ${ev.desc ? `<div class="tl-desc">${ev.desc}</div>` : ''}
+        ${charsHtml ? `<div class="tl-chars">${charsHtml}</div>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+
+  app.innerHTML = `
+  <div class="view timeline-view">
+    <div class="section-head">
+      <h2 class="brand-title">${w?w.name:''} · 時間軸</h2>
+      <div class="section-count">${events.length} EVENTS</div>
+    </div>
+    <div class="tl-track">${itemsHtml}</div>
+  </div>`;
+}
+
+/* ---------------- 隨機看看 Random ---------------- */
+/* scope: 'all'（全站）／'original'／'coop'（要搭配 world）。
+   進頁面先自動滾一次骰子，骰子本身只是視覺效果（轉到哪一面跟抽到誰沒有關係），
+   轉完停下來才真正從對應的角色池抽一個出來顯示。 */
+function renderRandomPage(scope, world){
+  let pool, crumbParts;
+  if(scope==='original'){
+    pool = CHARACTERS.filter(c=>c.category==='original');
+    crumbParts = [{label:'Home',hash:'#/index'},{label:'Plurk Project',hash:'#/grid/original'},{label:'隨機'}];
+  } else if(scope==='coop'){
+    const w = WORLD_META[world];
+    pool = CHARACTERS.filter(c=>c.category==='coop' && c.world===world);
+    crumbParts = [{label:'Home',hash:'#/index'},{label:'Co-creation',hash:'#/coop'},{label:w?w.name:'Co-creation',hash:`#/grid/coop/${world}`},{label:'隨機'}];
+  } else {
+    pool = CHARACTERS;
+    crumbParts = [{label:'Home',hash:'#/index'},{label:'隨機'}];
+  }
+  setCrumb(crumbParts);
+
+  if(!pool.length){
+    app.innerHTML = `<div class="view empty-note">No characters recorded yet.</div>`;
+    return;
+  }
+
+  const pips = { 1:[4], 2:[0,8], 3:[0,4,8], 4:[0,2,6,8], 5:[0,2,4,6,8], 6:[0,2,3,5,6,8] };
+  const faceHtml = n => `<div class="dice-face f${n}"><div class="pip-grid">${
+    Array.from({length:9}).map((_,i)=> pips[n].includes(i) ? '<span class="pip"></span>' : '<span></span>').join('')
+  }</div></div>`;
+  const diceFaces = [1,2,3,4,5,6].map(faceHtml).join('');
+
+  app.innerHTML = `
+  <div class="view random-view">
+    <div class="dice-scene"><div class="dice" id="random-dice">${diceFaces}</div></div>
+    <button class="dice-roll-btn" id="dice-roll-btn" type="button">擲骰子 ROLL AGAIN</button>
+    <div class="dice-result" id="dice-result"></div>
+  </div>`;
+
+  initRandomPage(pool);
+}
+
+function initRandomPage(pool){
+  const dice = document.getElementById('random-dice');
+  const btn = document.getElementById('dice-roll-btn');
+  const resultBox = document.getElementById('dice-result');
+  if(!dice || !btn || !resultBox) return;
+  let rotX = -20, rotY = 25;
+  let rolling = false;
+  let lastId = null;
+
+  function showResult(ch){
+    resultBox.innerHTML = `
+      <div class="dice-result-avatar">${avatarBlock(ch)}</div>
+      <div class="dice-result-name">${ch.codename}</div>
+      <div class="dice-result-role">${ch.role||''}</div>
+      <a class="dice-result-go" href="#/char/${ch.id}">前往角色頁面 →</a>
+    `;
+    requestAnimationFrame(()=> resultBox.classList.add('show'));
+  }
+
+  function roll(){
+    if(rolling) return;
+    rolling = true;
+    btn.disabled = true;
+    resultBox.classList.remove('show');
+    /* 每次都多轉個幾整圈，再加一點隨機角度，看起來才會像真的骰子滾出去、慢慢停下來 */
+    rotX += 360*(2+Math.floor(Math.random()*2)) + Math.floor(Math.random()*360);
+    rotY += 360*(2+Math.floor(Math.random()*2)) + Math.floor(Math.random()*360);
+    dice.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg)`;
+
+    const onEnd = (e)=>{
+      if(e.propertyName !== 'transform') return;
+      dice.removeEventListener('transitionend', onEnd);
+      rolling = false;
+      btn.disabled = false;
+      let pick;
+      if(pool.length===1){ pick = pool[0]; }
+      else { do{ pick = pool[Math.floor(Math.random()*pool.length)]; } while(pick.id===lastId); }
+      lastId = pick.id;
+      showResult(pick);
+    };
+    dice.addEventListener('transitionend', onEnd);
+  }
+
+  btn.addEventListener('click', roll);
+  /* 骰子是剛插進畫面的新元素，瀏覽器還沒真的畫出「轉動前」的樣子就馬上改
+     transform 的話，等於起點跟終點在同一格畫面內發生，瀏覽器會直接跳過
+     轉場動畫、也就不會觸發 transitionend，結果就是骰子沒有在轉、
+     結果卡也不會跳出來。用兩次 requestAnimationFrame 確保瀏覽器至少畫過
+     一次「轉動前」的樣子，再開始轉，動畫才會確實播出來。 */
+  requestAnimationFrame(()=> requestAnimationFrame(roll));
 }
 
 /* 角色列表恢復成橫向重疊卡片牆，但取消弧線起伏：
@@ -2299,7 +2855,21 @@ function renderLightbox(){
 ============================================================ */
 const cursor = document.createElement('div');
 cursor.id = 'cursor';
+cursor.innerHTML = '<span class="cursor-label">VIEW</span>';
 document.body.appendChild(cursor);
+
+/* ---------------- 圖片淡入 ---------------- */
+/* img 的 load / error 事件不會冒泡，但在 capture 階段還是會一路往下傳到 document，
+   所以在最外層用 capture:true 監聽一次，就能抓到之後任何時間點（包含頁面切換後
+   innerHTML 重新產生）新插入的每一張圖片，不用每次 render 都手動重新綁定事件。
+   載入完成（或失敗）才把 img-loaded 加上去，讓 CSS 的透明度轉場觸發，
+   圖片是「淡入」出現，而不是網路一慢就整張生硬地彈出來。 */
+function revealImg(e){
+  const el = e.target;
+  if(el && el.tagName === 'IMG') el.classList.add('img-loaded');
+}
+document.addEventListener('load', revealImg, true);
+document.addEventListener('error', revealImg, true);
 
 const TRAIL_COUNT = 4;
 const TRAIL_SIZES    = [14, 11, 8, 6];
@@ -2318,12 +2888,21 @@ let mouseX = window.innerWidth/2, mouseY = window.innerHeight/2;
 let curX = mouseX, curY = mouseY;
 
 const HOVER_SELECTOR = 'a, button, .gallery-thumb, .crumb .seg, .brand';
+/* 角色卡片／世界觀卡片：滑過去游標會放大成實心圓，中間浮出「VIEW」字樣，
+   跟一般連結的小圓點區分開來，強調「這是可以點進去瀏覽的卡片」 */
+const VIEW_SELECTOR = '.arc-card, .world-tile';
 
 window.addEventListener('mousemove', (e)=>{
   mouseX = e.clientX; mouseY = e.clientY;
 });
-document.addEventListener('mouseover', (e)=>{ if(e.target.closest(HOVER_SELECTOR)) cursor.classList.add('is-hover'); });
-document.addEventListener('mouseout', (e)=>{ if(e.target.closest(HOVER_SELECTOR)) cursor.classList.remove('is-hover'); });
+document.addEventListener('mouseover', (e)=>{
+  if(e.target.closest(VIEW_SELECTOR)){ cursor.classList.add('is-view'); cursor.classList.remove('is-hover'); }
+  else if(e.target.closest(HOVER_SELECTOR)){ cursor.classList.add('is-hover'); }
+});
+document.addEventListener('mouseout', (e)=>{
+  if(e.target.closest(VIEW_SELECTOR)) cursor.classList.remove('is-view');
+  if(e.target.closest(HOVER_SELECTOR)) cursor.classList.remove('is-hover');
+});
 
 (function cursorLoop(){
   curX += (mouseX - curX) * 0.5;
