@@ -161,7 +161,12 @@ button{font-family:inherit; cursor:pointer;}
   --ink-faint:#a9a9ac;
   --brand:#404aff;
 }
-body.is-gate .topbar{opacity:0; pointer-events:none;}
+/* 進站首頁（gate）不要有導覽列，之前只把它變透明（opacity:0），
+   但 sticky 定位的元素就算看不見還是會在版面裡佔住原本的高度，
+   等於整頁內容都被往下擠了快 90px——這是手機上「捲到最後才看得到
+   LOGO」的真正原因。改成 position:fixed 把它整個移出正常版面流，
+   才不會偷偷佔位。 */
+body.is-gate .topbar{opacity:0; pointer-events:none; position:fixed;}
 body.is-gate footer{display:none;}
 body.is-gate{overflow-x:hidden;}
 @media (max-width:640px){
@@ -229,7 +234,7 @@ body.is-gate{overflow-x:hidden;}
 }
 .gate-center{
   position:relative; z-index:2;
-  flex:1;
+  flex:1; min-height:0;
   display:flex; flex-direction:column; align-items:center; justify-content:center;
   gap:44px;
   padding:24px;
@@ -259,7 +264,8 @@ body.is-gate{overflow-x:hidden;}
 .gate-quote cite i{font-style:italic;}
 .gate-bottom-logo{
   position:relative; z-index:1;
-  width:94%; margin:0 auto; line-height:0; overflow:hidden;
+  width:90%; margin:0 auto; line-height:0; overflow:hidden;
+  padding-bottom:22px;
   animation:logoReveal 1.5s cubic-bezier(.2,.7,.2,1) both;
 }
 @keyframes logoReveal{
@@ -269,6 +275,24 @@ body.is-gate{overflow-x:hidden;}
 .gate-bottom-logo svg{
   display:block;
   width:100%;
+}
+/* 手機螢幕比較矮，第一屏內容（引言卡片＋ENTER＋底部大LOGO）原本的間距
+   在小螢幕上會整個超出一個畫面高度，導致 LOGO 被擠到螢幕外、要先往下滑
+   才看得到。這裡把手機版的間距、字級、LOGO 尺寸都縮小一點，
+   讓整組內容確實收在第一屏以內，不用滑動就能看到完整 LOGO。 */
+@media (max-width:640px){
+  .gate-center{ gap:20px; padding:16px 20px 10px; }
+  .gate-quote{ max-width:250px; padding:16px 18px 13px; }
+  .gate-quote p{ font-size:12px; line-height:1.5; margin-bottom:8px; }
+  .gate-quote cite{ font-size:9.5px; }
+  .gate-enter{ padding:10px 24px; font-size:12px; }
+  .gate-bottom-logo{ width:58%; padding-bottom:14px; }
+}
+@media (max-height:700px) and (max-width:640px){
+  .gate-center{ gap:12px; padding:10px 20px 6px; }
+  .gate-quote{ max-width:220px; padding:13px 16px 10px; }
+  .gate-quote p{ font-size:11px; line-height:1.42; margin-bottom:6px; }
+  .gate-bottom-logo{ width:48%; }
 }
 
 /* 提醒訪客這頁可以捲動的小提示，固定在左下角（避開底部的 logo 圖案），
