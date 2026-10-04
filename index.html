@@ -620,29 +620,7 @@ body.is-gate{overflow-x:hidden;}
 /* ================= INDEX：兩個漂浮節點 ================= */
 .node-view{
   min-height:66vh; display:flex; flex-direction:column; align-items:center; justify-content:center;
-  gap:0; position:relative; overflow-x:hidden;
-}
-.node-glow{
-  position:absolute; width:clamp(220px,44vw,640px); aspect-ratio:1/1; border-radius:50%;
-  filter:blur(110px); pointer-events:none; z-index:0;
-  background:radial-gradient(circle, rgba(64,74,255,.15), transparent 60%);
-  top:18%; left:22%;
-  animation:glowDrift1 24s ease-in-out infinite;
-}
-.node-glow.g2{
-  width:clamp(190px,36vw,520px);
-  background:radial-gradient(circle, rgba(64,74,255,.11), transparent 60%);
-  top:52%; left:66%;
-  animation:glowDrift2 30s ease-in-out infinite;
-  animation-delay:-8s;
-}
-@keyframes glowDrift1{
-  0%,100%{ transform:translate(0,0) scale(1); }
-  50%{ transform:translate(40px,-30px) scale(1.18); }
-}
-@keyframes glowDrift2{
-  0%,100%{ transform:translate(0,0) scale(1); }
-  50%{ transform:translate(-36px,26px) scale(1.12); }
+  gap:0; position:relative;
 }
 .node-field{
   position:relative; width:100%; z-index:1;
@@ -1840,8 +1818,12 @@ function route(){
    佔位畫面，方便你確認捲動效果，不影響其他功能。
    每次重新整理頁面，圖片出現的順序都會重新隨機排列一次。 */
 const GATE_SHOWCASE = [
-  // './gate-art/01.jpg',
-  // './gate-art/02.jpg',
+  './gate-art/01.jpg',
+  './gate-art/02.jpg',
+  './gate-art/03.jpg',
+  './gate-art/04.jpg',
+  './gate-art/05.jpg',
+  './gate-art/06.jpg',
 ];
 
 function buildGatePhotos(){
@@ -1974,8 +1956,6 @@ function renderHome(){
   app.innerHTML = `
   <div class="view node-view">
     <div class="node-field" id="node-field">
-      <div class="node-glow g1" aria-hidden="true"></div>
-      <div class="node-glow g2" aria-hidden="true"></div>
       <svg class="node-svg" id="node-svg"><line x1="0" y1="0" x2="0" y2="0"/></svg>
       <a href="#/grid/original" class="node-circle" id="node-a" style="left:32%; top:40%;"><span>Plurk<br>Project</span></a>
       <a href="#/coop" class="node-circle" id="node-b" style="left:68%; top:60%;"><span>Co-creation</span></a>
