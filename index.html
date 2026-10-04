@@ -45,6 +45,7 @@
   --font-disp:'Space Grotesk', 'Noto Sans TC', sans-serif;
   --font-mono:'IBM Plex Mono', monospace;
   --wipe-dur: 620ms;
+  --wipe-default:#2a2a2e; /* 換頁色塊沒有對應世界觀顏色時的預設深色，固定不隨 body 的世界觀主題變動 */
   --radius:10px;
   --radius-sm:6px;
 }
@@ -108,6 +109,23 @@ body.theme-victorian{
   --logo-color:#60373e;
 }
 
+/* 英雄世界觀專屬配色：白底，強調色換成琥珀金（原本沒有獨立配色，
+   跟其他世界觀共用預設藍色，現在補上屬於自己的顏色） */
+body.theme-hero{
+  --accent:#c6811f;
+  --accent-soft:#f1e3cc;
+  --brand:#c6811f;
+  --logo-color:#c6811f;
+}
+
+/* 其他／未分類世界觀：白底，強調色換成低調石板藍灰，當作「其餘」的中性色 */
+body.theme-other{
+  --accent:#5b6472;
+  --accent-soft:#dfe2e6;
+  --brand:#5b6472;
+  --logo-color:#5b6472;
+}
+
 *{box-sizing:border-box;}
 html,body{margin:0;padding:0;}
 body{
@@ -136,7 +154,7 @@ button{font-family:inherit; cursor:pointer;}
 ::selection{background:var(--accent-soft);}
 
 @media (prefers-reduced-motion: reduce){
-  *:not(.pf-avatar-circle):not(.pf-reveal):not(.node-circle):not(.node-svg line):not(#wipe):not(#wipe span){
+  *:not(.pf-avatar-circle):not(.pf-reveal):not(.node-circle):not(.node-svg line):not(#wipe):not(#wipe-bg):not(#wipe-label):not(.wl-ch){
     animation-duration:.001ms !important; transition-duration:.001ms !important;
   }
 }
@@ -239,29 +257,6 @@ body.is-gate{overflow-x:hidden;}
   gap:44px;
   padding:24px;
 }
-.gate-quote{
-  position:relative;
-  margin:0; max-width:300px; text-align:center;
-  background:var(--panel);
-  border-radius:var(--radius);
-  padding:26px 26px 22px;
-  box-shadow:0 22px 44px rgba(42,42,46,.09);
-}
-.gate-quote::after{
-  content:'';
-  position:absolute; left:50%; top:-9px; transform:translateX(-50%);
-  width:16px; height:16px;
-  background:var(--panel);
-  clip-path:polygon(50% 0, 0 100%, 100% 100%);
-}
-.gate-quote p{
-  margin:0 0 12px; font-size:14px; font-style:italic; line-height:1.65; color:var(--ink);
-}
-.gate-quote cite{
-  display:block; font-style:normal; font-family:var(--font-mono);
-  font-size:10.5px; letter-spacing:.03em; color:var(--ink-soft);
-}
-.gate-quote cite i{font-style:italic;}
 .gate-bottom-logo{
   position:relative; z-index:1;
   width:90%; margin:0 auto; line-height:0; overflow:hidden;
@@ -282,16 +277,11 @@ body.is-gate{overflow-x:hidden;}
    讓整組內容確實收在第一屏以內，不用滑動就能看到完整 LOGO。 */
 @media (max-width:640px){
   .gate-center{ gap:20px; padding:16px 20px 10px; }
-  .gate-quote{ max-width:250px; padding:16px 18px 13px; }
-  .gate-quote p{ font-size:12px; line-height:1.5; margin-bottom:8px; }
-  .gate-quote cite{ font-size:9.5px; }
   .gate-enter{ padding:10px 24px; font-size:12px; }
   .gate-bottom-logo{ width:58%; padding-bottom:14px; }
 }
 @media (max-height:700px) and (max-width:640px){
   .gate-center{ gap:12px; padding:10px 20px 6px; }
-  .gate-quote{ max-width:220px; padding:13px 16px 10px; }
-  .gate-quote p{ font-size:11px; line-height:1.42; margin-bottom:6px; }
   .gate-bottom-logo{ width:48%; }
 }
 
@@ -563,31 +553,65 @@ body.is-gate{overflow-x:hidden;}
 .view{animation:fadeIn .5s ease both;}
 @keyframes fadeIn{from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:none;}}
 
-/* ---------------- wipe transition overlay ---------------- */
+/* ---------------- wipe transition overlay ----------------
+   #wipe 本身只是個不會動的容器；真正掃過去的色塊是裡面的 #wipe-bg，
+   文字另外放在 #wipe-label，兩個是平輩、不是 #wipe-bg 的子元素，
+   這樣文字才不會跟著色塊一起被 scaleX 擠壓變形。色塊顏色改成讀
+   --wipe-color 這個 CSS 變數，由 JS 依照「要去的頁面」設定成該
+   世界觀的代表色（例如要進 mafia 就先掃一塊紅色），沒有對應世界觀
+   的頁面（首頁、Index、About...）就退回原本的 --ink 深色。
+   文字改成置中、一個字一個字浮現（.wl-ch），比原本躺在左下角的
+   小字更像是轉場的視覺焦點。 */
 #wipe{
   position:fixed; inset:0; z-index:100;
   pointer-events:none;
+}
+#wipe-bg{
+  position:absolute; inset:0;
   transform:scaleX(0);
   transform-origin:left;
-  background:var(--ink);
+  background:var(--wipe-color, var(--wipe-default));
 }
-#wipe.run{
+#wipe.run #wipe-bg{
   animation:wipeSweep var(--wipe-dur) cubic-bezier(.77,0,.18,1) forwards;
 }
-#wipe span{
-  position:absolute; top:50%; left:24px; transform:translateY(-50%);
-  font-family:var(--font-mono); font-size:11px; letter-spacing:.15em;
-  color:#fff; opacity:0;
+#wipe-label{
+  position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+  font-family:var(--font-mono); font-size:13px; letter-spacing:.24em;
+  color:#fff; white-space:nowrap;
 }
-#wipe.run span{animation:wipeLabel var(--wipe-dur) ease forwards;}
+#wipe-label .wl-ch{
+  display:inline-block;
+  opacity:0; transform:translateY(14px);
+  transition:opacity .38s ease, transform .5s cubic-bezier(.2,.8,.2,1);
+}
+#wipe.label-in #wipe-label .wl-ch{ opacity:1; transform:translateY(0); }
+#wipe.label-out #wipe-label .wl-ch{
+  opacity:0; transform:translateY(-10px);
+  transition:opacity .25s ease, transform .3s ease;
+  transition-delay:0ms !important;
+}
 @keyframes wipeSweep{
   0%{transform:scaleX(0); transform-origin:left;}
   48%{transform:scaleX(1); transform-origin:left;}
   52%{transform:scaleX(1); transform-origin:right;}
   100%{transform:scaleX(0); transform-origin:right;}
 }
-@keyframes wipeLabel{
-  0%{opacity:0;} 20%{opacity:1;} 48%{opacity:1;} 55%{opacity:0;} 100%{opacity:0;}
+
+/* 換頁之後，新頁面的內容不是整塊瞬間出現，而是依序一個一個浮現
+   （JS 的 initPageEnterStagger() 會幫新頁面裡每個區塊/每張卡片
+   標上 --enter-i 當作第幾個，數字越大延遲越晚出現）。角色頁本身
+   已經有自己捲動淡入的節奏（.pf-reveal），所以不會重複套用這層。 */
+.view.enter-stagger .enter-stagger-item{
+  opacity:0; transform:translateY(16px);
+  transition:none; /* 先瞬間變透明，不要被這個元素自己原本就有的 opacity transition
+                       （例如 .world-row 的 hover 變暗效果）捲進去，從 1 淡到 0 再淡回 1，
+                       結果看起來就像完全沒動。淡入動畫只在下面 .enter-run 那段發生。 */
+}
+.view.enter-stagger.enter-run .enter-stagger-item{
+  opacity:1; transform:translateY(0);
+  transition:opacity .5s ease, transform .6s cubic-bezier(.2,.8,.2,1);
+  transition-delay:calc(var(--enter-i,0) * 45ms);
 }
 
 /* ================= HOME ================= */
@@ -655,8 +679,20 @@ body.is-gate{overflow-x:hidden;}
   pointer-events:none;
   overflow:visible;
 }
-.node-svg line{
+.node-svg .line-base{
   stroke:var(--line); stroke-width:1.4;
+}
+/* 連接線上「流動的能量」：不是疊一條固定顏色的線，而是一段段虛線＋模糊，
+   靠 stroke-dashoffset 每一影格往同一方向推進，看起來像一段段光在線上
+   持續往返流動（dasharray 的「虛線段」比「間隔」短很多，視覺上就是一小段
+   一小段的光點在跑，不是規則的鐵路虛線）。平常就有、很淡，hover 時變亮、
+   流動速度也跟著加快，給出「被喚醒」的感覺。 */
+.node-svg .line-glow{
+  stroke:var(--brand); stroke-width:2.2;
+  stroke-linecap:round;
+  stroke-dasharray:1 13;
+  opacity:.4;
+  filter:blur(1px);
 }
 .node-circle{
   position:absolute;
@@ -672,6 +708,24 @@ body.is-gate{overflow-x:hidden;}
   will-change:left, top, transform, opacity;
 }
 .node-circle:hover{background:var(--brand); color:#fff;}
+/* 節點背後的呼吸光暈：用 ::before 疊一層模糊的放射狀漸層，inset 是負值讓光暈範圍
+   明顯大於圓圈本身，漸層本身在 70% 就已經淡到全透明、外面還有一圈 blur 繼續柔化，
+   確保光暈是自然散開、完全不會被任何邊界硬切掉（之前背景光暈被 overflow:hidden
+   切出一條硬邊的問題，這次一開始就不會發生：.node-view／.node-field 都沒有設
+   overflow:hidden，光暈也在很早就淡成透明，不會剩下一圈還很明顯的邊界） */
+.node-circle::before{
+  content:'';
+  position:absolute;
+  inset:-65%;
+  border-radius:50%;
+  background:radial-gradient(circle, var(--brand) 0%, rgba(64,74,255,0) 68%);
+  opacity:.32;
+  filter:blur(16px);
+  pointer-events:none;
+  z-index:-1;
+  transition:opacity .35s ease;
+}
+.node-circle:hover::before{opacity:.5;}
 @media (max-width:640px){
   .node-field{height:72vh;}
   .node-circle{width:82px; font-size:11.5px;}
@@ -717,33 +771,62 @@ body.is-gate{overflow-x:hidden;}
 }
 .cat-panel:hover .cat-arrow{transform:translateX(4px); border-color:var(--accent); background:var(--accent); color:#fff;}
 
-/* world sub-tiles (共構)：拿掉文字說明，改成置中、偏小的方塊群，
-   滑過去單一方塊會放大（其他方塊不動），像一排可以把玩的印章 */
-.world-tiles{
-  margin:48px auto 0; max-width:560px;
-  display:flex; flex-wrap:wrap; justify-content:center; gap:16px;
+/* world 選單（共構）：不用方塊卡片，改成一排可以整排點開的「清單列」，
+   平常只是很安靜的一條條文字＋細線，跟全站的中性調性一致；滑鼠移到
+   哪一列，那一列整條（滿版、不是一個方塊）往左往右洗出該世界觀的代表色、
+   名字放大翻白，其他列同時變暗、往旁邊讓開一點點，形成「這一列被選中」
+   的聚焦感。色塊是用 scaleX 從左邊展開，跟全站切換頁面用的那條 #wipe
+   橫掃效果是同一種手法，算是跟網站自己的轉場語言互相呼應；拿掉了方塊、
+   陰影、傾斜這些「卡片」才有的裝飾，改成更接近雜誌目錄的編排。 */
+.world-list{
+  width:100%; max-width:640px; margin:56px auto 0;
 }
-.world-tile{
-  position:relative; width:118px; height:118px; z-index:1;
-  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px;
-  background:var(--panel); border:1px solid var(--line); border-radius:var(--radius-sm);
-  text-align:center; padding:10px;
-  transition:transform .3s cubic-bezier(.2,.8,.2,1), box-shadow .3s ease, background .3s ease;
+.world-row{
+  position:relative; z-index:1;
+  display:flex; align-items:baseline; justify-content:space-between; gap:16px;
+  padding:22px 6px;
+  overflow:hidden;
+  transition:padding .4s cubic-bezier(.2,.8,.2,1), opacity .35s ease;
 }
-.world-tile:hover{
-  transform:scale(1.22);
-  z-index:5;
-  background:var(--brand);
-  box-shadow:0 22px 44px rgba(30,30,34,.22);
-  border-color:var(--brand);
+.world-row::before{
+  content:'';
+  position:absolute; inset:0;
+  background:var(--tile-accent);
+  transform:scaleX(0);
+  transform-origin:left;
+  transition:transform .5s cubic-bezier(.2,.8,.2,1);
+  z-index:-1;
 }
-.world-tile .wt-code{font-family:var(--font-mono); font-size:9px; letter-spacing:.08em; color:var(--ink-faint); transition:color .3s ease;}
-.world-tile .wt-name{font-family:var(--font-disp); font-weight:600; font-size:14px; color:var(--brand); line-height:1.25; transition:color .3s ease;}
-.world-tile:hover .wt-code{color:rgba(255,255,255,.75);}
-.world-tile:hover .wt-name{color:#fff;}
+.world-row:hover{ padding:30px 22px; }
+.world-row:hover::before{ transform:scaleX(1); }
+.world-list:hover .world-row:not(:hover){ opacity:.42; }
+.wr-name{
+  font-family:var(--font-disp); font-weight:600;
+  font-size:15px; letter-spacing:.1em; line-height:1;
+  color:var(--ink);
+  transform-origin:left center;
+  transition:color .4s ease, transform .5s cubic-bezier(.2,.8,.2,1);
+}
+.world-row:hover .wr-name{ color:#fff; transform:translateX(6px) scale(2.3); }
+.wr-char{ display:inline-block; }
+.wr-meta{ display:flex; align-items:center; gap:18px; flex:none; }
+.wr-code, .wr-count{
+  font-family:var(--font-mono); font-size:10px; letter-spacing:.08em;
+  color:var(--ink-faint); white-space:nowrap;
+  transition:color .35s ease;
+}
+.world-row:hover .wr-code, .world-row:hover .wr-count{ color:rgba(255,255,255,.78); }
 @media (max-width:640px){
-  .world-tile{ width:96px; height:96px; }
-  .world-tile .wt-name{ font-size:12.5px; }
+  .world-list{ margin-top:40px; }
+  .world-row{ padding:15px 2px; }
+  .world-row:hover{ padding:19px 14px; }
+  .wr-name{ font-size:13px; }
+  .world-row:hover .wr-name{ transform:translateX(4px) scale(1.9); }
+  .wr-meta{ gap:10px; }
+  .wr-count{ display:none; } /* 手機版位置窄，數量先讓位給名字跟代號 */
+}
+@media (prefers-reduced-motion: reduce){
+  .world-row, .world-row::before, .wr-name{ transition:none !important; }
 }
 
 /* ================= GRID (character list) ================= */
@@ -1277,9 +1360,23 @@ body.is-gate{overflow-x:hidden;}
 .gallery-thumb{
   aspect-ratio:1/1; position:relative; cursor:zoom-in; overflow:hidden; border-radius:var(--radius-sm); background:var(--panel);
 }
-.gallery-thumb img{width:100%; height:100%; object-fit:cover; display:block; transition:transform .4s ease, filter .4s ease;}
-.gallery-thumb:hover img{transform:scale(1.05);}
-.gallery-thumb .avatar-fill{position:absolute; inset:0; color:#fff; font-family:var(--font-mono); font-size:12px;}
+.gallery-thumb img{width:100%; height:100%; object-fit:cover; display:block; transition:transform .35s cubic-bezier(.2,.8,.2,1), filter .4s ease;}
+.gallery-thumb .avatar-fill{transition:transform .35s cubic-bezier(.2,.8,.2,1);}
+/* 縮圖 hover 的視差改由 JS 依滑鼠在縮圖裡的位置即時算位移（initGalleryParallax），
+   這裡只留最基本的「沒有 JS/滑鼠離開時」預設放大，JS 算出的 translate 會疊加上去 */
+.gallery-thumb:hover img, .gallery-thumb:hover .avatar-fill{transform:scale(1.08);}
+/* 還沒上傳圖片的格子：原本是整格填滿世界觀的品牌色（黑手黨世界觀底下
+   就是整塊紅色），看起來太像一個搶眼的色塊、不像「還沒放圖」的空格。
+   不另外加素色底——頁面本身已經有毛玻璃底層，這裡保持透明＋虛線框，
+   讓底下的毛玻璃透出來就夠了 */
+.gallery-thumb .avatar-fill{
+  position:absolute; inset:0;
+  display:flex; align-items:center; justify-content:center;
+  background:transparent;
+  border:1px dashed var(--line);
+  color:var(--ink-faint);
+  font-family:var(--font-mono); font-size:11px; letter-spacing:.04em;
+}
 
 /* R18／血腥等敏感圖片：縮圖預設模糊＋警告字，點一下先解除模糊看縮圖，
    要看大圖再點第二下（避免不小心點到直接看到原圖） */
@@ -1355,13 +1452,20 @@ footer{
   display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px;
 }
 body.has-fullbody-bg footer{ border-top:none; }
-/* ---------------- 自訂游標 ---------------- */
+/* ---------------- 自訂游標 ----------------
+   顏色不再跟著 body 的世界觀主題手動切換（固定一個顏色在深色底的頁面
+   會糊掉、換到淺色底又太搶），改用 mix-blend-mode:difference——
+   游標本身固定填白色，瀏覽器會拿這個白色跟它「正下方」的畫面顏色做
+   差值混合，深底自動變亮、淺底自動變暗，不管捲到哪個世界觀的頁面、
+   疊在圖片或文字上，游標永遠跟背景反相、維持看得清楚的對比度，
+   不用另外寫 JS 去讀目前是哪個主題。 */
 #cursor{
   position:fixed; top:0; left:0; z-index:9999;
   width:26px; height:26px; margin:-13px 0 0 -13px;
   border-radius:50%;
-  border:1.4px solid rgba(42,42,46,.75);
-  background:rgba(42,42,46,.06);
+  border:1.4px solid #fff;
+  background:rgba(255,255,255,.14);
+  mix-blend-mode:difference;
   pointer-events:none;
   will-change:transform;
   transition:width .22s cubic-bezier(.2,.8,.2,1), height .22s cubic-bezier(.2,.8,.2,1),
@@ -1375,11 +1479,11 @@ body.has-fullbody-bg footer{ border-top:none; }
 }
 #cursor.is-hover{
   width:9px; height:9px; margin:-4.5px 0 0 -4.5px;
-  background:#2a2a2e; border-color:#2a2a2e;
+  background:#fff; border-color:#fff;
 }
 #cursor.is-view{
   width:62px; height:62px; margin:-31px 0 0 -31px;
-  background:var(--brand); border-color:var(--brand);
+  background:#fff; border-color:#fff;
 }
 .cursor-label{
   position:absolute; inset:0;
@@ -1392,7 +1496,8 @@ body.has-fullbody-bg footer{ border-top:none; }
 .cursor-trail{
   position:fixed; top:0; left:0; z-index:9998;
   border-radius:50%;
-  background:var(--brand);
+  background:#fff;
+  mix-blend-mode:difference;
   pointer-events:none;
   will-change:transform;
 }
@@ -1464,7 +1569,7 @@ body.has-fullbody-bg footer{ border-top:none; }
   <div class="intro-expand"></div>
 </div>
 
-<div id="wipe"><span>LOADING RECORD</span></div>
+<div id="wipe"><div id="wipe-bg"></div><span id="wipe-label"></span></div>
 
 <div class="topbar">
   <div class="brand" onclick="location.hash='#/'"><svg class="logo-mark brand-logo" viewBox="0 0 362.84 61.52" xmlns="http://www.w3.org/2000/svg">
@@ -1604,7 +1709,31 @@ function galleryThumb(item, ch, idx){
      「縮圖 thumb／原圖 full」分開兩張，也繼續相容、不會壞掉 */
   const src = item.thumb || item.image;
   if(src){ return `<img src="${src}" alt="" loading="lazy" decoding="async" onerror="this.closest('.gallery-thumb').classList.add('img-error')">`; }
-  return `<div class="avatar-fill" style="${placeholderStyle(ch.id+'g'+idx,24,70,86)}">IMG_${String(idx+1).padStart(2,'0')}</div>`;
+  return `<div class="avatar-fill">IMG_${String(idx+1).padStart(2,'0')}</div>`;
+}
+
+/* Gallery 縮圖視差：滑鼠在縮圖裡的位置決定圖片往哪個方向輕輕位移
+   （滑鼠在右上，圖片就往右上偏移一點），疊加在原本 hover 放大上面，
+   讓縮圖有一點點「立體」的手感，不只是單純整張放大。離開縮圖時
+   position 歸零，CSS 的 transition 會負責自然地滑回正中央。 */
+const GALLERY_PARALLAX_RANGE = 12; /* px，位移幅度上限 */
+function initGalleryParallax(){
+  if(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  document.querySelectorAll('.gallery-thumb').forEach(thumb=>{
+    if(thumb.dataset.parallaxInit) return;
+    thumb.dataset.parallaxInit = '1';
+    const media = thumb.querySelector('img, .avatar-fill');
+    if(!media) return;
+    thumb.addEventListener('mousemove', (e)=>{
+      const r = thumb.getBoundingClientRect();
+      const px = (e.clientX - r.left) / r.width - 0.5;
+      const py = (e.clientY - r.top) / r.height - 0.5;
+      const mx = (px * GALLERY_PARALLAX_RANGE).toFixed(1);
+      const my = (py * GALLERY_PARALLAX_RANGE).toFixed(1);
+      media.style.transform = `scale(1.08) translate(${mx}px, ${my}px)`;
+    });
+    thumb.addEventListener('mouseleave', ()=>{ media.style.transform = ''; });
+  });
 }
 
 /* ============================================================
@@ -1612,18 +1741,100 @@ function galleryThumb(item, ch, idx){
 ============================================================ */
 const app = document.getElementById('app');
 const wipe = document.getElementById('wipe');
+const wipeLabelEl = document.getElementById('wipe-label');
 let wiping = false;
+
+/* 根據「要去的頁面」決定這次轉場要掃出哪個顏色、中間字要顯示什麼，
+   跟首頁/Index這些中性頁面不同，進某個世界觀的頁面時色塊就用那個
+   世界觀的代表色（跟 Co-creation 選單、body.theme-* 同一份顏色），
+   讓轉場本身就先「預告」你要去哪裡。 */
+function getRouteAccent(hash){
+  const parts = (hash||'').replace(/^#\//,'').split('/').filter(Boolean);
+  if(parts[0]==='grid' && parts[1]==='coop' && parts[2]) return WORLD_COLORS[parts[2]] || null;
+  if(parts[0]==='random' && parts[1]==='coop' && parts[2]) return WORLD_COLORS[parts[2]] || null;
+  if(parts[0]==='timeline' && parts[1]==='coop' && parts[2]) return WORLD_COLORS[parts[2]] || null;
+  if(parts[0]==='char' && parts[1]){
+    const id = parts[1];
+    if(/^coop-/i.test(id)){
+      const w = id.split('-')[1];
+      if(WORLD_COLORS[w]) return WORLD_COLORS[w];
+    }
+  }
+  return null;
+}
+function getRouteLabel(hash){
+  const parts = (hash||'').replace(/^#\//,'').split('/').filter(Boolean);
+  if(parts.length===0) return 'MONDAY’S MOOD';
+  if(parts[0]==='index') return 'INDEX';
+  if(parts[0]==='coop' && parts.length===1) return 'CO-CREATION';
+  if(parts[0]==='grid' && parts[1]==='original') return 'PLURK PROJECT';
+  if(parts[0]==='grid' && parts[1]==='coop' && parts[2]) return (WORLD_META[parts[2]] && WORLD_META[parts[2]].name) || parts[2].toUpperCase();
+  if(parts[0]==='random') return 'RANDOM';
+  if(parts[0]==='timeline' && parts[2]) return ((WORLD_META[parts[2]] && WORLD_META[parts[2]].name) || parts[2].toUpperCase()) + ' TIMELINE';
+  if(parts[0]==='about') return 'ABOUT';
+  if(parts[0]==='char' && parts[1]){
+    const ch = (typeof CHARACTERS!=='undefined' ? CHARACTERS.find(c=>c.id===parts[1]) : null);
+    return (ch && (ch.codename || ch.realname)) || 'RECORD';
+  }
+  return 'MONDAY’S MOOD';
+}
 
 function runWipe(renderFn){
   if(wiping) return;
   wiping = true;
-  wipe.classList.remove('run'); void wipe.offsetWidth;
+
+  const nextHash = location.hash;
+  const accent = getRouteAccent(nextHash);
+  if(accent) wipe.style.setProperty('--wipe-color', accent);
+  else wipe.style.removeProperty('--wipe-color');
+
+  const label = getRouteLabel(nextHash) || 'MONDAY’S MOOD';
+  wipeLabelEl.innerHTML = label.split('').map(ch=>`<span class="wl-ch">${ch===' '?'&nbsp;':ch}</span>`).join('');
+  const chars = wipeLabelEl.querySelectorAll('.wl-ch');
+  chars.forEach((c,i)=>{ c.style.transitionDelay = Math.min(i,20)*16+'ms'; });
+
+  wipe.classList.remove('run','label-in','label-out'); void wipe.offsetWidth;
   wipe.classList.add('run');
+  setTimeout(()=>{ wipe.classList.add('label-in'); }, 90);
+  setTimeout(()=>{ wipe.classList.remove('label-in'); wipe.classList.add('label-out'); }, 300);
   setTimeout(()=>{
     renderFn();
     window.scrollTo({top:0, behavior:'instant' in window ? 'instant':'auto'});
+    initPageEnterStagger();
   }, wipe.getAnimationDuration ? 0 : 300); /* mid-wipe swap */
-  setTimeout(()=>{ wiping=false; }, 640);
+  setTimeout(()=>{ wiping=false; wipe.classList.remove('run','label-in','label-out'); }, 640);
+}
+
+/* 換頁之後讓新內容依序浮現，而不是一次整頁彈出來：抓新頁面 .view
+   底下的區塊（卡片、清單列...），每一個標上第幾個（--enter-i），
+   CSS 再依這個數字給不同的延遲時間。角色頁自己已經有捲動淡入，
+   這裡就跳過不重複處理。 */
+function initPageEnterStagger(){
+  const view = app.querySelector('.view');
+  if(!view || view.classList.contains('profile-view')) return;
+  /* 角色列表頁（.arc-stage 那種橫向疊卡）本身已經有一套持續用行內樣式
+     即時計算透明度的「置中淡出」效果（捲動時哪張卡在正中間最清楚），
+     這裡再疊一層用 class 控制的進場動畫，兩邊都在搶同一個 opacity，
+     會互相蓋掉、卡片變成卡在奇怪的透明度，所以這種頁面跳過不處理。 */
+  if(view.querySelector('.arc-stage')) return;
+  let kids = Array.from(view.children);
+  if(kids.length<=1 && kids[0] && kids[0].children && kids[0].children.length>1){
+    kids = Array.from(kids[0].children);
+  }
+  if(kids.length===0) return;
+  kids.forEach((el,i)=>{
+    el.classList.add('enter-stagger-item');
+    el.style.setProperty('--enter-i', Math.min(i,14));
+  });
+  view.classList.add('enter-stagger');
+  void view.offsetWidth;
+  /* 用兩層 rAF 而不是一層：只排一次 rAF 的話，瀏覽器常常會把「設成透明」
+     跟「變回不透明」這兩個狀態合併成同一張畫面一次畫完，等於沒有真的播放
+     到淡入動畫，必須等瀏覽器先畫出一次「透明」的畫面，下一輪再切回來，
+     動畫才會確實播出來。 */
+  requestAnimationFrame(()=>{
+    requestAnimationFrame(()=>{ view.classList.add('enter-run'); });
+  });
 }
 
 window.addEventListener('hashchange', ()=> runWipe(route));
@@ -1809,7 +2020,17 @@ function setWorldTheme(world){
   document.body.classList.toggle('theme-fantasy', world==='fantasy');
   document.body.classList.toggle('theme-football', world==='football');
   document.body.classList.toggle('theme-victorian', world==='victorian');
+  document.body.classList.toggle('theme-hero', world==='hero');
+  document.body.classList.toggle('theme-other', world==='other');
 }
+
+/* Co-creation 選單卡片要在「還沒進入那個世界觀」的狀態下，就先用上它的代表色，
+   跟 body.theme-* 是同一套顏色，這裡另外存一份給選單直接讀，不用為了讀顏色
+   就先把整個頁面套上那個世界觀的主題 */
+const WORLD_COLORS = {
+  mafia:'#e0293e', ancient:'#6b7a66', hero:'#c6811f', fantasy:'#72636e',
+  football:'#619e69', victorian:'#60373e', other:'#5b6472',
+};
 
 function route(){
   const hash = location.hash || '#/';
@@ -1889,10 +2110,6 @@ function renderGate(){
         <div class="gate-fallback" id="gate-fallback"></div>
       </div>
       <div class="gate-center">
-        <blockquote class="gate-quote">
-          <p>"Every portrait that is painted with feeling is a portrait of the artist, not of the sitter."</p>
-          <cite>— Oscar Wilde,<br><i>The Picture of Dorian Gray</i></cite>
-        </blockquote>
         <button class="gate-enter" onclick="location.hash='#/index'">ENTER<span aria-hidden="true">→</span></button>
       </div>
       <div class="gate-bottom-logo">
@@ -1980,7 +2197,7 @@ function renderHome(){
   app.innerHTML = `
   <div class="view node-view">
     <div class="node-field" id="node-field">
-      <svg class="node-svg" id="node-svg"><line x1="0" y1="0" x2="0" y2="0"/></svg>
+      <svg class="node-svg" id="node-svg"><line class="line-base" x1="0" y1="0" x2="0" y2="0"/><line class="line-glow" x1="0" y1="0" x2="0" y2="0"/></svg>
       <a href="#/grid/original" class="node-circle" id="node-a" style="left:32%; top:40%;"><span>Plurk<br>Project</span></a>
       <a href="#/coop" class="node-circle" id="node-b" style="left:68%; top:60%;"><span>Co-creation</span></a>
     </div>
@@ -1993,27 +2210,50 @@ function renderHome(){
 function initNodeField(){
   const field = document.getElementById('node-field');
   const svg = document.getElementById('node-svg');
-  const line = svg.querySelector('line');
+  const line = svg.querySelector('.line-base');
+  const lineGlow = svg.querySelector('.line-glow');
   const nodes = [
     { el:document.getElementById('node-a'),
       baseXPct:32, baseYPct:40, ampX:26, ampY:18, speed:0.00033, phase:0,
-      breathSpeed:0.0009, breathPhase:0, hoverT:0, hoverC:0 },
+      breathSpeed:0.0009, breathPhase:0, hoverT:0, hoverC:0,
+      pullX:0, pullY:0 },
     { el:document.getElementById('node-b'),
       baseXPct:68, baseYPct:60, ampX:20, ampY:24, speed:0.00026, phase:2.4,
-      breathSpeed:0.0007, breathPhase:1.8, hoverT:0, hoverC:0 },
+      breathSpeed:0.0007, breathPhase:1.8, hoverT:0, hoverC:0,
+      pullX:0, pullY:0 },
   ];
   nodes.forEach(n=>{
     n.el.addEventListener('mouseenter', ()=>{ n.hoverT = 1; });
     n.el.addEventListener('mouseleave', ()=>{ n.hoverT = 0; });
   });
+  /* 磁吸半徑：滑鼠進到這個範圍內，節點會被「輕輕吸過去」一點點，
+     越靠近吸力越強，離開範圍就放掉、回到原本漂浮的軌跡上，
+     滑鼠座標沿用全站共用的游標座標（mouseX/mouseY，定義在檔案別處）。 */
+  const PULL_RADIUS = 170;
+  const PULL_MAX = 22;
   function tick(t){
     if(!document.body.contains(field)) return; /* 已離開此頁，停止動畫 */
     const rect = field.getBoundingClientRect();
+    const localMouseX = mouseX - rect.left;
+    const localMouseY = mouseY - rect.top;
     nodes.forEach(n=>{
       const baseX = rect.width * n.baseXPct/100;
       const baseY = rect.height * n.baseYPct/100;
-      const x = baseX + Math.sin(t*n.speed + n.phase) * n.ampX;
-      const y = baseY + Math.cos(t*n.speed*1.35 + n.phase) * n.ampY;
+      const floatX = baseX + Math.sin(t*n.speed + n.phase) * n.ampX;
+      const floatY = baseY + Math.cos(t*n.speed*1.35 + n.phase) * n.ampY;
+
+      const dx = localMouseX - floatX, dy = localMouseY - floatY;
+      const dist = Math.hypot(dx, dy);
+      let targetPullX = 0, targetPullY = 0;
+      if(dist < PULL_RADIUS && dist > 0.01){
+        const strength = (1 - dist/PULL_RADIUS) * PULL_MAX;
+        targetPullX = (dx/dist) * strength;
+        targetPullY = (dy/dist) * strength;
+      }
+      n.pullX += (targetPullX - n.pullX) * 0.12;
+      n.pullY += (targetPullY - n.pullY) * 0.12;
+
+      const x = floatX + n.pullX, y = floatY + n.pullY;
       n.el.style.left = x+'px';
       n.el.style.top = y+'px';
       n._x = x; n._y = y;
@@ -2032,6 +2272,20 @@ function initNodeField(){
     line.setAttribute('y2', nodes[1]._y);
     /* 連接線也有自己的呼吸節奏，比節點慢一些、幅度更小 */
     line.style.opacity = (0.55 + (Math.sin(t*0.00045)+1)/2*0.25).toFixed(3);
+
+    /* 流動的能量線：跟底線同座標疊在上面，用 stroke-dashoffset 持續推進，
+       造出一段段光點沿線移動的感覺。hover 任一節點時，流動變快、變亮、
+       線也變粗一點，像是被啟動了一樣；兩個節點共用這條線，用 max 取較大值。 */
+    lineGlow.setAttribute('x1', nodes[0]._x);
+    lineGlow.setAttribute('y1', nodes[0]._y);
+    lineGlow.setAttribute('x2', nodes[1]._x);
+    lineGlow.setAttribute('y2', nodes[1]._y);
+    const glowT = Math.max(nodes[0].hoverC, nodes[1].hoverC);
+    const flowSpeed = 0.012 + glowT*0.05;
+    lineGlow.style.strokeDashoffset = (-(t*flowSpeed) % 28).toFixed(2);
+    lineGlow.style.opacity = (0.4 + glowT*0.6).toFixed(3);
+    lineGlow.setAttribute('stroke-width', (2.2 + glowT*1.1).toFixed(2));
+
     requestAnimationFrame(tick);
   }
   requestAnimationFrame(tick);
@@ -2065,15 +2319,79 @@ function renderAbout(){
 function renderCoopWorlds(){
   setCrumb([{label:'Home',hash:'#/index'},{label:'Co-creation'}]);
   const rows = Object.entries(WORLD_META).map(([key,w])=>{
-    return `<a class="world-tile" href="#/grid/coop/${key}">
-      <div class="wt-code">${w.code}</div>
-      <div class="wt-name">${w.name}</div>
+    const count = CHARACTERS.filter(c=>c.category==='coop' && c.world===key).length;
+    const accent = WORLD_COLORS[key] || 'var(--brand)';
+    return `<a class="world-row" href="#/grid/coop/${key}" style="--tile-accent:${accent};">
+      <span class="wr-name">${w.name}</span>
+      <span class="wr-meta">
+        <span class="wr-code">${w.code}</span>
+        <span class="wr-count">${count} CHARACTERS</span>
+      </span>
     </a>`;
   }).join('');
   app.innerHTML = `
   <div class="view" style="min-height:70vh; display:flex; align-items:center; justify-content:center;">
-    <div class="world-tiles" style="margin:0;">${rows}</div>
+    <div class="world-list">${rows}</div>
   </div>`;
+  initMagneticRowText();
+}
+
+/* 清單文字的磁吸效果：呼應首頁節點圖的磁吸手感。滑過每一列時，
+   名字裡的每個字母會各自偵測跟游標的距離，距離夠近就被輕輕吸過去，
+   游標離開那個字母的範圍又會鬆開彈回來，整排字像活的一樣跟著游標走，
+   不是單純的顏色色塊而已。用 rAF 迴圈 + lerp 讓動作平滑，不用 CSS transition
+   （避免跟每一幀都在變的 transform 互相打架）。 */
+function initMagneticRowText(){
+  if(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const RADIUS = 60, MAX_PULL = 6, EASE = 0.22, Y_DAMP = 0.4;
+  document.querySelectorAll('.world-row .wr-name').forEach(nameEl=>{
+    if(nameEl.dataset.magInit) return;
+    nameEl.dataset.magInit = '1';
+    const text = nameEl.textContent;
+    nameEl.innerHTML = text.split('').map(ch=>`<span class="wr-char">${ch===' '?'&nbsp;':ch}</span>`).join('');
+    const row = nameEl.closest('.world-row');
+    const chars = Array.from(nameEl.querySelectorAll('.wr-char'));
+    const state = chars.map(()=>({x:0,y:0,tx:0,ty:0}));
+    let raf = null, hovering = false;
+
+    function onMove(e){
+      chars.forEach((c,i)=>{
+        const r = c.getBoundingClientRect();
+        const cx = r.left + r.width/2, cy = r.top + r.height/2;
+        const dx = e.clientX - cx, dy = e.clientY - cy;
+        const dist = Math.hypot(dx,dy);
+        if(dist < RADIUS){
+          const strength = (1 - dist/RADIUS) * MAX_PULL;
+          state[i].tx = (dx/(dist||1)) * strength;
+          state[i].ty = (dy/(dist||1)) * strength * Y_DAMP;
+        } else {
+          state[i].tx = 0; state[i].ty = 0;
+        }
+      });
+    }
+    function loop(){
+      let moving = false;
+      state.forEach((s,i)=>{
+        s.x += (s.tx - s.x) * EASE;
+        s.y += (s.ty - s.y) * EASE;
+        if(Math.abs(s.x)>0.05 || Math.abs(s.y)>0.05 || Math.abs(s.tx)>0.05 || Math.abs(s.ty)>0.05) moving = true;
+        chars[i].style.transform = `translate(${s.x.toFixed(2)}px, ${s.y.toFixed(2)}px)`;
+      });
+      if(hovering || moving) raf = requestAnimationFrame(loop);
+      else raf = null;
+    }
+    row.addEventListener('mouseenter', ()=>{
+      hovering = true;
+      row.addEventListener('mousemove', onMove);
+      if(!raf) raf = requestAnimationFrame(loop);
+    });
+    row.addEventListener('mouseleave', ()=>{
+      hovering = false;
+      row.removeEventListener('mousemove', onMove);
+      state.forEach(s=>{ s.tx = 0; s.ty = 0; });
+      if(!raf) raf = requestAnimationFrame(loop);
+    });
+  });
 }
 
 /* ---------------- GRID ---------------- */
@@ -2562,6 +2880,7 @@ function renderProfile(id){
 
   initProfileReveal();
   setupFullbodyBackground(ch);
+  initGalleryParallax();
 }
 
 /* ---------------- 角色頁面：這個角色的關係 ---------------- */
@@ -2804,18 +3123,47 @@ function handleGalleryThumbClick(el, charId, index){
     el.classList.add('revealed');
     return;
   }
-  openLightbox(charId, index);
+  openLightbox(charId, index, el);
 }
 let lbState = { charId:null, index:0 };
-function openLightbox(charId, index){
+function openLightbox(charId, index, originEl){
   lbState = { charId, index };
   renderLightbox();
   document.getElementById('lightbox').classList.add('open');
   document.addEventListener('keydown', lbKeyHandler);
+  if(originEl) playLightboxExpand(originEl);
+}
+/* 點縮圖開大圖：圖片不是憑空淡入疊上去，而是先瞬間「貼」在縮圖原本的
+   位置跟大小（用 translate+scale 算出跟最終置中大小的落差），逼瀏覽器
+   畫出這一幀，下一影格再把 transform 放開、用 transition 滑到正常的
+   置中大小——視覺上就像縮圖自己原地展開變成大圖，而不是另一層東西蓋上來。
+   用 FLIP 技巧（記錄起點→量終點→反推落差→播放）做，不用等圖片真的
+   載入完成也能先播動畫，圖片本身另外有自己的淡入。 */
+function playLightboxExpand(originEl){
+  if(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const img = document.getElementById('lb-img');
+  if(!img || img.style.display==='none') return;
+  const originRect = originEl.getBoundingClientRect();
+  requestAnimationFrame(()=>{
+    const finalRect = img.getBoundingClientRect();
+    if(!finalRect.width || !finalRect.height) return;
+    const scaleX = originRect.width / finalRect.width;
+    const scaleY = originRect.height / finalRect.height;
+    const dx = (originRect.left + originRect.width/2) - (finalRect.left + finalRect.width/2);
+    const dy = (originRect.top + originRect.height/2) - (finalRect.top + finalRect.height/2);
+
+    img.style.transition = 'none';
+    img.style.transform = `translate(${dx}px, ${dy}px) scale(${scaleX}, ${scaleY})`;
+    void img.offsetWidth;
+    img.style.transition = 'transform .55s cubic-bezier(.16,.84,.24,1)';
+    requestAnimationFrame(()=>{ img.style.transform = 'translate(0,0) scale(1,1)'; });
+  });
 }
 function closeLightbox(){
   document.getElementById('lightbox').classList.remove('open');
   document.removeEventListener('keydown', lbKeyHandler);
+  const img = document.getElementById('lb-img');
+  if(img){ img.style.transition = ''; img.style.transform = ''; }
 }
 function lbNav(dir){
   const ch = CHARACTERS.find(c=>c.id===lbState.charId);
@@ -2894,7 +3242,7 @@ let curX = mouseX, curY = mouseY;
 const HOVER_SELECTOR = 'a, button, .gallery-thumb, .crumb .seg, .brand';
 /* 角色卡片／世界觀卡片：滑過去游標會放大成實心圓，中間浮出「VIEW」字樣，
    跟一般連結的小圓點區分開來，強調「這是可以點進去瀏覽的卡片」 */
-const VIEW_SELECTOR = '.arc-card, .world-tile';
+const VIEW_SELECTOR = '.arc-card, .world-row';
 
 window.addEventListener('mousemove', (e)=>{
   mouseX = e.clientX; mouseY = e.clientY;
@@ -2908,18 +3256,34 @@ window.addEventListener('mousemove', (e)=>{
    狀態每一影格都重新算一次，就不會有「卡住忘記還原」的問題。 */
 function currentHoverState(){
   const el = document.elementFromPoint(mouseX, mouseY);
-  if(!el) return null;
-  if(el.closest(VIEW_SELECTOR)) return 'view';
-  if(el.closest(HOVER_SELECTOR)) return 'hover';
-  return null;
+  if(!el) return {state:null, target:null};
+  const viewEl = el.closest(VIEW_SELECTOR);
+  if(viewEl) return {state:'view', target:viewEl};
+  if(el.closest(HOVER_SELECTOR)) return {state:'hover', target:null};
+  return {state:null, target:null};
 }
 
+/* 游標磁吸：滑到卡片（角色卡／世界觀清單列）上時，游標不是單純疊在滑鼠
+   正下方，而是朝卡片中心被輕輕吸過去——跟首頁節點圖、Co-creation 清單
+   文字同一套「磁吸」手感，讓游標停在卡片上時有種被吸住定住的感覺，
+   而不是一個圓圈生硬地蓋在滑鼠上。只在 VIEW 狀態（卡片）發生，一般
+   連結的小圓點維持原本緊貼滑鼠。 */
+const CURSOR_PULL_STRENGTH = 0.38;
+
 (function cursorLoop(){
-  curX += (mouseX - curX) * 0.5;
-  curY += (mouseY - curY) * 0.5;
+  const { state, target } = currentHoverState();
+
+  let targetX = mouseX, targetY = mouseY;
+  if(state==='view' && target){
+    const r = target.getBoundingClientRect();
+    const cx = r.left + r.width/2, cy = r.top + r.height/2;
+    targetX = mouseX + (cx - mouseX) * CURSOR_PULL_STRENGTH;
+    targetY = mouseY + (cy - mouseY) * CURSOR_PULL_STRENGTH;
+  }
+  curX += (targetX - curX) * 0.5;
+  curY += (targetY - curY) * 0.5;
   cursor.style.transform = `translate(${curX}px, ${curY}px)`;
 
-  const state = currentHoverState();
   cursor.classList.toggle('is-view', state==='view');
   cursor.classList.toggle('is-hover', state==='hover');
 
