@@ -1,6 +1,16 @@
 backend:
   name: git-gateway
   branch: main
+  # 為了省 Netlify 額度（每次正式部署扣 15 點），後台存檔／上傳圖片時，
+  # commit 訊息會自動加上 [skip netlify]，Netlify 看到就不會自動部署。
+  # 一批內容改完後，到 Netlify →「Deploys」→「Trigger deploy」→「Deploy site」
+  # 手動部署一次，網站才會更新。想恢復「存檔就自動上線」，把下面整段刪掉即可。
+  commit_messages:
+    create: 'Create {{collection}} “{{slug}}” [skip netlify]'
+    update: 'Update {{collection}} “{{slug}}” [skip netlify]'
+    delete: 'Delete {{collection}} “{{slug}}” [skip netlify]'
+    uploadMedia: 'Upload “{{path}}” [skip netlify]'
+    deleteMedia: 'Delete “{{path}}” [skip netlify]'
 
 # 圖片上傳後會放在這個資料夾（網站裡的 images/uploads/）
 media_folder: "images/uploads"

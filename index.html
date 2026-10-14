@@ -1742,7 +1742,7 @@ let WORLD_META = {
 
 async function loadWorldMeta(){
   try{
-    const res = await fetch('./worlds.json', {cache:'no-store'});
+    const res = await fetch('./worlds.json', {cache:'no-cache'});
     if(!res.ok) throw new Error('HTTP '+res.status);
     const data = await res.json();
     const list = Array.isArray(data) ? data : (data.worlds || []);
@@ -1801,7 +1801,7 @@ const STATUS_COLOR = { alive:'#3fa66a', dead:'#5a5a5e' };
 let IMG_MANIFEST = null;
 async function loadImageManifest(){
   try{
-    const res = await fetch('/_img/manifest.json', {cache:'no-store'});
+    const res = await fetch('/_img/manifest.json', {cache:'no-cache'});
     if(!res.ok) return;
     const data = await res.json();
     IMG_MANIFEST = new Set(data.images || []);
@@ -2148,7 +2148,7 @@ const CHARACTER_SOURCES = [
 async function loadCharacters(){
   try{
     const results = await Promise.all(CHARACTER_SOURCES.map(async src=>{
-      const res = await fetch(src.file, {cache:'no-store'});
+      const res = await fetch(src.file, {cache:'no-cache'});
       if(!res.ok) throw new Error('HTTP '+res.status+' — '+src.file);
       const data = await res.json();
       const list = Array.isArray(data) ? data : (data.characters || []);
@@ -3001,7 +3001,7 @@ function renderProfile(id){
 
   const crumbParts = [{label:'Home',hash:'#/index'}];
   if(ch.category==='original'){ crumbParts.push({label:'Plurk Project',hash:'#/grid/original'}); }
-  else{ crumbParts.push({label:'Co-creation',hash:'#/coop'}, {label:WORLD_META[ch.world].name, hash:`#/grid/coop/${ch.world}`}); }
+  else{ crumbParts.push({label:'Co-creation',hash:'#/coop'}, {label:(WORLD_META[ch.world] && WORLD_META[ch.world].name) || String(ch.world||'').toUpperCase(), hash:`#/grid/coop/${ch.world}`}); }
   crumbParts.push({label:ch.codename});
   setCrumb(crumbParts);
 
