@@ -553,6 +553,12 @@ body.is-gate{overflow-x:hidden;}
   transition:color .2s ease;
 }
 .index-dd-col a:hover{color:var(--brand);}
+.index-dd-soon{
+  display:block; font-size:13px; color:var(--ink-faint); padding:5px 0; cursor:default;
+}
+.index-dd-soon small{
+  font-family:var(--font-mono); font-size:9px; letter-spacing:.08em; margin-left:8px;
+}
 @media (max-width:640px){
   .nav-index{padding-right:0; border-right:none;}
   /* 手機上「Index」這個字通常在畫面偏左的位置，如果選單用 right:0 對齊，
@@ -863,6 +869,9 @@ body.is-gate{overflow-x:hidden;}
   z-index:-1;
 }
 .world-row:hover{ padding:30px 22px; }
+/* 還沒有角色的世界觀：變淡、滑過去沒有任何效果 */
+.world-row.is-empty{ opacity:.38; pointer-events:none; }
+.wr-soon{ letter-spacing:.12em; }
 .world-row:hover::before{ transform:scaleX(1); }
 .world-list:hover .world-row:not(:hover){ opacity:.42; }
 .wr-name{
@@ -1729,17 +1738,18 @@ body.has-fullbody-bg footer{ border-top:none; }
 ============================================================ */
 /* 世界觀介紹文字（名稱／代號／簡述／介紹卡片）現在從 worlds.json 讀取，
    在後台的「世界觀 Worlds」分類裡就能直接編輯，不用改這支 index.html。
-   這裡先放一份跟 worlds.json 一樣的內容當備援，避免 worlds.json 讀取失敗時整頁掛掉。
+   這裡只放名稱跟代號當備援，避免 worlds.json 讀取失敗時整頁掛掉（介紹文字以 worlds.json 為準）。
    注意：這裡只是「介紹文字」的資料，真正的角色列表還是各自存在
-   characters-mafia.json / characters-ancient.json / characters-hero.json 這幾個檔案裡，
-   兩邊的 slug（例如 "mafia"）要一致，角色才會被歸到對的世界觀底下。 */
+   characters-<slug>.json 這些檔案裡，兩邊的 slug（例如 "mafia"）要一致，
+   角色才會被歸到對的世界觀底下。 */
 let WORLD_META = {
-  mafia:  { name:'MAFIA',   code:'W-01', desc:'A criminal underworld built on power, contracts, and family loyalty.',
-    brief:'現代黑手黨世界觀，三大黑幫家族佔據了西西里，分別是坎圖家族、羅西家族與馬拉斯家族。這裡訴說的是他們的故事。' },
-  ancient:{ name:'ANCIENT', code:'W-02', desc:'An alternate ancient-East setting where court politics and jianghu coexist.',
-    brief:'Placeholder text — replace with your own worldbuilding. An empire in decline, held together by ritual and rumor. Wandering swordsmen drift between border garrisons and the capital, carrying messages no one will say out loud.' },
-  hero:   { name:'HERO',    code:'W-03', desc:'A contemporary order of licensed superhumans.',
-    brief:'Placeholder text — replace with your own worldbuilding. Powers were legalized eleven years ago and immediately turned into a ranking system. Every hero answers to a division; not every division agrees on what "answer to" means.' },
+  mafia:    { name:'MAFIA',     code:'W-01' },
+  ancient:  { name:'ANCIENT',   code:'W-02' },
+  hero:     { name:'HERO',      code:'W-03' },
+  fantasy:  { name:'FANTASY',   code:'W-04' },
+  football: { name:'FOOTBALL',  code:'W-05' },
+  victorian:{ name:'VICTORIAN', code:'W-06' },
+  other:    { name:'OTHER',     code:'W-07' },
 };
 
 async function loadWorldMeta(){
@@ -1750,7 +1760,12 @@ async function loadWorldMeta(){
     const list = Array.isArray(data) ? data : (data.worlds || []);
     if(list.length){
       const merged = {};
-      list.forEach(w=>{ if(w.slug) merged[w.slug] = { name:w.name, code:w.code, desc:w.desc, brief:w.brief, timeline:w.timeline||[] }; });
+      list.forEach(w=>{
+        if(!w.slug) return;
+        const color = COLOR_RE.test(w.color||'') ? w.color : '';
+        merged[w.slug] = { name:w.name, code:w.code, desc:w.desc, brief:w.brief, timeline:w.timeline||[], color };
+        if(color) WORLD_COLORS[w.slug] = color;
+      });
       WORLD_META = merged;
     }
   }catch(err){
@@ -1758,23 +1773,7 @@ async function loadWorldMeta(){
   }
 }
 
-/* 首頁縮圖預覽區（moodboard）—— 自動從角色資料裡「已經有上傳圖片」的角色收集
-   大頭照＋Gallery 縮圖，每次整理頁面會重新洗牌隨機排序。電腦只留一排、手機留兩排，
-   多出來的用 CSS 裁掉，不用手動維護清單，之後角色/圖片增加會自動反映。 */
-function buildThumbPool(){
-  const pool = [];
-  CHARACTERS.forEach(ch=>{
-    if(ch.avatarImg) pool.push(thumbSrc(ch.avatarImg));
-    (ch.gallery||[]).forEach(g=>{ const t = g.thumb || g.image; if(t) pool.push(thumbSrc(t)); });
-  });
-  for(let i=pool.length-1;i>0;i--){
-    const j = Math.floor(Math.random()*(i+1));
-    [pool[i],pool[j]] = [pool[j],pool[i]];
-  }
-  return pool;
-}
-
-/* 角色資料現在拆成 4 個外部檔案讀取（見下方 CHARACTER_SOURCES），
+/* 角色資料拆成好幾個外部檔案讀取（每個世界觀一個，見下方 CHARACTER_SOURCES），
    之後要新增/修改角色，直接在後台（/admin/）編輯即可，完全不用碰這支 index.html。 */
 let CHARACTERS = [];
 
@@ -1983,7 +1982,7 @@ window.addEventListener('hashchange', ()=>{
 });
 window.addEventListener('DOMContentLoaded', ()=>{
   document.getElementById('foot-time').textContent = 'REV. ' + new Date().toISOString().slice(0,10);
-  Promise.all([loadWorldMeta(), loadImageManifest()]).then(()=>{ loadCharacters(); populateIndexDropdown(); });
+  Promise.all([loadWorldMeta(), loadImageManifest()]).then(()=>loadCharacters()).then(populateIndexDropdown);
   runIntroSplash();
   initIndexNav();
   initNavBurger();
@@ -1994,9 +1993,14 @@ window.addEventListener('DOMContentLoaded', ()=>{
 function populateIndexDropdown(){
   const col = document.getElementById('index-dd-coop');
   if(!col) return;
-  const links = Object.entries(WORLD_META).map(([key,w])=>
-    `<a href="#/grid/coop/${key}">${w.name || key.toUpperCase()}</a>`
-  ).join('');
+  /* 還沒有角色的世界觀一樣列出來，但變淡、標 SOON、不能點 */
+  const links = Object.entries(WORLD_META).map(([key,w])=>{
+    const name = w.name || key.toUpperCase();
+    const count = CHARACTERS.filter(c=>c.category==='coop' && c.world===key).length;
+    return count
+      ? `<a href="#/grid/coop/${key}">${name}</a>`
+      : `<span class="index-dd-soon" aria-disabled="true">${name}<small>SOON</small></span>`;
+  }).join('');
   col.innerHTML = `<div class="index-dd-label">共構</div>${links}`;
 }
 
@@ -2208,15 +2212,34 @@ function setWorldTheme(world){
   document.body.classList.toggle('theme-victorian', world==='victorian');
   document.body.classList.toggle('theme-hero', world==='hero');
   document.body.classList.toggle('theme-other', world==='other');
+
+  /* 後台改過代表色（跟內建預設色不一樣）時，用新的顏色蓋過這個世界觀的強調色；
+     沒改過就完全沿用上面 body.theme-* 原本設計好的整套配色。
+     沒有內建配色的新世界觀，只要在後台填了代表色，也會套用成強調色。 */
+  const bodyStyle = document.body.style;
+  const custom = world && WORLD_META[world] && WORLD_META[world].color;
+  const isOverride = custom && custom.toLowerCase() !== (WORLD_COLORS_DEFAULT[world]||'').toLowerCase();
+  if(isOverride){
+    bodyStyle.setProperty('--accent', custom);
+    bodyStyle.setProperty('--brand', custom);
+    bodyStyle.setProperty('--logo-color', custom);
+    bodyStyle.setProperty('--accent-soft', `color-mix(in srgb, ${custom} 22%, var(--bg))`);
+  } else {
+    ['--accent','--brand','--logo-color','--accent-soft'].forEach(v=>bodyStyle.removeProperty(v));
+  }
 }
 
 /* Co-creation 選單卡片要在「還沒進入那個世界觀」的狀態下，就先用上它的代表色，
    跟 body.theme-* 是同一套顏色，這裡另外存一份給選單直接讀，不用為了讀顏色
    就先把整個頁面套上那個世界觀的主題 */
-const WORLD_COLORS = {
+const WORLD_COLORS_DEFAULT = {
   mafia:'#e0293e', ancient:'#6b7a66', hero:'#c6811f', fantasy:'#72636e',
   football:'#619e69', victorian:'#60373e', other:'#5b6472',
 };
+/* 後台「世界觀 Worlds」裡每個世界觀可以填「代表色 Color」（見 loadWorldMeta），
+   有填就蓋過上面的預設值；沒填就沿用預設 */
+const WORLD_COLORS = { ...WORLD_COLORS_DEFAULT };
+const COLOR_RE = /^#([0-9a-f]{3}|[0-9a-f]{6})$/i;
 
 function route(){
   const hash = location.hash || '#/';
@@ -2507,6 +2530,16 @@ function renderCoopWorlds(){
   const rows = Object.entries(WORLD_META).map(([key,w])=>{
     const count = CHARACTERS.filter(c=>c.category==='coop' && c.world===key).length;
     const accent = WORLD_COLORS[key] || 'var(--brand)';
+    /* 還沒有任何角色的世界觀：變淡、標示 COMING SOON，不能點進去（不然只會看到空頁面） */
+    if(!count){
+      return `<div class="world-row is-empty" aria-disabled="true" style="--tile-accent:${accent};">
+      <span class="wr-name">${w.name}</span>
+      <span class="wr-meta">
+        <span class="wr-code">${w.code||''}</span>
+        <span class="wr-count wr-soon">COMING SOON</span>
+      </span>
+    </div>`;
+    }
     return `<a class="world-row" href="#/grid/coop/${key}" style="--tile-accent:${accent};">
       <span class="wr-name">${w.name}</span>
       <span class="wr-meta">
@@ -3587,7 +3620,14 @@ const VIEW_SELECTOR = '.arc-card, .world-row';
 
 window.addEventListener('mousemove', (e)=>{
   mouseX = e.clientX; mouseY = e.clientY;
+  wakeCursor();
 });
+/* 滑鼠沒動，但畫面在捲動／換頁（游標底下的東西變了）時也要重新判斷 */
+window.addEventListener('scroll', ()=>wakeCursor(), {capture:true, passive:true});
+window.addEventListener('wheel', ()=>wakeCursor(), {passive:true});
+window.addEventListener('mousedown', ()=>wakeCursor());
+window.addEventListener('mouseup', ()=>wakeCursor());
+window.addEventListener('hashchange', ()=>wakeCursor());
 
 /* 用 mouseover/mouseout 事件判斷游標該不該變成 hover 樣式，
    在 SPA 換頁（點卡片跳轉、innerHTML 整塊換掉）時會有問題：
@@ -3611,7 +3651,17 @@ function currentHoverState(){
    連結的小圓點維持原本緊貼滑鼠。 */
 const CURSOR_PULL_STRENGTH = 0.38;
 
-(function cursorLoop(){
+/* 游標動畫只在需要時才跑：滑鼠移動、捲動、換頁時喚醒，
+   游標跟殘影都追上滑鼠、而且懸停狀態連續一段時間沒變，就自動暫停，
+   不會在滑鼠完全沒動的時候還每秒重算 60 次（筆電比較省電）。 */
+let cursorRAF = null;
+let cursorIdleFrames = 0;
+let lastCursorState = null;
+function wakeCursor(){
+  cursorIdleFrames = 0;
+  if(!cursorRAF) cursorRAF = requestAnimationFrame(cursorLoop);
+}
+function cursorLoop(){
   const { state, target } = currentHoverState();
 
   let targetX = mouseX, targetY = mouseY;
@@ -3629,16 +3679,24 @@ const CURSOR_PULL_STRENGTH = 0.38;
   cursor.classList.toggle('is-hover', state==='hover');
 
   let prevX = curX, prevY = curY;
+  let maxGap = Math.abs(targetX - curX) + Math.abs(targetY - curY);
   trailDots.forEach((t, i)=>{
     const lerp = Math.max(0.45 - i*0.06, 0.16); /* 越後面跟得越慢，自然拉開間距 */
     t.x += (prevX - t.x) * lerp;
     t.y += (prevY - t.y) * lerp;
     t.el.style.transform = `translate(${t.x}px, ${t.y}px)`;
+    maxGap = Math.max(maxGap, Math.abs(prevX - t.x) + Math.abs(prevY - t.y));
     prevX = t.x; prevY = t.y;
   });
 
-  requestAnimationFrame(cursorLoop);
-})();
+  /* 位置都追上了（差距不到 0.1px）、懸停狀態也沒變，連續 30 影格（約半秒）就暫停 */
+  if(maxGap < 0.1 && state === lastCursorState) cursorIdleFrames++;
+  else cursorIdleFrames = 0;
+  lastCursorState = state;
+  if(cursorIdleFrames > 30){ cursorRAF = null; return; }
+  cursorRAF = requestAnimationFrame(cursorLoop);
+}
+wakeCursor();
 </script>
 <!-- Netlify Identity：讓邀請信、忘記密碼的連結能正常運作（點連結後會跳出設定密碼的視窗） -->
 <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
