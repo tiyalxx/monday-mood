@@ -1,25 +1,39 @@
 backend:
   name: git-gateway
   branch: main
+  # 為了省 Netlify 額度（每次正式部署扣 15 點），後台存檔／上傳圖片時，
+  # commit 訊息會自動加上 [skip netlify]，Netlify 看到就不會自動部署。
+  # 一批內容改完後，到 Netlify →「Deploys」→「Trigger deploy」→「Deploy site」
+  # 手動部署一次，網站才會更新。想恢復「存檔就自動上線」，把下面整段刪掉即可。
+  commit_messages:
+    create: 'Create {{collection}} “{{slug}}” [skip netlify]'
+    update: 'Update {{collection}} “{{slug}}” [skip netlify]'
+    delete: 'Delete {{collection}} “{{slug}}” [skip netlify]'
+    uploadMedia: 'Upload “{{path}}” [skip netlify]'
+    deleteMedia: 'Delete “{{path}}” [skip netlify]'
 
 # 圖片上傳後會放在這個資料夾（網站裡的 images/uploads/）
 media_folder: "images/uploads"
 public_folder: "/images/uploads"
 
-# 存檔後直接發布，不需要額外審核流程
+# 存檔後直接寫進 main，不需要額外審核流程（但網站要手動部署才會更新，見上方 commit_messages 說明）
 publish_mode: simple
 
 # ------------------------------------------------------------------
-# 角色資料拆成 4 個檔案，分屬兩個大分類的資料夾：
+# 角色資料拆成 8 個檔案，分屬兩個大分類的資料夾：
 #   企劃 Original
 #     └─ characters-original.json
 #   共構 Collab
-#     ├─ MAFIA   → characters-mafia.json
-#     ├─ ANCIENT → characters-ancient.json
-#     └─ HERO    → characters-hero.json
+#     ├─ MAFIA     → characters-mafia.json
+#     ├─ ANCIENT   → characters-ancient.json
+#     ├─ HERO      → characters-hero.json
+#     ├─ FANTASY   → characters-fantasy.json
+#     ├─ FOOTBALL  → characters-football.json
+#     ├─ VICTORIAN → characters-victorian.json
+#     └─ OTHER     → characters-other.json
 #
 # 左側選單會先看到「企劃 Original」「共構 Collab」兩個大分類，
-# 點開「共構 Collab」才會看到 MAFIA / ANCIENT / HERO 三個子項，
+# 點開「共構 Collab」才會看到各個世界觀的子項，
 # 點進去才是該世界觀底下的角色列表——不會再把 30 幾個角色全部塞在同一頁。
 #
 # 世界觀（world）跟分類（category）已經不是角色資料裡的欄位了，
@@ -45,6 +59,7 @@ collections:
               - {label: "編號 Code（例如 W-01）", name: "code", widget: "string", required: false}
               - {label: "簡短說明 Short Desc（顯示在共構世界選單卡片上）", name: "desc", widget: "text", required: false}
               - {label: "介紹全文 Brief（顯示在該世界觀角色列表頁的浮動卡片裡）", name: "brief", widget: "text", required: false}
+              - {label: "代表色 Color（共構選單、換頁轉場、該世界觀頁面的強調色；留空就用網站內建的顏色）", name: "color", widget: "color", required: false}
 
   - name: "original"
     label: "企劃 Original"

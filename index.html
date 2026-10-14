@@ -553,6 +553,12 @@ body.is-gate{overflow-x:hidden;}
   transition:color .2s ease;
 }
 .index-dd-col a:hover{color:var(--brand);}
+.index-dd-soon{
+  display:block; font-size:13px; color:var(--ink-faint); padding:5px 0; cursor:default;
+}
+.index-dd-soon small{
+  font-family:var(--font-mono); font-size:9px; letter-spacing:.08em; margin-left:8px;
+}
 @media (max-width:640px){
   .nav-index{padding-right:0; border-right:none;}
   /* 手機上「Index」這個字通常在畫面偏左的位置，如果選單用 right:0 對齊，
@@ -863,6 +869,9 @@ body.is-gate{overflow-x:hidden;}
   z-index:-1;
 }
 .world-row:hover{ padding:30px 22px; }
+/* 還沒有角色的世界觀：變淡、滑過去沒有任何效果 */
+.world-row.is-empty{ opacity:.38; pointer-events:none; }
+.wr-soon{ letter-spacing:.12em; }
 .world-row:hover::before{ transform:scaleX(1); }
 .world-list:hover .world-row:not(:hover){ opacity:.42; }
 .wr-name{
@@ -1138,6 +1147,8 @@ body.is-gate{overflow-x:hidden;}
    這裡的 class 只負責視覺樣式，不負責排版數值。 */
 /* 角色列表恢復成橫向重疊卡片牆，但取消原本的弧形高低起伏：
    每張卡片統一寬度／高度，排成一直線，只靠中間淡出/降飽和＋滑鼠放大來做重點 */
+/* 滑鼠按住拖曳卡片時，不要反白選到文字 */
+.arc-stage.is-dragging, .arc-stage.is-dragging *{ user-select:none; -webkit-user-select:none; }
 .arc-stage{
   height:clamp(380px, 56vh, 600px);
   overflow-x:auto; overflow-y:hidden;
@@ -1727,28 +1738,34 @@ body.has-fullbody-bg footer{ border-top:none; }
 ============================================================ */
 /* 世界觀介紹文字（名稱／代號／簡述／介紹卡片）現在從 worlds.json 讀取，
    在後台的「世界觀 Worlds」分類裡就能直接編輯，不用改這支 index.html。
-   這裡先放一份跟 worlds.json 一樣的內容當備援，避免 worlds.json 讀取失敗時整頁掛掉。
+   這裡只放名稱跟代號當備援，避免 worlds.json 讀取失敗時整頁掛掉（介紹文字以 worlds.json 為準）。
    注意：這裡只是「介紹文字」的資料，真正的角色列表還是各自存在
-   characters-mafia.json / characters-ancient.json / characters-hero.json 這幾個檔案裡，
-   兩邊的 slug（例如 "mafia"）要一致，角色才會被歸到對的世界觀底下。 */
+   characters-<slug>.json 這些檔案裡，兩邊的 slug（例如 "mafia"）要一致，
+   角色才會被歸到對的世界觀底下。 */
 let WORLD_META = {
-  mafia:  { name:'MAFIA',   code:'W-01', desc:'A criminal underworld built on power, contracts, and family loyalty.',
-    brief:'現代黑手黨世界觀，三大黑幫家族佔據了西西里，分別是坎圖家族、羅西家族與馬拉斯家族。這裡訴說的是他們的故事。' },
-  ancient:{ name:'ANCIENT', code:'W-02', desc:'An alternate ancient-East setting where court politics and jianghu coexist.',
-    brief:'Placeholder text — replace with your own worldbuilding. An empire in decline, held together by ritual and rumor. Wandering swordsmen drift between border garrisons and the capital, carrying messages no one will say out loud.' },
-  hero:   { name:'HERO',    code:'W-03', desc:'A contemporary order of licensed superhumans.',
-    brief:'Placeholder text — replace with your own worldbuilding. Powers were legalized eleven years ago and immediately turned into a ranking system. Every hero answers to a division; not every division agrees on what "answer to" means.' },
+  mafia:    { name:'MAFIA',     code:'W-01' },
+  ancient:  { name:'ANCIENT',   code:'W-02' },
+  hero:     { name:'HERO',      code:'W-03' },
+  fantasy:  { name:'FANTASY',   code:'W-04' },
+  football: { name:'FOOTBALL',  code:'W-05' },
+  victorian:{ name:'VICTORIAN', code:'W-06' },
+  other:    { name:'OTHER',     code:'W-07' },
 };
 
 async function loadWorldMeta(){
   try{
-    const res = await fetch('./worlds.json', {cache:'no-store'});
+    const res = await fetch('./worlds.json', {cache:'no-cache'});
     if(!res.ok) throw new Error('HTTP '+res.status);
     const data = await res.json();
     const list = Array.isArray(data) ? data : (data.worlds || []);
     if(list.length){
       const merged = {};
-      list.forEach(w=>{ if(w.slug) merged[w.slug] = { name:w.name, code:w.code, desc:w.desc, brief:w.brief, timeline:w.timeline||[] }; });
+      list.forEach(w=>{
+        if(!w.slug) return;
+        const color = COLOR_RE.test(w.color||'') ? w.color : '';
+        merged[w.slug] = { name:w.name, code:w.code, desc:w.desc, brief:w.brief, timeline:w.timeline||[], color };
+        if(color) WORLD_COLORS[w.slug] = color;
+      });
       WORLD_META = merged;
     }
   }catch(err){
@@ -1756,23 +1773,7 @@ async function loadWorldMeta(){
   }
 }
 
-/* 首頁縮圖預覽區（moodboard）—— 自動從角色資料裡「已經有上傳圖片」的角色收集
-   大頭照＋Gallery 縮圖，每次整理頁面會重新洗牌隨機排序。電腦只留一排、手機留兩排，
-   多出來的用 CSS 裁掉，不用手動維護清單，之後角色/圖片增加會自動反映。 */
-function buildThumbPool(){
-  const pool = [];
-  CHARACTERS.forEach(ch=>{
-    if(ch.avatarImg) pool.push(thumbSrc(ch.avatarImg));
-    (ch.gallery||[]).forEach(g=>{ const t = g.thumb || g.image; if(t) pool.push(thumbSrc(t)); });
-  });
-  for(let i=pool.length-1;i>0;i--){
-    const j = Math.floor(Math.random()*(i+1));
-    [pool[i],pool[j]] = [pool[j],pool[i]];
-  }
-  return pool;
-}
-
-/* 角色資料現在拆成 4 個外部檔案讀取（見下方 CHARACTER_SOURCES），
+/* 角色資料拆成好幾個外部檔案讀取（每個世界觀一個，見下方 CHARACTER_SOURCES），
    之後要新增/修改角色，直接在後台（/admin/）編輯即可，完全不用碰這支 index.html。 */
 let CHARACTERS = [];
 
@@ -1801,7 +1802,7 @@ const STATUS_COLOR = { alive:'#3fa66a', dead:'#5a5a5e' };
 let IMG_MANIFEST = null;
 async function loadImageManifest(){
   try{
-    const res = await fetch('/_img/manifest.json', {cache:'no-store'});
+    const res = await fetch('/_img/manifest.json', {cache:'no-cache'});
     if(!res.ok) return;
     const data = await res.json();
     IMG_MANIFEST = new Set(data.images || []);
@@ -1981,7 +1982,7 @@ window.addEventListener('hashchange', ()=>{
 });
 window.addEventListener('DOMContentLoaded', ()=>{
   document.getElementById('foot-time').textContent = 'REV. ' + new Date().toISOString().slice(0,10);
-  Promise.all([loadWorldMeta(), loadImageManifest()]).then(()=>{ loadCharacters(); populateIndexDropdown(); });
+  Promise.all([loadWorldMeta(), loadImageManifest()]).then(()=>loadCharacters()).then(populateIndexDropdown);
   runIntroSplash();
   initIndexNav();
   initNavBurger();
@@ -1992,9 +1993,14 @@ window.addEventListener('DOMContentLoaded', ()=>{
 function populateIndexDropdown(){
   const col = document.getElementById('index-dd-coop');
   if(!col) return;
-  const links = Object.entries(WORLD_META).map(([key,w])=>
-    `<a href="#/grid/coop/${key}">${w.name || key.toUpperCase()}</a>`
-  ).join('');
+  /* 還沒有角色的世界觀一樣列出來，但變淡、標 SOON、不能點 */
+  const links = Object.entries(WORLD_META).map(([key,w])=>{
+    const name = w.name || key.toUpperCase();
+    const count = CHARACTERS.filter(c=>c.category==='coop' && c.world===key).length;
+    return count
+      ? `<a href="#/grid/coop/${key}">${name}</a>`
+      : `<span class="index-dd-soon" aria-disabled="true">${name}<small>SOON</small></span>`;
+  }).join('');
   col.innerHTML = `<div class="index-dd-label">共構</div>${links}`;
 }
 
@@ -2148,7 +2154,7 @@ const CHARACTER_SOURCES = [
 async function loadCharacters(){
   try{
     const results = await Promise.all(CHARACTER_SOURCES.map(async src=>{
-      const res = await fetch(src.file, {cache:'no-store'});
+      const res = await fetch(src.file, {cache:'no-cache'});
       if(!res.ok) throw new Error('HTTP '+res.status+' — '+src.file);
       const data = await res.json();
       const list = Array.isArray(data) ? data : (data.characters || []);
@@ -2206,15 +2212,34 @@ function setWorldTheme(world){
   document.body.classList.toggle('theme-victorian', world==='victorian');
   document.body.classList.toggle('theme-hero', world==='hero');
   document.body.classList.toggle('theme-other', world==='other');
+
+  /* 後台改過代表色（跟內建預設色不一樣）時，用新的顏色蓋過這個世界觀的強調色；
+     沒改過就完全沿用上面 body.theme-* 原本設計好的整套配色。
+     沒有內建配色的新世界觀，只要在後台填了代表色，也會套用成強調色。 */
+  const bodyStyle = document.body.style;
+  const custom = world && WORLD_META[world] && WORLD_META[world].color;
+  const isOverride = custom && custom.toLowerCase() !== (WORLD_COLORS_DEFAULT[world]||'').toLowerCase();
+  if(isOverride){
+    bodyStyle.setProperty('--accent', custom);
+    bodyStyle.setProperty('--brand', custom);
+    bodyStyle.setProperty('--logo-color', custom);
+    bodyStyle.setProperty('--accent-soft', `color-mix(in srgb, ${custom} 22%, var(--bg))`);
+  } else {
+    ['--accent','--brand','--logo-color','--accent-soft'].forEach(v=>bodyStyle.removeProperty(v));
+  }
 }
 
 /* Co-creation 選單卡片要在「還沒進入那個世界觀」的狀態下，就先用上它的代表色，
    跟 body.theme-* 是同一套顏色，這裡另外存一份給選單直接讀，不用為了讀顏色
    就先把整個頁面套上那個世界觀的主題 */
-const WORLD_COLORS = {
+const WORLD_COLORS_DEFAULT = {
   mafia:'#e0293e', ancient:'#6b7a66', hero:'#c6811f', fantasy:'#72636e',
   football:'#619e69', victorian:'#60373e', other:'#5b6472',
 };
+/* 後台「世界觀 Worlds」裡每個世界觀可以填「代表色 Color」（見 loadWorldMeta），
+   有填就蓋過上面的預設值；沒填就沿用預設 */
+const WORLD_COLORS = { ...WORLD_COLORS_DEFAULT };
+const COLOR_RE = /^#([0-9a-f]{3}|[0-9a-f]{6})$/i;
 
 function route(){
   const hash = location.hash || '#/';
@@ -2505,6 +2530,16 @@ function renderCoopWorlds(){
   const rows = Object.entries(WORLD_META).map(([key,w])=>{
     const count = CHARACTERS.filter(c=>c.category==='coop' && c.world===key).length;
     const accent = WORLD_COLORS[key] || 'var(--brand)';
+    /* 還沒有任何角色的世界觀：變淡、標示 COMING SOON，不能點進去（不然只會看到空頁面） */
+    if(!count){
+      return `<div class="world-row is-empty" aria-disabled="true" style="--tile-accent:${accent};">
+      <span class="wr-name">${w.name}</span>
+      <span class="wr-meta">
+        <span class="wr-code">${w.code||''}</span>
+        <span class="wr-count wr-soon">COMING SOON</span>
+      </span>
+    </div>`;
+    }
     return `<a class="world-row" href="#/grid/coop/${key}" style="--tile-accent:${accent};">
       <span class="wr-name">${w.name}</span>
       <span class="wr-meta">
@@ -2822,7 +2857,7 @@ function buildArcStage(list){
     </a>`;
   });
 
-  const hintLabel = isMobile ? 'SWIPE TO BROWSE' : 'SCROLL TO BROWSE';
+  const hintLabel = isMobile ? 'SWIPE TO BROWSE' : 'SCROLL OR DRAG TO BROWSE';
   return `
   <div class="arc-stage" id="arc-stage"><div class="arc-track" id="arc-track">${html}</div></div>
   <div class="arc-hint"><span class="dot"></span> ${hintLabel}</div>`;
@@ -2936,22 +2971,126 @@ function initArcStage(){
     momentumRAF = requestAnimationFrame(stepMomentum);
   }
 
+  /* 某一張卡片置中時，stage 應該捲到的 scrollLeft */
+  function cardTarget(card){
+    const stageRectC = stage.getBoundingClientRect();
+    const r = card.getBoundingClientRect();
+    return (r.left - stageRectC.left) + stage.scrollLeft + r.width/2 - stage.clientWidth/2;
+  }
+  function nearestCardIndex(cards){
+    const center = stage.getBoundingClientRect().left + stage.clientWidth/2;
+    let best = 0, bestDist = Infinity;
+    cards.forEach((card,i)=>{
+      const r = card.getBoundingClientRect();
+      const d = Math.abs(r.left + r.width/2 - center);
+      if(d < bestDist){ bestDist = d; best = i; }
+    });
+    return best;
+  }
+  /* 平滑捲到指定 scrollLeft（跟 snapToNearest 同一套緩動，共用 snapRAF，
+     新的捲動一開始就會接手、取代還沒跑完的舊動畫） */
+  let stepTargetIdx = null;
+  function animateScrollTo(target, duration){
+    cancelSnap();
+    const start = stage.scrollLeft;
+    const dist = target - start;
+    const startTime = performance.now();
+    function easeOutCubic(t){ return 1 - Math.pow(1-t, 3); }
+    function tick(now){
+      const t = Math.min(1, (now - startTime) / duration);
+      stage.scrollLeft = start + dist * easeOutCubic(t);
+      updateArcFocus(stage);
+      if(t < 1){ snapRAF = requestAnimationFrame(tick); }
+      else { snapRAF = null; stepTargetIdx = null; }
+    }
+    snapRAF = requestAnimationFrame(tick);
+  }
+
   if(window.innerWidth > 820){
+    /* 滑鼠滾輪：每滾一格只移動「一張」卡片，不再用慣性一口氣衝過好幾張。
+       觸控板會送出很多很小的 deltaY，所以先累積，累積到一定量才算一格；
+       連續快速滾動時，從「正要前往的那張」繼續往下算，不會吃掉滾動的格數。 */
+    const WHEEL_STEP = 60;      // 累積多少 deltaY 算一格（一般滑鼠滾一格約 100）
+    const WHEEL_COOLDOWN = 110; // 兩次換卡之間最短間隔（毫秒），避免觸控板一甩就飛過整排
+    let wheelAcc = 0;
+    let lastStepTime = 0;
     stage.addEventListener('wheel', (e)=>{
       if(Math.abs(e.deltaX) > Math.abs(e.deltaY)) return; // 觸控板橫滑，交給原生捲動
       e.preventDefault();
-      cancelSnap();
-      momentum += e.deltaY * 0.65;
-      momentum = Math.max(-90, Math.min(90, momentum));
-      if(!momentumRAF){ momentumRAF = requestAnimationFrame(stepMomentum); }
+      if(momentumRAF){ cancelAnimationFrame(momentumRAF); momentumRAF = null; momentum = 0; }
+      const dy = e.deltaMode === 1 ? e.deltaY * 40 : e.deltaY; // 以「行」為單位的滑鼠換算成像素
+      if(wheelAcc && Math.sign(dy) !== Math.sign(wheelAcc)) wheelAcc = 0;
+      wheelAcc += dy;
+      const now = performance.now();
+      if(Math.abs(wheelAcc) < WHEEL_STEP || now - lastStepTime < WHEEL_COOLDOWN) return;
+      const dir = Math.sign(wheelAcc);
+      wheelAcc = 0;
+      lastStepTime = now;
+      const cards = stage.querySelectorAll('.arc-card');
+      if(!cards.length) return;
+      const from = stepTargetIdx != null ? stepTargetIdx : nearestCardIndex(cards);
+      const to = Math.max(0, Math.min(cards.length-1, from + dir));
+      stepTargetIdx = to;
+      animateScrollTo(cardTarget(cards[to]), 320);
     }, {passive:false});
+
+    /* 滑鼠按住拖曳：按住卡片往左右拉就能捲動，放開後依照甩動的速度
+       再滑一小段，最後一樣自動對齊到最近的卡片。只處理滑鼠，
+       手機／觸控板維持瀏覽器原生的滑動。拖過之後放開不會被當成「點擊」，
+       不會不小心跳進角色頁；沒有拖動（單純點一下）則照常進入角色頁。 */
+    let drag = null;
+    let suppressClick = false;
+    stage.addEventListener('pointerdown', (e)=>{
+      if(e.pointerType !== 'mouse' || e.button !== 0) return;
+      cancelSnap();
+      stepTargetIdx = null;
+      if(momentumRAF){ cancelAnimationFrame(momentumRAF); momentumRAF = null; momentum = 0; }
+      drag = { startX:e.clientX, startScroll:stage.scrollLeft, lastX:e.clientX, lastT:performance.now(), v:0, moved:false, id:e.pointerId };
+    });
+    stage.addEventListener('pointermove', (e)=>{
+      if(!drag || e.pointerId !== drag.id) return;
+      const dx = e.clientX - drag.startX;
+      if(!drag.moved){
+        if(Math.abs(dx) < 6) return; // 小於 6px 視為點擊，不算拖曳
+        drag.moved = true;
+        stage.setPointerCapture(e.pointerId);
+        stage.classList.add('is-dragging');
+      }
+      stage.scrollLeft = drag.startScroll - dx;
+      const now = performance.now();
+      const dt = Math.max(1, now - drag.lastT);
+      /* 速度換算成「每一影格（約 16ms）移動幾 px」，給放開後的慣性用 */
+      drag.v = drag.v*0.6 + ((drag.lastX - e.clientX) / dt * 16) * 0.4;
+      drag.lastX = e.clientX; drag.lastT = now;
+      updateArcFocus(stage);
+    });
+    function endDrag(e){
+      if(!drag || (e && e.pointerId !== drag.id)) return;
+      const d = drag; drag = null;
+      stage.classList.remove('is-dragging');
+      if(!d.moved) return;
+      suppressClick = true;
+      setTimeout(()=>{ suppressClick = false; }, 0);
+      /* 放開前停住超過 0.1 秒就不給慣性，直接對齊 */
+      const v = performance.now() - d.lastT > 100 ? 0 : d.v;
+      momentum = Math.max(-40, Math.min(40, v));
+      if(Math.abs(momentum) > 1){ momentumRAF = requestAnimationFrame(stepMomentum); }
+      else { momentum = 0; snapToNearest(); }
+    }
+    stage.addEventListener('pointerup', endDrag);
+    stage.addEventListener('pointercancel', endDrag);
+    stage.addEventListener('click', (e)=>{
+      if(suppressClick){ e.preventDefault(); e.stopPropagation(); suppressClick = false; }
+    }, true);
+    /* 不讓瀏覽器把圖片／連結當成「拖出去」的檔案，不然拉一下就變成拖曳圖片 */
+    stage.addEventListener('dragstart', (e)=>e.preventDefault());
   }
   let ticking = false;
   stage.addEventListener('scroll', ()=>{
     if(ticking) return;
     ticking = true;
     requestAnimationFrame(()=>{ updateArcFocus(stage); ticking = false; });
-    if(!momentumRAF && !snapRAF){ scheduleSnap(); }
+    if(!momentumRAF && !snapRAF && !stage.classList.contains('is-dragging')){ scheduleSnap(); }
   }, {passive:true});
   requestAnimationFrame(()=>{
     const cardsEls = track.querySelectorAll('.arc-card');
@@ -3001,7 +3140,7 @@ function renderProfile(id){
 
   const crumbParts = [{label:'Home',hash:'#/index'}];
   if(ch.category==='original'){ crumbParts.push({label:'Plurk Project',hash:'#/grid/original'}); }
-  else{ crumbParts.push({label:'Co-creation',hash:'#/coop'}, {label:WORLD_META[ch.world].name, hash:`#/grid/coop/${ch.world}`}); }
+  else{ crumbParts.push({label:'Co-creation',hash:'#/coop'}, {label:(WORLD_META[ch.world] && WORLD_META[ch.world].name) || String(ch.world||'').toUpperCase(), hash:`#/grid/coop/${ch.world}`}); }
   crumbParts.push({label:ch.codename});
   setCrumb(crumbParts);
 
@@ -3481,7 +3620,14 @@ const VIEW_SELECTOR = '.arc-card, .world-row';
 
 window.addEventListener('mousemove', (e)=>{
   mouseX = e.clientX; mouseY = e.clientY;
+  wakeCursor();
 });
+/* 滑鼠沒動，但畫面在捲動／換頁（游標底下的東西變了）時也要重新判斷 */
+window.addEventListener('scroll', ()=>wakeCursor(), {capture:true, passive:true});
+window.addEventListener('wheel', ()=>wakeCursor(), {passive:true});
+window.addEventListener('mousedown', ()=>wakeCursor());
+window.addEventListener('mouseup', ()=>wakeCursor());
+window.addEventListener('hashchange', ()=>wakeCursor());
 
 /* 用 mouseover/mouseout 事件判斷游標該不該變成 hover 樣式，
    在 SPA 換頁（點卡片跳轉、innerHTML 整塊換掉）時會有問題：
@@ -3505,7 +3651,17 @@ function currentHoverState(){
    連結的小圓點維持原本緊貼滑鼠。 */
 const CURSOR_PULL_STRENGTH = 0.38;
 
-(function cursorLoop(){
+/* 游標動畫只在需要時才跑：滑鼠移動、捲動、換頁時喚醒，
+   游標跟殘影都追上滑鼠、而且懸停狀態連續一段時間沒變，就自動暫停，
+   不會在滑鼠完全沒動的時候還每秒重算 60 次（筆電比較省電）。 */
+let cursorRAF = null;
+let cursorIdleFrames = 0;
+let lastCursorState = null;
+function wakeCursor(){
+  cursorIdleFrames = 0;
+  if(!cursorRAF) cursorRAF = requestAnimationFrame(cursorLoop);
+}
+function cursorLoop(){
   const { state, target } = currentHoverState();
 
   let targetX = mouseX, targetY = mouseY;
@@ -3523,16 +3679,24 @@ const CURSOR_PULL_STRENGTH = 0.38;
   cursor.classList.toggle('is-hover', state==='hover');
 
   let prevX = curX, prevY = curY;
+  let maxGap = Math.abs(targetX - curX) + Math.abs(targetY - curY);
   trailDots.forEach((t, i)=>{
     const lerp = Math.max(0.45 - i*0.06, 0.16); /* 越後面跟得越慢，自然拉開間距 */
     t.x += (prevX - t.x) * lerp;
     t.y += (prevY - t.y) * lerp;
     t.el.style.transform = `translate(${t.x}px, ${t.y}px)`;
+    maxGap = Math.max(maxGap, Math.abs(prevX - t.x) + Math.abs(prevY - t.y));
     prevX = t.x; prevY = t.y;
   });
 
-  requestAnimationFrame(cursorLoop);
-})();
+  /* 位置都追上了（差距不到 0.1px）、懸停狀態也沒變，連續 30 影格（約半秒）就暫停 */
+  if(maxGap < 0.1 && state === lastCursorState) cursorIdleFrames++;
+  else cursorIdleFrames = 0;
+  lastCursorState = state;
+  if(cursorIdleFrames > 30){ cursorRAF = null; return; }
+  cursorRAF = requestAnimationFrame(cursorLoop);
+}
+wakeCursor();
 </script>
 <!-- Netlify Identity：讓邀請信、忘記密碼的連結能正常運作（點連結後會跳出設定密碼的視窗） -->
 <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
