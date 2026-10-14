@@ -1,0 +1,11 @@
+{
+  "name": "monday-mood",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build-images.mjs"
+  },
+  "dependencies": {
+    "sharp": "0.34.4"
+  }
+}
