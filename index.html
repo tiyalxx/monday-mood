@@ -206,27 +206,40 @@ body.is-gate{overflow-x:hidden;}
 .nav-burger.open span:nth-child(3){ transform:translateY(-6.5px) rotate(-45deg); }
 
 @media (max-width:860px){
-  .topbar{ flex-wrap:wrap; row-gap:8px; padding:14px 20px; }
-  .topbar-right{ position:relative; width:100%; justify-content:flex-end; gap:14px; }
-  .nav-burger{ display:flex; }
+  /* .topbar-right 在這個寬度下不當容器（display:contents），裡面的漢堡按鈕、
+     麵包屑直接變成 .topbar 的排版項目：第一行＝Logo（左）＋漢堡按鈕（右），
+     第二行＝麵包屑。選單卡片從右上角的漢堡按鈕正下方展開，
+     按鈕在哪邊、選單就在哪邊，不會「按左邊、跳右邊」 */
+  .topbar{ flex-wrap:wrap; align-items:center; row-gap:6px; padding:12px 20px; }
+  .topbar .topbar-right{ display:contents; }
+  .nav-burger{ display:flex; order:1; margin-left:auto; margin-right:-6px; }
+  /* 第二行：← Back 在左、麵包屑接在後面。Back 放在選單外面——它是「回上一層」
+     的動作，不是選單項目，要隨時按得到。.topbar::after 是一個高度 0、佔滿整行的
+     隱形項目，用來把第一行（Logo＋漢堡）跟第二行隔開 */
+  .topbar{ row-gap:0; }
+  .topbar::after{ content:''; order:2; flex:0 0 100%; height:0; }
+  .back-btn{ order:3; flex:none; margin:8px 12px 0 0; padding:0; border-right:none; font-size:11px; }
+  .crumb{ order:4; flex:1 1 0; min-width:0; margin-top:8px; width:auto; }
   /* 平常橫排的那一排連結，收合狀態下變成貼在漢堡按鈕下方的卡片選單，
      預設不顯示，點漢堡按鈕才用 .open 切出來（JS 控制） */
-  .nav-links{
+  .topbar .nav-links{
     display:none;
-    position:absolute; top:calc(100% + 10px); right:0;
-    flex-direction:column; align-items:stretch; gap:0;
+    position:absolute; top:calc(100% + 6px); right:20px;
+    flex-direction:column; align-items:stretch; gap:2px;
     min-width:200px;
     background:var(--bg); border:1px solid var(--line); border-radius:var(--radius);
     box-shadow:0 22px 48px rgba(42,42,46,.16);
     padding:8px; z-index:70;
   }
-  .nav-links.open{ display:flex; }
-  .nav-links .back-btn, .nav-links .about-link, .nav-links .nav-index .index-link{
-    width:100%; padding:12px 10px; font-size:13px;
-    border-right:none !important; border-bottom:1px solid var(--line);
+  .topbar .nav-links.open{ display:flex; }
+  /* 選單項目：不用分隔線，統一成滿版、左對齊的一列，滑過去用淡淡的底色提示 */
+  .nav-links .about-link, .nav-links .nav-index .index-link{
+    display:block; width:100%; box-sizing:border-box; text-align:left;
+    padding:11px 12px; font-size:13px; border-radius:8px;
+    border:none !important;
   }
-  .nav-links .nav-index{ border-right:none; padding-right:0; }
-  .nav-links > *:last-child, .nav-links .nav-index:last-child .index-link{ border-bottom:none; }
+  .nav-links .about-link:hover, .nav-links .nav-index .index-link:hover{ background:var(--panel); }
+  .nav-links .nav-index{ display:block; border:none; padding:0; }
   /* 世界觀清單（原本桌機版是滑過去才浮出來的卡片）收合狀態下改成直接往下
      展開成選單裡的一個子區塊，不要再疊成一張浮動在外面的卡片 */
   .nav-links .index-dropdown{
@@ -239,7 +252,7 @@ body.is-gate{overflow-x:hidden;}
     flex-direction:column; gap:14px;
   }
   .crumb{
-    width:100%; justify-content:flex-start;
+    justify-content:flex-start;
     overflow-x:auto; white-space:nowrap;
     -webkit-overflow-scrolling:touch;
     font-size:11px;
@@ -248,6 +261,7 @@ body.is-gate{overflow-x:hidden;}
 }
 @media (max-width:640px){
   .topbar{ padding:9px 18px; }
+  .topbar .nav-links{ right:18px; }
   .brand small{display:none;}
   .brand-logo{height:14px;}
 }
@@ -468,6 +482,9 @@ body.is-gate{overflow-x:hidden;}
 .crumb .sep{color:var(--ink-faint);}
 
 .topbar-right{
+  display:flex; align-items:center; gap:22px;
+}
+.nav-links{
   display:flex; align-items:center; gap:22px;
 }
 .about-link{
@@ -1655,8 +1672,8 @@ body.has-fullbody-bg footer{ border-top:none; }
 <path d="M174.09,15.23h-29.18c-.36,0-.66.3-.66.66v6.86h-7.69c-.36,0-.66.3-.66.66v11.42c0,.36.3.66.66.66h5.58v5.01c0,.36.3.66.66.66h22.28v8.12h-28.52c-.36,0-.66.3-.66.66v7.59c0,.36.3.66.66.66h29.18c.36,0,.66-.3.66-.66v-6.93h7.69c.36,0,.66-.3.66-.66v-11.35c0-.36-.3-.66-.66-.66h-7.69v-5.01c0-.36-.3-.66-.66-.66h-20.17v-8.18h28.52c.36,0,.66-.3.66-.66v-7.52c0-.36-.3-.66-.66-.66Z"/>
 </svg> <small>CHARACTER ARCHIVE</small></div>
   <div class="topbar-right">
+    <button class="back-btn" id="back-btn" type="button">← Back</button>
     <div class="nav-links" id="nav-links">
-      <button class="back-btn" id="back-btn" type="button">← Back</button>
       <div class="nav-index" id="nav-index">
         <a href="#/index" class="index-link">Index</a>
         <div class="index-dropdown" id="index-dropdown">
@@ -1980,6 +1997,17 @@ function initNavBurger(){
   const burger = document.getElementById('nav-burger');
   const panel = document.getElementById('nav-links');
   if(!burger || !panel) return;
+  const closePanel = ()=>{
+    panel.classList.remove('open');
+    burger.classList.remove('open');
+    burger.setAttribute('aria-expanded','false');
+  };
+  /* 點到目前就在的那一頁的連結時網址不會變、hashchange 不會觸發，
+     所以選單裡除了 Index 本身（它是用來展開子選單的）以外，點任何連結都直接收起來 */
+  panel.addEventListener('click', (ev)=>{
+    const t = ev.target.closest('a, .back-btn');
+    if(t && !t.classList.contains('index-link')) closePanel();
+  });
   burger.addEventListener('click', (e)=>{
     e.stopPropagation();
     const willOpen = !panel.classList.contains('open');
