@@ -1138,6 +1138,8 @@ body.is-gate{overflow-x:hidden;}
    這裡的 class 只負責視覺樣式，不負責排版數值。 */
 /* 角色列表恢復成橫向重疊卡片牆，但取消原本的弧形高低起伏：
    每張卡片統一寬度／高度，排成一直線，只靠中間淡出/降飽和＋滑鼠放大來做重點 */
+/* 滑鼠按住拖曳卡片時，不要反白選到文字 */
+.arc-stage.is-dragging, .arc-stage.is-dragging *{ user-select:none; -webkit-user-select:none; }
 .arc-stage{
   height:clamp(380px, 56vh, 600px);
   overflow-x:auto; overflow-y:hidden;
@@ -2822,7 +2824,7 @@ function buildArcStage(list){
     </a>`;
   });
 
-  const hintLabel = isMobile ? 'SWIPE TO BROWSE' : 'SCROLL TO BROWSE';
+  const hintLabel = isMobile ? 'SWIPE TO BROWSE' : 'SCROLL OR DRAG TO BROWSE';
   return `
   <div class="arc-stage" id="arc-stage"><div class="arc-track" id="arc-track">${html}</div></div>
   <div class="arc-hint"><span class="dot"></span> ${hintLabel}</div>`;
@@ -2936,22 +2938,126 @@ function initArcStage(){
     momentumRAF = requestAnimationFrame(stepMomentum);
   }
 
+  /* 某一張卡片置中時，stage 應該捲到的 scrollLeft */
+  function cardTarget(card){
+    const stageRectC = stage.getBoundingClientRect();
+    const r = card.getBoundingClientRect();
+    return (r.left - stageRectC.left) + stage.scrollLeft + r.width/2 - stage.clientWidth/2;
+  }
+  function nearestCardIndex(cards){
+    const center = stage.getBoundingClientRect().left + stage.clientWidth/2;
+    let best = 0, bestDist = Infinity;
+    cards.forEach((card,i)=>{
+      const r = card.getBoundingClientRect();
+      const d = Math.abs(r.left + r.width/2 - center);
+      if(d < bestDist){ bestDist = d; best = i; }
+    });
+    return best;
+  }
+  /* 平滑捲到指定 scrollLeft（跟 snapToNearest 同一套緩動，共用 snapRAF，
+     新的捲動一開始就會接手、取代還沒跑完的舊動畫） */
+  let stepTargetIdx = null;
+  function animateScrollTo(target, duration){
+    cancelSnap();
+    const start = stage.scrollLeft;
+    const dist = target - start;
+    const startTime = performance.now();
+    function easeOutCubic(t){ return 1 - Math.pow(1-t, 3); }
+    function tick(now){
+      const t = Math.min(1, (now - startTime) / duration);
+      stage.scrollLeft = start + dist * easeOutCubic(t);
+      updateArcFocus(stage);
+      if(t < 1){ snapRAF = requestAnimationFrame(tick); }
+      else { snapRAF = null; stepTargetIdx = null; }
+    }
+    snapRAF = requestAnimationFrame(tick);
+  }
+
   if(window.innerWidth > 820){
+    /* 滑鼠滾輪：每滾一格只移動「一張」卡片，不再用慣性一口氣衝過好幾張。
+       觸控板會送出很多很小的 deltaY，所以先累積，累積到一定量才算一格；
+       連續快速滾動時，從「正要前往的那張」繼續往下算，不會吃掉滾動的格數。 */
+    const WHEEL_STEP = 60;      // 累積多少 deltaY 算一格（一般滑鼠滾一格約 100）
+    const WHEEL_COOLDOWN = 110; // 兩次換卡之間最短間隔（毫秒），避免觸控板一甩就飛過整排
+    let wheelAcc = 0;
+    let lastStepTime = 0;
     stage.addEventListener('wheel', (e)=>{
       if(Math.abs(e.deltaX) > Math.abs(e.deltaY)) return; // 觸控板橫滑，交給原生捲動
       e.preventDefault();
-      cancelSnap();
-      momentum += e.deltaY * 0.65;
-      momentum = Math.max(-90, Math.min(90, momentum));
-      if(!momentumRAF){ momentumRAF = requestAnimationFrame(stepMomentum); }
+      if(momentumRAF){ cancelAnimationFrame(momentumRAF); momentumRAF = null; momentum = 0; }
+      const dy = e.deltaMode === 1 ? e.deltaY * 40 : e.deltaY; // 以「行」為單位的滑鼠換算成像素
+      if(wheelAcc && Math.sign(dy) !== Math.sign(wheelAcc)) wheelAcc = 0;
+      wheelAcc += dy;
+      const now = performance.now();
+      if(Math.abs(wheelAcc) < WHEEL_STEP || now - lastStepTime < WHEEL_COOLDOWN) return;
+      const dir = Math.sign(wheelAcc);
+      wheelAcc = 0;
+      lastStepTime = now;
+      const cards = stage.querySelectorAll('.arc-card');
+      if(!cards.length) return;
+      const from = stepTargetIdx != null ? stepTargetIdx : nearestCardIndex(cards);
+      const to = Math.max(0, Math.min(cards.length-1, from + dir));
+      stepTargetIdx = to;
+      animateScrollTo(cardTarget(cards[to]), 320);
     }, {passive:false});
+
+    /* 滑鼠按住拖曳：按住卡片往左右拉就能捲動，放開後依照甩動的速度
+       再滑一小段，最後一樣自動對齊到最近的卡片。只處理滑鼠，
+       手機／觸控板維持瀏覽器原生的滑動。拖過之後放開不會被當成「點擊」，
+       不會不小心跳進角色頁；沒有拖動（單純點一下）則照常進入角色頁。 */
+    let drag = null;
+    let suppressClick = false;
+    stage.addEventListener('pointerdown', (e)=>{
+      if(e.pointerType !== 'mouse' || e.button !== 0) return;
+      cancelSnap();
+      stepTargetIdx = null;
+      if(momentumRAF){ cancelAnimationFrame(momentumRAF); momentumRAF = null; momentum = 0; }
+      drag = { startX:e.clientX, startScroll:stage.scrollLeft, lastX:e.clientX, lastT:performance.now(), v:0, moved:false, id:e.pointerId };
+    });
+    stage.addEventListener('pointermove', (e)=>{
+      if(!drag || e.pointerId !== drag.id) return;
+      const dx = e.clientX - drag.startX;
+      if(!drag.moved){
+        if(Math.abs(dx) < 6) return; // 小於 6px 視為點擊，不算拖曳
+        drag.moved = true;
+        stage.setPointerCapture(e.pointerId);
+        stage.classList.add('is-dragging');
+      }
+      stage.scrollLeft = drag.startScroll - dx;
+      const now = performance.now();
+      const dt = Math.max(1, now - drag.lastT);
+      /* 速度換算成「每一影格（約 16ms）移動幾 px」，給放開後的慣性用 */
+      drag.v = drag.v*0.6 + ((drag.lastX - e.clientX) / dt * 16) * 0.4;
+      drag.lastX = e.clientX; drag.lastT = now;
+      updateArcFocus(stage);
+    });
+    function endDrag(e){
+      if(!drag || (e && e.pointerId !== drag.id)) return;
+      const d = drag; drag = null;
+      stage.classList.remove('is-dragging');
+      if(!d.moved) return;
+      suppressClick = true;
+      setTimeout(()=>{ suppressClick = false; }, 0);
+      /* 放開前停住超過 0.1 秒就不給慣性，直接對齊 */
+      const v = performance.now() - d.lastT > 100 ? 0 : d.v;
+      momentum = Math.max(-40, Math.min(40, v));
+      if(Math.abs(momentum) > 1){ momentumRAF = requestAnimationFrame(stepMomentum); }
+      else { momentum = 0; snapToNearest(); }
+    }
+    stage.addEventListener('pointerup', endDrag);
+    stage.addEventListener('pointercancel', endDrag);
+    stage.addEventListener('click', (e)=>{
+      if(suppressClick){ e.preventDefault(); e.stopPropagation(); suppressClick = false; }
+    }, true);
+    /* 不讓瀏覽器把圖片／連結當成「拖出去」的檔案，不然拉一下就變成拖曳圖片 */
+    stage.addEventListener('dragstart', (e)=>e.preventDefault());
   }
   let ticking = false;
   stage.addEventListener('scroll', ()=>{
     if(ticking) return;
     ticking = true;
     requestAnimationFrame(()=>{ updateArcFocus(stage); ticking = false; });
-    if(!momentumRAF && !snapRAF){ scheduleSnap(); }
+    if(!momentumRAF && !snapRAF && !stage.classList.contains('is-dragging')){ scheduleSnap(); }
   }, {passive:true});
   requestAnimationFrame(()=>{
     const cardsEls = track.querySelectorAll('.arc-card');
