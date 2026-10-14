@@ -1,0 +1,14 @@
+# Netlify 每次部署（包含在後台 /admin/ 存檔、上傳圖片）都會自動跑這個指令：
+# 把網站複製到 dist/，並幫 images/、gate-art/ 底下每一張圖產生壓縮過的縮圖跟大圖。
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+# 產生出來的縮圖檔名固定，內容可能因為換圖而改變，所以不做長期快取
+[[headers]]
+  for = "/_img/*"
+  [headers.values]
+    Cache-Control = "public, max-age=3600, must-revalidate"

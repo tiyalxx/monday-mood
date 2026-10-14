@@ -1762,8 +1762,8 @@ async function loadWorldMeta(){
 function buildThumbPool(){
   const pool = [];
   CHARACTERS.forEach(ch=>{
-    if(ch.avatarImg) pool.push(ch.avatarImg);
-    (ch.gallery||[]).forEach(g=>{ if(g.thumb) pool.push(g.thumb); });
+    if(ch.avatarImg) pool.push(thumbSrc(ch.avatarImg));
+    (ch.gallery||[]).forEach(g=>{ const t = g.thumb || g.image; if(t) pool.push(thumbSrc(t)); });
   });
   for(let i=pool.length-1;i>0;i--){
     const j = Math.floor(Math.random()*(i+1));
@@ -1790,23 +1790,55 @@ const FALLBACK_CHARACTERS = [
 const STATUS_LABEL = { alive:'Alive', dead:'Dead' };
 const STATUS_COLOR = { alive:'#3fa66a', dead:'#5a5a5e' };
 
+/* ---------------- 壓縮版圖片（縮圖／大圖） ----------------
+   Netlify 部署時，scripts/build-images.mjs 會幫 images/、gate-art/ 底下每張圖
+   自動產生兩個壓縮版本，並把成功產生的清單寫進 _img/manifest.json：
+     thumb：短邊 600px，給 Gallery 縮圖、頭像、角色卡片用
+     large：長邊最多 2400px，給燈箱、全身立繪、首頁大圖用
+   後台上傳圖片、填路徑的方式完全不變，這裡會自動把原圖路徑換成壓縮版。
+   清單裡沒有的圖（例如本機直接打開、還沒重新部署、外部網址）就照舊顯示原圖；
+   壓縮版萬一讀取失敗，也會自動退回原圖（見下方 revealImg）。 */
+let IMG_MANIFEST = null;
+async function loadImageManifest(){
+  try{
+    const res = await fetch('/_img/manifest.json', {cache:'no-store'});
+    if(!res.ok) return;
+    const data = await res.json();
+    IMG_MANIFEST = new Set(data.images || []);
+  }catch(err){ /* 沒有清單就全部用原圖，不影響網站運作 */ }
+}
+function imgVariant(src, size){
+  if(!src || !IMG_MANIFEST) return src;
+  let rel = String(src).replace(/^\.?\//, '');
+  try{ rel = decodeURI(rel); }catch(e){}
+  if(!IMG_MANIFEST.has(rel)) return src;
+  return '/_img/' + size + '/' + rel.split('/').map(encodeURIComponent).join('/') + '.webp';
+}
+const thumbSrc = src => imgVariant(src, 'thumb');
+const largeSrc = src => imgVariant(src, 'large');
+/* 產生 <img> 的 src 屬性；用的是壓縮版時，順便用 data-orig 記住原圖，讀取失敗時拿來退回 */
+function imgSrcAttr(src, size){
+  const v = imgVariant(src, size);
+  return v === src ? `src="${src}"` : `src="${v}" data-orig="${src}"`;
+}
+
 /* 佔位色塊統一使用單一藍色（品牌色），不做漸層深淺，所有沒放圖的角色看起來色調一致 */
 function placeholderStyle(seed, sat, light1, light2){
   return `background:var(--brand);`;
 }
 function avatarBlock(ch, size){
-  if(ch.avatarImg){ return `<img src="${ch.avatarImg}" alt="${ch.codename}" decoding="async">`; }
+  if(ch.avatarImg){ return `<img ${imgSrcAttr(ch.avatarImg,'thumb')} alt="${ch.codename}" decoding="async">`; }
   return `<div class="avatar-fill" style="${placeholderStyle(ch.id)}">${ch.codename.slice(0,1)}</div>`;
 }
 function fullbodyBlock(ch){
-  if(ch.fullbodyImg){ return `<img src="${ch.fullbodyImg}" alt="${ch.codename} full body art">`; }
+  if(ch.fullbodyImg){ return `<img ${imgSrcAttr(ch.fullbodyImg,'large')} alt="${ch.codename} full body art">`; }
   return `<div class="avatar-fill" style="${placeholderStyle(ch.id+'fb')}; display:flex; align-items:center; justify-content:center; color:rgba(255,255,255,.85); font-family:var(--font-mono); font-size:12px;">Full body art not uploaded</div>`;
 }
 function galleryThumb(item, ch, idx){
   /* 新的 CMS 欄位只要傳一張「圖片 image」；舊角色資料如果還是用以前的
      「縮圖 thumb／原圖 full」分開兩張，也繼續相容、不會壞掉 */
   const src = item.thumb || item.image;
-  if(src){ return `<img src="${src}" alt="" loading="lazy" decoding="async" onerror="this.closest('.gallery-thumb').classList.add('img-error')">`; }
+  if(src){ return `<img ${imgSrcAttr(src,'thumb')} alt="" loading="lazy" decoding="async">`; }
   return `<div class="avatar-fill">IMG_${String(idx+1).padStart(2,'0')}</div>`;
 }
 
@@ -1949,7 +1981,7 @@ window.addEventListener('hashchange', ()=>{
 });
 window.addEventListener('DOMContentLoaded', ()=>{
   document.getElementById('foot-time').textContent = 'REV. ' + new Date().toISOString().slice(0,10);
-  loadWorldMeta().then(()=>{ loadCharacters(); populateIndexDropdown(); });
+  Promise.all([loadWorldMeta(), loadImageManifest()]).then(()=>{ loadCharacters(); populateIndexDropdown(); });
   runIntroSplash();
   initIndexNav();
   initNavBurger();
@@ -2234,7 +2266,7 @@ function buildGatePhotos(){
   let html = '';
   order.forEach(srcIdx=>{
     if(useReal){
-      html += `<div class="gate-photo-layer" style="background-image:url('${GATE_SHOWCASE[srcIdx]}');"></div>`;
+      html += `<div class="gate-photo-layer" style="background-image:url('${largeSrc(GATE_SHOWCASE[srcIdx])}');"></div>`;
     } else {
       const hue = (srcIdx*63) % 360;
       html += `<div class="gate-photo-layer is-placeholder" style="--ph-a:hsl(${hue},70%,55%); --ph-b:hsl(${(hue+40)%360},70%,36%);">
@@ -2457,7 +2489,7 @@ function renderAbout(){
   setCrumb([{label:'Home',hash:'#/index'},{label:'About'}]);
   const links = CONTACT_LINKS.map(l=>`<a class="contact-link" href="${l.url}" target="_blank" rel="noopener">${l.label}</a>`).join('');
   const avatar = ABOUT_AVATAR
-    ? `<img src="${ABOUT_AVATAR}" alt="Monday">`
+    ? `<img ${imgSrcAttr(ABOUT_AVATAR,'thumb')} alt="Monday">`
     : `<div class="avatar-fill">M</div>`;
 
   app.innerHTML = `
@@ -3037,7 +3069,7 @@ function renderProfile(id){
 
     ${ch.fullbodyImg ? `
     <div class="pf-reveal pf-fullbody-mobile">
-      <img src="${ch.fullbodyImg}" alt="${ch.codename} full body art" decoding="async">
+      <img ${imgSrcAttr(ch.fullbodyImg,'large')} alt="${ch.codename} full body art" decoding="async">
     </div>` : ''}
 
     ${buildCharRelations(ch)}
@@ -3153,7 +3185,7 @@ function setupFullbodyBackground(ch){
     placeholder.className = 'pf-bg-placeholder';
     bg.insertBefore(placeholder, bg.firstChild);
   }
-  placeholder.style.backgroundImage = ch.avatarImg ? `url("${ch.avatarImg}")` : 'none';
+  placeholder.style.backgroundImage = ch.avatarImg ? `url("${thumbSrc(ch.avatarImg)}")` : 'none';
   if(ch.fullbodyImg){
     const targetSrc = ch.fullbodyImg;
     /* 切換角色時，直接改舊 <img> 的 src 有兩個問題：
@@ -3193,7 +3225,11 @@ function setupFullbodyBackground(ch){
       requestAnimationFrame(()=>{ preload.classList.add('loaded'); });
       requestAnimationFrame(()=>{ requestAnimationFrame(()=>{ bg.classList.add('in-view'); }); });
     };
-    preload.src = targetSrc;
+    /* 優先載入壓縮過的大圖；萬一讀取失敗就退回原圖。這個 Image() 還沒接到畫面上，
+       所以 document 上的 revealImg 抓不到它的 error，要在這裡自己處理 */
+    const largeTarget = largeSrc(targetSrc);
+    preload.onerror = ()=>{ preload.onerror = null; if(largeTarget !== targetSrc) preload.src = targetSrc; };
+    preload.src = largeTarget;
     bg.classList.add('show');
     document.body.classList.add('has-fullbody-bg');
   } else {
@@ -3368,7 +3404,9 @@ function renderLightbox(){
   const img = document.getElementById('lb-img');
   if(full){
     img.style.display='block';
-    img.src = full;
+    const large = largeSrc(full);
+    if(large !== full) img.dataset.orig = full; else delete img.dataset.orig;
+    img.src = large;
   } else {
     img.style.display='none';
   }
@@ -3403,7 +3441,19 @@ document.body.appendChild(cursor);
    圖片是「淡入」出現，而不是網路一慢就整張生硬地彈出來。 */
 function revealImg(e){
   const el = e.target;
-  if(el && el.tagName === 'IMG') el.classList.add('img-loaded');
+  if(!el || el.tagName !== 'IMG') return;
+  if(e.type === 'error'){
+    /* 壓縮版圖片讀取失敗：退回原圖再試一次，原圖也失敗才算真的載入失敗 */
+    if(el.dataset.orig){
+      const orig = el.dataset.orig;
+      delete el.dataset.orig;
+      el.src = orig;
+      return;
+    }
+    const thumb = el.closest('.gallery-thumb');
+    if(thumb) thumb.classList.add('img-error');
+  }
+  el.classList.add('img-loaded');
 }
 document.addEventListener('load', revealImg, true);
 document.addEventListener('error', revealImg, true);
