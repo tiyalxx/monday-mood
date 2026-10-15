@@ -1272,7 +1272,10 @@ body.is-gate{overflow-x:hidden;}
 }
 .pf-basic .p-code{font-family:var(--font-mono); font-size:12px; color:var(--ink-soft); margin-bottom:10px;}
 .pf-basic h1{font-family:var(--font-disp); font-weight:600; font-size:clamp(26px,4vw,38px); margin:0 0 6px;}
-.pf-basic .p-role{color:var(--ink-soft); font-size:14px; margin-bottom:26px;}
+.pf-basic .p-role{color:var(--ink-soft); font-size:14px; margin-bottom:18px;}
+.pf-share{ display:flex; flex-wrap:wrap; justify-content:center; gap:8px; margin-bottom:26px; }
+.pf-share .pill-link{ background:none; cursor:pointer; }
+.pf-share .pill-link.is-done{ color:var(--brand); border-color:var(--brand); }
 .pf-basic .field-list{
   text-align:left; background:var(--panel); border-radius:var(--radius);
   padding:2px 20px; margin-bottom:24px;
@@ -3214,6 +3217,7 @@ function renderProfile(id){
       <div class="p-code">${ch.id.toUpperCase()} · ${STATUS_LABEL[ch.status]||ch.status}</div>
       <h1>${ch.codename}</h1>
       <div class="p-role">${ch.role}</div>
+      ${shareButtons(ch)}
       <div class="field-list">${fields}</div>
       ${ch.bio ? `<div class="pf-bio">${bioParagraphs(ch.bio)}</div>` : ''}
     </div>
@@ -3243,6 +3247,46 @@ function renderProfile(id){
   initProfileReveal();
   setupFullbodyBackground(ch);
   initGalleryParallax();
+}
+
+/* ---------------- 角色頁面：分享按鈕 ----------------
+   分享出去的不是網址列上的 /#/char/xxx（X、Plurk 抓不到 # 後面，預覽會變成首頁），
+   而是部署時 scripts/build-share.mjs 幫每個角色產生的 /char/xxx/ 分享頁：
+   那一頁有這個角色自己的標題、簡介跟預覽圖，真人點進去會自動跳回角色頁。 */
+function shareUrlFor(ch){
+  return `${location.origin}/char/${encodeURIComponent(ch.id)}/`;
+}
+function shareButtons(ch){
+  const url = shareUrlFor(ch);
+  const title = `${ch.codename} — Monday's Mood`;
+  const xHref = `https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(url)}`;
+  /* Plurk 的「網址 (文字)」格式會變成一個有標題的連結 */
+  const plurkHref = `https://www.plurk.com/?qualifier=shares&status=${encodeURIComponent(`${url} (${title})`)}`;
+  return `<div class="pf-share">
+    <button type="button" class="pill-link" onclick="copyShareLink(this, '${ch.id}')">🔗 複製分享連結</button>
+    <a class="pill-link" href="${xHref}" target="_blank" rel="noopener">分享到 X</a>
+    <a class="pill-link" href="${plurkHref}" target="_blank" rel="noopener">分享到 Plurk</a>
+  </div>`;
+}
+async function copyShareLink(btn, id){
+  const ch = CHARACTERS.find(c=>c.id===id);
+  if(!ch) return;
+  const url = shareUrlFor(ch);
+  let ok = false;
+  try{ await navigator.clipboard.writeText(url); ok = true; }
+  catch(e){
+    /* 舊瀏覽器／沒有權限時的備援：用隱藏的文字框複製 */
+    const ta = document.createElement('textarea');
+    ta.value = url; ta.setAttribute('readonly',''); ta.style.cssText = 'position:fixed; opacity:0;';
+    document.body.appendChild(ta); ta.select();
+    try{ ok = document.execCommand('copy'); }catch(err){}
+    ta.remove();
+  }
+  if(!ok){ window.prompt('複製這個連結：', url); return; }
+  const label = btn.textContent;
+  btn.textContent = '✓ 已複製';
+  btn.classList.add('is-done');
+  setTimeout(()=>{ btn.textContent = label; btn.classList.remove('is-done'); }, 1600);
 }
 
 /* ---------------- 角色頁面：這個角色的關係 ---------------- */
