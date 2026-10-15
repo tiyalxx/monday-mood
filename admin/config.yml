@@ -83,6 +83,8 @@ collections:
               - {label: "生日 Birthday", name: "birthday", widget: "string", required: false}
               - {label: "年齡 Age", name: "age", widget: "string", required: false}
               - {label: "CP", name: "cp", widget: "string", required: false}
+              - {label: "CP 介紹 CP Intro（選填；有填的話，角色頁上的 CP 名字就能點開小視窗看這段介紹。空一行代表分段）", name: "cpIntro", widget: "text", required: false}
+              - {label: "CP 圖片 CP Image（選填；顯示在 CP 介紹小視窗最上面）", name: "cpImage", widget: "image", required: false}
               - {label: "狀態 Status", name: "status", widget: "select", options: [
                   {label: "生存 Alive", value: "alive"},
                   {label: "死亡 Dead", value: "dead"}
@@ -137,6 +139,8 @@ collections:
               - {label: "生日 Birthday", name: "birthday", widget: "string", required: false}
               - {label: "年齡 Age", name: "age", widget: "string", required: false}
               - {label: "CP", name: "cp", widget: "string", required: false}
+              - {label: "CP 介紹 CP Intro（選填；有填的話，角色頁上的 CP 名字就能點開小視窗看這段介紹。空一行代表分段）", name: "cpIntro", widget: "text", required: false}
+              - {label: "CP 圖片 CP Image（選填；顯示在 CP 介紹小視窗最上面）", name: "cpImage", widget: "image", required: false}
               - {label: "狀態 Status", name: "status", widget: "select", options: [
                   {label: "生存 Alive", value: "alive"},
                   {label: "死亡 Dead", value: "dead"}
@@ -188,6 +192,8 @@ collections:
               - {label: "生日 Birthday", name: "birthday", widget: "string", required: false}
               - {label: "年齡 Age", name: "age", widget: "string", required: false}
               - {label: "CP", name: "cp", widget: "string", required: false}
+              - {label: "CP 介紹 CP Intro（選填；有填的話，角色頁上的 CP 名字就能點開小視窗看這段介紹。空一行代表分段）", name: "cpIntro", widget: "text", required: false}
+              - {label: "CP 圖片 CP Image（選填；顯示在 CP 介紹小視窗最上面）", name: "cpImage", widget: "image", required: false}
               - {label: "狀態 Status", name: "status", widget: "select", options: [
                   {label: "生存 Alive", value: "alive"},
                   {label: "死亡 Dead", value: "dead"}
@@ -239,6 +245,8 @@ collections:
               - {label: "生日 Birthday", name: "birthday", widget: "string", required: false}
               - {label: "年齡 Age", name: "age", widget: "string", required: false}
               - {label: "CP", name: "cp", widget: "string", required: false}
+              - {label: "CP 介紹 CP Intro（選填；有填的話，角色頁上的 CP 名字就能點開小視窗看這段介紹。空一行代表分段）", name: "cpIntro", widget: "text", required: false}
+              - {label: "CP 圖片 CP Image（選填；顯示在 CP 介紹小視窗最上面）", name: "cpImage", widget: "image", required: false}
               - {label: "狀態 Status", name: "status", widget: "select", options: [
                   {label: "生存 Alive", value: "alive"},
                   {label: "死亡 Dead", value: "dead"}
@@ -290,6 +298,8 @@ collections:
               - {label: "生日 Birthday", name: "birthday", widget: "string", required: false}
               - {label: "年齡 Age", name: "age", widget: "string", required: false}
               - {label: "CP", name: "cp", widget: "string", required: false}
+              - {label: "CP 介紹 CP Intro（選填；有填的話，角色頁上的 CP 名字就能點開小視窗看這段介紹。空一行代表分段）", name: "cpIntro", widget: "text", required: false}
+              - {label: "CP 圖片 CP Image（選填；顯示在 CP 介紹小視窗最上面）", name: "cpImage", widget: "image", required: false}
               - {label: "狀態 Status", name: "status", widget: "select", options: [
                   {label: "生存 Alive", value: "alive"},
                   {label: "死亡 Dead", value: "dead"}
@@ -341,6 +351,8 @@ collections:
               - {label: "生日 Birthday", name: "birthday", widget: "string", required: false}
               - {label: "年齡 Age", name: "age", widget: "string", required: false}
               - {label: "CP", name: "cp", widget: "string", required: false}
+              - {label: "CP 介紹 CP Intro（選填；有填的話，角色頁上的 CP 名字就能點開小視窗看這段介紹。空一行代表分段）", name: "cpIntro", widget: "text", required: false}
+              - {label: "CP 圖片 CP Image（選填；顯示在 CP 介紹小視窗最上面）", name: "cpImage", widget: "image", required: false}
               - {label: "狀態 Status", name: "status", widget: "select", options: [
                   {label: "生存 Alive", value: "alive"},
                   {label: "死亡 Dead", value: "dead"}
@@ -392,6 +404,8 @@ collections:
               - {label: "生日 Birthday", name: "birthday", widget: "string", required: false}
               - {label: "年齡 Age", name: "age", widget: "string", required: false}
               - {label: "CP", name: "cp", widget: "string", required: false}
+              - {label: "CP 介紹 CP Intro（選填；有填的話，角色頁上的 CP 名字就能點開小視窗看這段介紹。空一行代表分段）", name: "cpIntro", widget: "text", required: false}
+              - {label: "CP 圖片 CP Image（選填；顯示在 CP 介紹小視窗最上面）", name: "cpImage", widget: "image", required: false}
               - {label: "狀態 Status", name: "status", widget: "select", options: [
                   {label: "生存 Alive", value: "alive"},
                   {label: "死亡 Dead", value: "dead"}
@@ -443,6 +457,8 @@ collections:
               - {label: "生日 Birthday", name: "birthday", widget: "string", required: false}
               - {label: "年齡 Age", name: "age", widget: "string", required: false}
               - {label: "CP", name: "cp", widget: "string", required: false}
+              - {label: "CP 介紹 CP Intro（選填；有填的話，角色頁上的 CP 名字就能點開小視窗看這段介紹。空一行代表分段）", name: "cpIntro", widget: "text", required: false}
+              - {label: "CP 圖片 CP Image（選填；顯示在 CP 介紹小視窗最上面）", name: "cpImage", widget: "image", required: false}
               - {label: "狀態 Status", name: "status", widget: "select", options: [
                   {label: "生存 Alive", value: "alive"},
                   {label: "死亡 Dead", value: "dead"}

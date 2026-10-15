@@ -1273,6 +1273,44 @@ body.is-gate{overflow-x:hidden;}
 .pf-basic .p-code{font-family:var(--font-mono); font-size:12px; color:var(--ink-soft); margin-bottom:10px;}
 .pf-basic h1{font-family:var(--font-disp); font-weight:600; font-size:clamp(26px,4vw,38px); margin:0 0 6px;}
 .pf-basic .p-role{color:var(--ink-soft); font-size:14px; margin-bottom:18px;}
+/* CP 名字：有介紹時可以點，點了開 CP 小視窗 */
+.cp-link{
+  font:inherit; color:var(--brand); background:none; border:none; padding:0; cursor:pointer;
+  text-decoration:underline dotted; text-underline-offset:4px; text-align:right;
+}
+.cp-link:hover{ text-decoration-style:solid; }
+.cp-link-icon{ font-size:.85em; margin-left:6px; }
+#cp-modal{
+  position:fixed; inset:0; z-index:210;
+  background:rgba(20,18,20,.55); backdrop-filter:blur(4px); -webkit-backdrop-filter:blur(4px);
+  display:none; align-items:center; justify-content:center; padding:20px;
+}
+#cp-modal.open{ display:flex; animation:fadeIn .25s ease both; }
+body.cp-modal-open{ overflow:hidden; }
+.cp-card{
+  position:relative; width:min(520px, 100%); max-height:min(86vh, 760px); overflow-y:auto;
+  background:var(--bg); color:var(--ink); border:1px solid var(--line); border-radius:var(--radius);
+  box-shadow:0 30px 80px rgba(0,0,0,.28); padding:34px 30px 30px;
+  animation:cpCardIn .35s cubic-bezier(.2,.8,.2,1) both;
+}
+@keyframes cpCardIn{ from{ opacity:0; transform:translateY(14px) scale(.98); } to{ opacity:1; transform:none; } }
+.cp-close{
+  position:absolute; top:14px; right:14px; width:34px; height:34px; border-radius:50%;
+  border:1px solid var(--line); background:var(--bg); color:var(--ink-soft); font-size:13px;
+}
+.cp-close:hover{ color:var(--brand); border-color:var(--brand); }
+.cp-label{ font-family:var(--font-mono); font-size:11px; letter-spacing:.12em; color:var(--brand); margin-bottom:8px; }
+.cp-title{ font-family:var(--font-disp); font-weight:600; font-size:clamp(20px,3.4vw,26px); line-height:1.4; margin:0 36px 18px 0; }
+.cp-x{ color:var(--brand); margin:0 .45em; font-weight:400; }
+.cp-image{ margin:0 0 18px; border-radius:var(--radius-sm); overflow:hidden; background:var(--panel); }
+.cp-image img{ display:block; width:100%; height:auto; max-height:46vh; object-fit:contain; }
+.cp-intro p{ margin:0 0 1em; line-height:1.9; font-size:14.5px; }
+.cp-intro p:last-child{ margin-bottom:0; }
+.cp-partner{ display:inline-block; margin-top:20px; }
+@media (max-width:640px){
+  #cp-modal{ align-items:flex-end; padding:0; }
+  .cp-card{ width:100%; max-height:88vh; border-radius:var(--radius) var(--radius) 0 0; padding:30px 22px calc(26px + env(safe-area-inset-bottom, 0px)); }
+}
 .pf-share{ display:flex; flex-wrap:wrap; justify-content:center; gap:8px; margin-bottom:26px; }
 .pf-share .pill-link{ background:none; cursor:pointer; }
 .pf-share .pill-link.is-done{ color:var(--brand); border-color:var(--brand); }
@@ -1727,6 +1765,14 @@ body.has-fullbody-bg footer{ border-top:none; }
 
 <!-- 角色頁往下捲動時出現的「回到最頂」按鈕 -->
 <button id="to-top-btn" class="to-top-btn" type="button" aria-label="Back to top">↑</button>
+
+<!-- CP 介紹小視窗：角色頁點 CP 名字時打開（內容由 openCpModal() 填入） -->
+<div id="cp-modal" role="dialog" aria-modal="true" aria-labelledby="cp-modal-title" onclick="if(event.target===this) closeCpModal()">
+  <div class="cp-card">
+    <button class="cp-close" type="button" onclick="closeCpModal()" aria-label="關閉">✕</button>
+    <div id="cp-modal-body"></div>
+  </div>
+</div>
 
 <div id="lightbox">
   <button class="lb-close" onclick="closeLightbox()">CLOSE ✕</button>
@@ -3187,7 +3233,7 @@ function renderProfile(id){
     ['Height', ch.height||'—'],
     ['Birthday', ch.birthday||'—'],
     ['Age', ch.age||'—'],
-    ['CP', ch.cp||'—'],
+    ['CP', cpFieldValue(ch)],
     ['Status', `${STATUS_LABEL[ch.status]||ch.status}`],
   ].map(([k,v])=>`<div class="field"><div class="k">${k}</div><div class="v">${v}</div></div>`).join('');
 
@@ -3248,6 +3294,55 @@ function renderProfile(id){
   setupFullbodyBackground(ch);
   initGalleryParallax();
 }
+
+/* ---------------- 角色頁面：CP 介紹小視窗 ----------------
+   後台每個角色的「CP」欄位下面有「CP 介紹 cpIntro」「CP 圖片 cpImage」兩個選填欄位。
+   有填其中一個，角色頁上的 CP 名字就會變成可以點的樣子，點了跳出小視窗。
+   如果這個角色沒填、但 CP 對象剛好也是這個網站上的角色而且那邊有填，就沿用對方的介紹，
+   同一對 CP 只要在其中一邊寫一次就好。 */
+const normName = s => String(s||'').replace(/[\s·・•‧･.]/g, '');
+function cpPartner(ch){
+  if(!ch.cp) return null;
+  const target = normName(ch.cp);
+  return CHARACTERS.find(c => c.id !== ch.id && normName(c.codename) === target) || null;
+}
+function cpInfo(ch){
+  if(!ch.cp || ch.cp === '—') return null;
+  if(ch.cpIntro || ch.cpImage) return { intro:ch.cpIntro, image:ch.cpImage };
+  const p = cpPartner(ch);
+  if(p && (p.cpIntro || p.cpImage) && normName(p.cp) === normName(ch.codename)) return { intro:p.cpIntro, image:p.cpImage };
+  return null;
+}
+function cpFieldValue(ch){
+  if(!ch.cp) return '—';
+  if(!cpInfo(ch)) return ch.cp;
+  return `<button type="button" class="cp-link" onclick="openCpModal('${ch.id}')">${ch.cp}<span class="cp-link-icon" aria-hidden="true">♡</span></button>`;
+}
+function openCpModal(id){
+  const ch = CHARACTERS.find(c=>c.id===id);
+  const info = ch && cpInfo(ch);
+  if(!info) return;
+  const partner = cpPartner(ch);
+  document.getElementById('cp-modal-body').innerHTML = `
+    <div class="cp-label">CP</div>
+    <h2 class="cp-title" id="cp-modal-title">${ch.codename}<span class="cp-x">×</span>${ch.cp}</h2>
+    ${info.image ? `<div class="cp-image"><img ${imgSrcAttr(info.image,'large')} alt="${ch.codename} × ${ch.cp}" decoding="async"></div>` : ''}
+    ${info.intro ? `<div class="cp-intro">${bioParagraphs(info.intro)}</div>` : ''}
+    ${partner ? `<a class="pill-link cp-partner" href="#/char/${partner.id}" onclick="closeCpModal()">查看 ${partner.codename} 的檔案 →</a>` : ''}`;
+  const modal = document.getElementById('cp-modal');
+  modal.classList.add('open');
+  document.body.classList.add('cp-modal-open');
+  document.addEventListener('keydown', cpKeyHandler);
+  modal.querySelector('.cp-close').focus({preventScroll:true});
+}
+function closeCpModal(){
+  document.getElementById('cp-modal').classList.remove('open');
+  document.body.classList.remove('cp-modal-open');
+  document.removeEventListener('keydown', cpKeyHandler);
+}
+function cpKeyHandler(e){ if(e.key === 'Escape') closeCpModal(); }
+/* 換頁時（例如按上一頁）小視窗要跟著關掉 */
+window.addEventListener('hashchange', ()=>{ if(document.getElementById('cp-modal').classList.contains('open')) closeCpModal(); });
 
 /* ---------------- 角色頁面：分享按鈕 ----------------
    分享出去的不是網址列上的 /#/char/xxx（X、Plurk 抓不到 # 後面，預覽會變成首頁），
