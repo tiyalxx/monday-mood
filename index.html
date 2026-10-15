@@ -245,6 +245,7 @@ body.is-gate{overflow-x:hidden;}
   .nav-links .index-dropdown{
     position:static; opacity:1; transform:none; pointer-events:auto;
     padding-top:0; display:none;
+    --dd-x:0px; /* 收在漢堡選單裡時不用置中位移（見下方 max-width:640px 那段），不然會往左歪出選單外 */
   }
   .nav-links .nav-index.open .index-dropdown{ display:block; }
   .nav-links .index-dropdown-card{
@@ -870,7 +871,8 @@ body.is-gate{overflow-x:hidden;}
 }
 .world-row:hover{ padding:30px 22px; }
 /* 還沒有角色的世界觀：變淡、滑過去沒有任何效果 */
-.world-row.is-empty{ opacity:.38; pointer-events:none; }
+.world-row.is-empty,
+.view.enter-stagger.enter-run .world-row.is-empty{ opacity:.38; pointer-events:none; } /* 第二行：換頁淡入動畫跑完後，不要被它的 opacity:1 蓋掉 */
 .wr-soon{ letter-spacing:.12em; }
 .world-row:hover::before{ transform:scaleX(1); }
 .world-list:hover .world-row:not(:hover){ opacity:.42; }
@@ -898,6 +900,7 @@ body.is-gate{overflow-x:hidden;}
   .world-row:hover .wr-name{ transform:translateX(4px) scale(1.9); }
   .wr-meta{ gap:10px; }
   .wr-count{ display:none; } /* 手機版位置窄，數量先讓位給名字跟代號 */
+  .wr-count.wr-soon{ display:inline; font-size:10px; } /* 但 COMING SOON 還是要顯示 */
 }
 @media (prefers-reduced-motion: reduce){
   .world-row, .world-row::before, .wr-name{ transition:none !important; }
@@ -1543,10 +1546,18 @@ body.is-gate{overflow-x:hidden;}
   position:absolute; top:50%; transform:translateY(-50%);
   width:44px; height:44px; border:1px solid var(--line); border-radius:50%; background:var(--bg);
   display:flex; align-items:center; justify-content:center; font-family:var(--font-mono);
+  color:var(--ink);
 }
 .lb-nav:hover{border-color:var(--accent); color:var(--accent);}
 .lb-prev{left:clamp(14px,4vw,48px);}
 .lb-next{right:clamp(14px,4vw,48px);}
+/* 手機：左右箭頭移到畫面下方，不要蓋住圖片的左右兩側；也可以直接左右滑動圖片切換 */
+@media (max-width:640px){
+  .lb-nav{ top:auto; bottom:calc(24px + env(safe-area-inset-bottom, 0px)); transform:none; }
+  .lb-prev{ left:calc(50% - 60px); }
+  .lb-next{ right:calc(50% - 60px); }
+  .lb-cap{ padding:0 20px; text-align:center; }
+}
 
 footer{
   position:relative; z-index:1;
@@ -2185,6 +2196,7 @@ function setCrumb(parts, opts){
     const isLast = i===parts.length-1;
     return `<span class="seg" ${p.hash?`onclick="location.hash='${p.hash}'"`:''} style="${isLast?'color:var(--ink)':''}">${p.label}</span>` + (isLast?'':'<span class="sep">/</span>');
   }).join('');
+  el.scrollLeft = el.scrollWidth; /* 手機版麵包屑可以左右滑，預設停在最右邊顯示目前頁面 */
 
   /* 上一頁按鈕：除了首頁，其他頁面都會顯示，回到麵包屑往前一個有連結的層級 */
   const backBtn = document.getElementById('back-btn');
@@ -3536,6 +3548,22 @@ function lbKeyHandler(e){
   if(e.key==='ArrowLeft') lbNav(-1);
   if(e.key==='ArrowRight') lbNav(1);
 }
+/* 手機：在燈箱裡左右滑動就能切換上一張／下一張（上下滑或滑動距離太短不算） */
+(function initLightboxSwipe(){
+  const lb = document.getElementById('lightbox');
+  let sx = null, sy = null;
+  lb.addEventListener('touchstart', (e)=>{
+    if(e.touches.length !== 1){ sx = null; return; }
+    sx = e.touches[0].clientX; sy = e.touches[0].clientY;
+  }, {passive:true});
+  lb.addEventListener('touchend', (e)=>{
+    if(sx == null) return;
+    const t = e.changedTouches[0];
+    const dx = t.clientX - sx, dy = t.clientY - sy;
+    sx = null;
+    if(Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) lbNav(dx < 0 ? 1 : -1);
+  }, {passive:true});
+})();
 function renderLightbox(){
   const ch = CHARACTERS.find(c=>c.id===lbState.charId);
   const item = ch.gallery[lbState.index];
