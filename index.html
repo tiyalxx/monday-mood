@@ -1177,7 +1177,7 @@ body.is-gate{overflow-x:hidden;}
   position:relative; aspect-ratio:4/5;
   background:var(--brand); border-radius:var(--radius-sm); overflow:hidden;
   box-shadow:0 26px 50px rgba(30,30,34,.16);
-  transition:transform .35s cubic-bezier(.2,.8,.2,1), box-shadow .35s ease;
+  transition:transform .5s cubic-bezier(.2,.8,.2,1), box-shadow .5s ease;
 }
 .arc-card img{ width:100%; height:100%; object-fit:cover; display:block; }
 .arc-card .avatar-fill{
@@ -1198,10 +1198,19 @@ body.is-gate{overflow-x:hidden;}
   filter:none !important; opacity:1 !important; z-index:2000 !important;
 }
 .arc-card:hover .arc-card-media{
-  transform:scale(1.1) !important;
-  box-shadow:0 36px 70px rgba(30,30,34,.26);
+  transform:translateY(-10px) scale(1.07) !important;
+  box-shadow:0 44px 80px rgba(30,30,34,.3), 0 0 0 1px var(--brand);
 }
+.arc-card img{ transition:transform .7s cubic-bezier(.2,.8,.2,1); }
+.arc-card:hover img{ transform:scale(1.06); }
 .arc-card:hover .name-bar{opacity:1; transform:translateY(0);}
+.arc-card .name-bar .cn{ position:relative; display:inline-block; padding-bottom:3px; }
+.arc-card .name-bar .cn::after{
+  content:''; position:absolute; left:0; bottom:0; height:1px; width:100%;
+  background:var(--brand); transform:scaleX(0); transform-origin:left;
+  transition:transform .45s cubic-bezier(.2,.8,.2,1) .08s;
+}
+.arc-card:hover .name-bar .cn::after{ transform:scaleX(1); }
 /* 手機版：一直顯示在圖片「下面」的小字說明，桌機不用 */
 .name-caption{ display:none; }
 
@@ -1266,6 +1275,33 @@ body.is-gate{overflow-x:hidden;}
   transition:opacity 1.1s ease, transform 1.1s cubic-bezier(.2,.7,.2,1);
 }
 .pf-reveal.in-view{opacity:1; transform:translateY(0) scale(1);}
+/* 頭像：從微微模糊、縮小的狀態「對焦」出現 */
+.profile-view .pf-avatar-wrap{ animation:pfAvatarIn 1.1s cubic-bezier(.2,.8,.2,1) both; }
+@keyframes pfAvatarIn{
+  from{ opacity:0; transform:scale(.86); filter:blur(10px); }
+  to{ opacity:1; transform:none; filter:none; }
+}
+/* 基本資料區塊：整塊不再一起浮上來，改成裡面每一行依序出現，像翻開檔案 */
+.pf-reveal.pf-basic{ opacity:1; transform:none; }
+.pf-basic > *, .pf-basic .field{
+  opacity:0; transform:translateY(16px);
+  transition:opacity .7s ease, transform .8s cubic-bezier(.2,.8,.2,1);
+}
+.pf-basic.in-view > *, .pf-basic.in-view .field{ opacity:1; transform:none; }
+.pf-basic.in-view > :nth-child(1){ transition-delay:.05s; }
+.pf-basic.in-view > :nth-child(2){ transition-delay:.15s; }
+.pf-basic.in-view > :nth-child(3){ transition-delay:.25s; }
+.pf-basic.in-view > :nth-child(4){ transition-delay:.33s; }
+.pf-basic.in-view > :nth-child(5){ transition-delay:.4s; }
+.pf-basic.in-view > :nth-child(6){ transition-delay:.75s; }
+.pf-basic.in-view .field:nth-child(1){ transition-delay:.45s; }
+.pf-basic.in-view .field:nth-child(2){ transition-delay:.5s; }
+.pf-basic.in-view .field:nth-child(3){ transition-delay:.55s; }
+.pf-basic.in-view .field:nth-child(4){ transition-delay:.6s; }
+.pf-basic.in-view .field:nth-child(5){ transition-delay:.65s; }
+.pf-basic.in-view .field:nth-child(6){ transition-delay:.7s; }
+.pf-basic.in-view .field:nth-child(7){ transition-delay:.75s; }
+.pf-basic.in-view .field:nth-child(8){ transition-delay:.8s; }
 
 .pf-basic{
   text-align:center; max-width:480px; margin:0 auto 70px;
@@ -1394,9 +1430,9 @@ body.cp-modal-open{ overflow:hidden; }
   transform:translateY(0);
   opacity:0;
   will-change:transform, width, height, opacity;
-  transition:opacity .5s ease;
+  transition:opacity .5s ease, filter .5s ease;
 }
-.pf-bg-fullbody img.loaded{opacity:1;}
+.pf-bg-fullbody img.loaded{opacity:var(--fb-dim, 1); filter:blur(calc((1 - var(--fb-dim, 1)) * 3px)) saturate(calc(.55 + var(--fb-dim, 1) * .45));}
 /* 立繪圖片本身還在載入時，用一個淡淡的閃光骨架占位，
    這樣切換角色的當下畫面不會整塊空白、感覺卡住不動 */
 .pf-bg-fullbody::before{
@@ -1510,6 +1546,13 @@ body.cp-modal-open{ overflow:hidden; }
 .gallery-thumb{
   aspect-ratio:1/1; position:relative; cursor:zoom-in; overflow:hidden; border-radius:var(--radius-sm); background:var(--panel);
 }
+/* Gallery 區塊捲進畫面時，縮圖一張接一張浮現（--i 是第幾張，最多延遲到第 18 張） */
+.pf-reveal .gallery-thumb{
+  opacity:0; transform:translateY(22px) scale(.96);
+  transition:opacity .7s ease, transform .8s cubic-bezier(.2,.8,.2,1);
+  transition-delay:calc(var(--i, 0) * 55ms + 150ms);
+}
+.pf-reveal.in-view .gallery-thumb{ opacity:1; transform:none; }
 .gallery-thumb img{width:100%; height:100%; object-fit:cover; display:block; transition:transform .35s cubic-bezier(.2,.8,.2,1), filter .4s ease;}
 .gallery-thumb .avatar-fill{transition:transform .35s cubic-bezier(.2,.8,.2,1);}
 /* 縮圖 hover 的視差改由 JS 依滑鼠在縮圖裡的位置即時算位移（initGalleryParallax），
@@ -3284,7 +3327,7 @@ function renderProfile(id){
   `).join('') : '';
 
   const gallery = ch.gallery && ch.gallery.length ? ch.gallery.map((g,i)=>`
-    <div class="gallery-thumb${g.sensitive ? ' is-sensitive' : ''}" onclick="handleGalleryThumbClick(this, '${ch.id}', ${i})">
+    <div class="gallery-thumb${g.sensitive ? ' is-sensitive' : ''}" style="--i:${Math.min(i, 18)}" onclick="handleGalleryThumbClick(this, '${ch.id}', ${i})">
       ${galleryThumb(g, ch, i)}
       ${g.sensitive ? `<div class="sensitive-badge"><div class="icon">⚠</div>敏感內容<br>點擊查看</div>` : ''}
     </div>
@@ -3651,6 +3694,21 @@ function updateFullbodyParallax(){
     img.style.top = (INSET + (boxH - renderedH) / 2).toFixed(1) + 'px';
     img.style.transform = 'translateY(0)';
   }
+  updateFullbodyDim(bg);
+}
+/* 捲到 Gallery（沒有 Gallery 就是頁尾的上一位／下一位）附近時，立繪慢慢變淡、
+   微微模糊，融進背景裡，不會跟縮圖、按鈕疊在一起搶畫面；但不會完全消失，
+   往回捲又會慢慢變回來。用 CSS 變數 --fb-dim 控制（1 = 原本，FULLBODY_MIN_DIM = 最淡） */
+const FULLBODY_MIN_DIM = 0.16;
+function updateFullbodyDim(bg){
+  const target = document.querySelector('.profile-view .gallery-grid') || document.querySelector('.profile-view .pf-char-nav');
+  if(!target){ bg.style.setProperty('--fb-dim', 1); return; }
+  const vh = window.innerHeight;
+  const top = target.getBoundingClientRect().top;
+  /* 目標區塊的頂端從畫面 90% 高度往上捲到 30% 的這段距離內，從 1 漸變到最淡 */
+  const t = Math.min(1, Math.max(0, (vh*0.9 - top) / (vh*0.6)));
+  const eased = t * t * (3 - 2*t); // smoothstep，開始跟結束都比較柔和
+  bg.style.setProperty('--fb-dim', (1 - eased * (1 - FULLBODY_MIN_DIM)).toFixed(3));
 }
 let fullbodyParallaxTicking = false;
 window.addEventListener('scroll', ()=>{
@@ -3722,6 +3780,7 @@ function openLightbox(charId, index, originEl){
   document.getElementById('lightbox').classList.add('open');
   document.addEventListener('keydown', lbKeyHandler);
   if(originEl) playLightboxExpand(originEl);
+  preloadLightboxNeighbors();
 }
 /* 點縮圖開大圖：圖片不是憑空淡入疊上去，而是先瞬間「貼」在縮圖原本的
    位置跟大小（用 translate+scale 算出跟最終置中大小的落差），逼瀏覽器
@@ -3745,7 +3804,7 @@ function playLightboxExpand(originEl){
     img.style.transition = 'none';
     img.style.transform = `translate(${dx}px, ${dy}px) scale(${scaleX}, ${scaleY})`;
     void img.offsetWidth;
-    img.style.transition = 'transform .55s cubic-bezier(.16,.84,.24,1)';
+    img.style.transition = 'transform .55s cubic-bezier(.16,.84,.24,1), opacity .5s ease';
     requestAnimationFrame(()=>{ img.style.transform = 'translate(0,0) scale(1,1)'; });
   });
 }
@@ -3753,13 +3812,51 @@ function closeLightbox(){
   document.getElementById('lightbox').classList.remove('open');
   document.removeEventListener('keydown', lbKeyHandler);
   const img = document.getElementById('lb-img');
-  if(img){ img.style.transition = ''; img.style.transform = ''; }
+  if(img){ img.style.transition = ''; img.style.transform = ''; img.style.opacity = ''; }
+  lbNavToken++;
 }
+let lbNavToken = 0;
 function lbNav(dir){
   const ch = CHARACTERS.find(c=>c.id===lbState.charId);
   const len = ch.gallery.length;
   lbState.index = (lbState.index + dir + len) % len;
-  renderLightbox();
+  const img = document.getElementById('lb-img');
+  const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const token = ++lbNavToken;
+  if(!img || img.style.display === 'none' || reduce){ renderLightbox(); preloadLightboxNeighbors(); return; }
+  /* 1) 舊圖往反方向滑一小段並淡出 */
+  img.style.transition = 'opacity .18s ease, transform .2s ease';
+  img.style.opacity = '0';
+  img.style.transform = `translateX(${-dir * 28}px)`;
+  setTimeout(()=>{
+    if(token !== lbNavToken) return; // 連續快速點擊時，只處理最後一次
+    renderLightbox();
+    /* 2) 新圖先放在另一側、透明，等載入好再滑進來 */
+    img.style.transition = 'none';
+    img.style.transform = `translateX(${dir * 28}px)`;
+    const slideIn = ()=>{
+      if(token !== lbNavToken) return;
+      requestAnimationFrame(()=>{
+        img.style.transition = 'opacity .45s ease, transform .55s cubic-bezier(.2,.8,.2,1)';
+        img.style.opacity = '';
+        img.style.transform = '';
+      });
+    };
+    if(img.complete && img.naturalWidth) slideIn();
+    else { img.addEventListener('load', slideIn, {once:true}); img.addEventListener('error', slideIn, {once:true}); }
+  }, 170);
+  preloadLightboxNeighbors();
+}
+/* 先在背景下載前一張、後一張大圖，切換時幾乎不用等 */
+function preloadLightboxNeighbors(){
+  const ch = CHARACTERS.find(c=>c.id===lbState.charId);
+  if(!ch || !ch.gallery) return;
+  const len = ch.gallery.length;
+  [1, -1].forEach(d=>{
+    const it = ch.gallery[(lbState.index + d + len) % len];
+    const src = it && (it.full || it.image);
+    if(src){ const im = new Image(); im.src = largeSrc(src); }
+  });
 }
 function lbKeyHandler(e){
   if(e.key==='Escape') closeLightbox();
