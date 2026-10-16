@@ -86,7 +86,7 @@ collections:
               - {label: "所屬 Affiliation", name: "affiliation", widget: "string", required: false, default: "—"}
               - {label: "專長 Skill", name: "skill", widget: "string", required: false, default: "—"}
               - {label: "身高 Height", name: "height", widget: "string", required: false}
-              - {label: "生日 Birthday", name: "birthday", widget: "string", required: false}
+              - {label: "生日 Birthday", name: "birthday", widget: "string", required: false, hint: "寫成「月.日」，例如 6.6 或 12.25；Index 頁的壽星提醒會讀這個欄位（6/6、6月6日 也可以）"}
               - {label: "年齡 Age", name: "age", widget: "string", required: false}
               - label: "狀態 Status"
                 name: "status"

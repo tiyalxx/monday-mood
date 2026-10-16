@@ -686,6 +686,104 @@ body.is-gate{overflow-x:hidden;}
   transition-delay:calc(var(--enter-i,0) * 45ms);
 }
 
+
+/* ================= 世界觀關係圖 ================= */
+.wr-legend{
+  display:flex; flex-wrap:wrap; align-items:center; gap:8px 18px; margin:-6px 0 14px;
+  font-family:var(--font-mono); font-size:10.5px; letter-spacing:.06em; color:var(--ink-soft);
+}
+.wr-legend span{ display:inline-flex; align-items:center; gap:7px; }
+.wr-key{ display:inline-block; width:22px; height:0; border-top:1px solid var(--ink-faint); }
+.wr-key.is-love{ border-top:2px solid var(--brand); }
+.wr-key.is-family{ border-top:1px dashed var(--ink-soft); }
+.wr-key-node{ display:inline-block; width:12px; height:12px; border-radius:50%; border:1px dashed var(--ink-soft); }
+.wr-hint{ margin-left:auto; color:var(--ink-faint); }
+.wr-stage{
+  position:relative; max-width:100%; margin:0 auto 40px;
+  border:1px solid var(--line); border-radius:var(--radius);
+  background:radial-gradient(ellipse at center, var(--panel) 0%, transparent 70%);
+}
+.wr-lines{ position:absolute; inset:0; width:100%; height:100%; overflow:visible; }
+.wr-edge{
+  stroke:var(--ink-faint); stroke-width:1; vector-effect:non-scaling-stroke; opacity:.55;
+  transition:opacity .3s ease, stroke-width .3s ease;
+}
+.wr-edge.is-love{ stroke:var(--brand); stroke-width:1.8; opacity:.75; }
+.wr-edge.is-family{ stroke:var(--ink-soft); stroke-dasharray:4 4; }
+.wr-stage.has-focus .wr-edge{ opacity:.08; }
+.wr-stage.has-focus .wr-edge.is-on{ opacity:1; stroke-width:2.2; }
+.wr-stage .wr-edge{ opacity:0; }
+.wr-stage.is-ready .wr-edge{ opacity:.55; transition:opacity 1.2s ease .5s; }
+.wr-stage.is-ready .wr-edge.is-love{ opacity:.75; }
+.wr-stage.is-ready.has-focus .wr-edge{ opacity:.08; transition:opacity .3s ease; }
+.wr-stage.is-ready.has-focus .wr-edge.is-on{ opacity:1; }
+.wr-edge-label{
+  position:absolute; transform:translate(-50%,-50%); z-index:3; pointer-events:none;
+  font-size:11px; line-height:1.4; white-space:nowrap; max-width:220px; overflow:hidden; text-overflow:ellipsis;
+  background:var(--bg); color:var(--ink); border:1px solid var(--line); border-radius:999px; padding:2px 9px;
+  opacity:0; transition:opacity .25s ease;
+}
+.wr-edge-label.is-on{ opacity:1; }
+.wr-node{
+  position:absolute; z-index:2; transform:translate(-50%, -50%);
+  display:flex; flex-direction:column; align-items:center; gap:5px;
+  opacity:0; transition:opacity .6s ease var(--d, 0ms), transform .6s cubic-bezier(.2,.8,.2,1) var(--d, 0ms);
+}
+.wr-stage.is-ready .wr-node{ opacity:1; }
+.wr-avatar{
+  width:var(--s); height:var(--s); border-radius:50%; overflow:hidden; display:block; position:relative;
+  border:2px solid var(--bg); box-shadow:0 6px 18px rgba(0,0,0,.18); background:var(--panel);
+  transition:transform .3s cubic-bezier(.2,.8,.2,1), border-color .3s ease, box-shadow .3s ease;
+}
+.wr-avatar img{ width:100%; height:100%; object-fit:cover; display:block; }
+.wr-avatar .avatar-fill{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; color:#fff; font-size:13px; }
+.wr-node.is-external .wr-avatar{ background:transparent; border:1px dashed var(--ink-soft); box-shadow:none; }
+.wr-initial{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:13px; color:var(--ink-soft); }
+.wr-name{
+  font-size:11.5px; white-space:nowrap; color:var(--ink); text-shadow:0 0 6px var(--bg), 0 0 3px var(--bg);
+}
+.wr-node.is-focus .wr-name{ background:var(--bg); padding:0 6px; border-radius:999px; }
+.wr-node.is-external .wr-name{ color:var(--ink-soft); }
+.wr-stage.has-focus .wr-node{ opacity:.18; }
+.wr-stage.has-focus .wr-node.is-near{ opacity:1; }
+.wr-stage.has-focus .wr-node.is-focus{ z-index:4; }
+.wr-node.is-focus .wr-avatar{ transform:scale(1.18); border-color:var(--brand); box-shadow:0 10px 28px rgba(0,0,0,.28); }
+.wr-node.is-focus .wr-name{ font-weight:600; }
+@media (max-width:640px){
+  .wr-hint{ margin-left:0; width:100%; }
+  .wr-name{ font-size:10px; }
+  .wr-edge-label{ font-size:10px; max-width:150px; }
+}
+
+
+/* ================= 生日提醒（Index 頁） ================= */
+.bday{
+  position:relative; z-index:2; margin:6px auto 0; text-align:center;
+  padding:14px 22px 16px; border:1px solid var(--line); border-radius:var(--radius);
+  background:var(--bg); max-width:min(640px, calc(100vw - 32px));
+  animation:bdayIn .9s cubic-bezier(.2,.8,.2,1) .6s both;
+}
+@keyframes bdayIn{ from{ opacity:0; transform:translateY(14px); } to{ opacity:1; transform:none; } }
+.bday-title{ font-family:var(--font-mono); font-size:10.5px; letter-spacing:.18em; color:var(--ink-soft); margin-bottom:10px; }
+.bday-chips{ display:flex; flex-wrap:wrap; justify-content:center; gap:8px; }
+.bday-chip{
+  display:inline-flex; align-items:center; gap:8px; padding:4px 12px 4px 4px;
+  border:1px solid var(--line); border-radius:999px; font-size:12.5px; color:var(--ink);
+  transition:border-color .25s ease, transform .25s ease;
+}
+.bday-chip:hover{ border-color:var(--brand); transform:translateY(-2px); }
+.bday-chip em{ font-style:normal; font-family:var(--font-mono); font-size:10.5px; color:var(--brand); }
+.bday-chip.is-past{ opacity:.45; }
+.bday-av{ width:26px; height:26px; border-radius:50%; overflow:hidden; position:relative; flex:none; background:var(--brand); }
+.bday-av img{ width:100%; height:100%; object-fit:cover; display:block; }
+.bday-av .avatar-fill{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; color:#fff; font-size:11px; }
+.bday.is-today{ border-color:var(--brand); box-shadow:0 0 0 4px color-mix(in srgb, var(--brand) 12%, transparent); }
+.bday.is-today .bday-title{ color:var(--brand); }
+.bday-sub{ margin-top:10px; font-size:13px; }
+.bday-spark{ position:absolute; top:-10px; right:18px; color:var(--brand); font-size:16px; animation:bdaySpark 2.4s ease-in-out infinite; }
+@keyframes bdaySpark{ 0%,100%{ transform:scale(.8) rotate(0); opacity:.5; } 50%{ transform:scale(1.2) rotate(20deg); opacity:1; } }
+.bday-badge{ display:inline-block; margin-left:6px; padding:0 8px; border-radius:999px; font-size:11px; background:var(--brand); color:#fff; }
+
 /* ================= HOME ================= */
 .hero{
   padding:min(9vh,90px) 0 40px;
@@ -2024,6 +2122,7 @@ function getRouteAccent(hash){
   if(parts[0]==='grid' && parts[1]==='coop' && parts[2]) return WORLD_COLORS[parts[2]] || null;
   if(parts[0]==='random' && parts[1]==='coop' && parts[2]) return WORLD_COLORS[parts[2]] || null;
   if(parts[0]==='timeline' && parts[1]==='coop' && parts[2]) return WORLD_COLORS[parts[2]] || null;
+  if(parts[0]==='relations' && parts[1]==='coop' && parts[2]) return WORLD_COLORS[parts[2]] || null;
   if(parts[0]==='char' && parts[1]){
     const id = parts[1];
     if(/^coop-/i.test(id)){
@@ -2042,6 +2141,7 @@ function getRouteLabel(hash){
   if(parts[0]==='grid' && parts[1]==='coop' && parts[2]) return (WORLD_META[parts[2]] && WORLD_META[parts[2]].name) || parts[2].toUpperCase();
   if(parts[0]==='random') return 'RANDOM';
   if(parts[0]==='timeline' && parts[2]) return ((WORLD_META[parts[2]] && WORLD_META[parts[2]].name) || parts[2].toUpperCase()) + ' TIMELINE';
+  if(parts[0]==='relations' && parts[2]) return ((WORLD_META[parts[2]] && WORLD_META[parts[2]].name) || parts[2].toUpperCase()) + ' RELATIONS';
   if(parts[0]==='about') return 'ABOUT';
   if(parts[0]==='char' && parts[1]){
     const ch = (typeof CHARACTERS!=='undefined' ? CHARACTERS.find(c=>c.id===parts[1]) : null);
@@ -2396,6 +2496,7 @@ function route(){
   if(parts[0]==='random' && parts[1]==='original'){ document.body.classList.remove('is-profile'); hideFullbodyBackground(); setWorldTheme(null); return renderRandomPage('original'); }
   if(parts[0]==='random' && parts[1]==='coop' && parts[2]){ document.body.classList.remove('is-profile'); hideFullbodyBackground(); setWorldTheme(parts[2]); return renderRandomPage('coop', parts[2]); }
   if(parts[0]==='timeline' && parts[1]==='coop' && parts[2]){ document.body.classList.remove('is-profile'); hideFullbodyBackground(); setWorldTheme(parts[2]); return renderTimeline(parts[2]); }
+  if(parts[0]==='relations' && parts[1]==='coop' && parts[2]){ document.body.classList.remove('is-profile'); hideFullbodyBackground(); setWorldTheme(parts[2]); return renderWorldRelations(parts[2]); }
   if(parts[0]==='about'){ document.body.classList.remove('is-profile'); hideFullbodyBackground(); setWorldTheme(null); return renderAbout(); }
   if(parts[0]==='char' && parts[1]){ document.body.classList.add('is-profile'); return renderProfile(parts[1]); }
   document.body.classList.remove('is-profile');
@@ -2542,6 +2643,42 @@ window.addEventListener('scroll', ()=>{
 }, {passive:true});
 
 /* ---------------- HOME (分類頁) ---------------- */
+/* ---------------- 生日提醒 ----------------
+   讀角色的「生日 Birthday」欄位（6.6、6/6、6-6、6月6日 這些寫法都可以），
+   在 Index 頁顯示：今天有人生日 → 「今天是 ○○ 的生日」；
+   沒有 → 這個月的壽星；這個月也沒有 → 下一位壽星還有幾天。日期用看網頁的人自己的時區。 */
+function parseBirthday(s){
+  const m = String(s||'').match(/(\d{1,2})\s*[.\/\-月]\s*(\d{1,2})/);
+  if(!m) return null;
+  const month = +m[1], day = +m[2];
+  return (month >= 1 && month <= 12 && day >= 1 && day <= 31) ? { month, day } : null;
+}
+function isBirthdayToday(ch){
+  const b = parseBirthday(ch.birthday); const t = new Date();
+  return !!b && b.month === t.getMonth() + 1 && b.day === t.getDate();
+}
+function birthdayBanner(){
+  const t = new Date(); t.setHours(0,0,0,0);
+  const list = CHARACTERS.map(ch=>({ ch, b:parseBirthday(ch.birthday) })).filter(x=>x.b);
+  if(!list.length) return '';
+  const chip = (x, extra='') => `<a class="bday-chip${extra}" href="#/char/${x.ch.id}"><span class="bday-av">${avatarBlock(x.ch)}</span><span>${x.ch.codename}</span><em>${x.b.month}.${x.b.day}</em></a>`;
+  const today = list.filter(x=>x.b.month === t.getMonth()+1 && x.b.day === t.getDate());
+  if(today.length){
+    return `<div class="bday is-today"><span class="bday-spark" aria-hidden="true">✦</span><div class="bday-title">🎂 HAPPY BIRTHDAY</div>
+      <div class="bday-chips">${today.map(x=>chip(x)).join('')}</div><div class="bday-sub">今天是${today.map(x=>x.ch.codename).join('、')}的生日！</div></div>`;
+  }
+  const month = list.filter(x=>x.b.month === t.getMonth()+1).sort((a,b)=>a.b.day-b.b.day);
+  if(month.length){
+    return `<div class="bday"><div class="bday-title">🎂 ${t.getMonth()+1} 月壽星</div>
+      <div class="bday-chips">${month.map(x=>chip(x, x.b.day < t.getDate() ? ' is-past' : '')).join('')}</div></div>`;
+  }
+  const daysUntil = b => { let d = new Date(t.getFullYear(), b.month-1, b.day); if(d < t) d = new Date(t.getFullYear()+1, b.month-1, b.day); return Math.round((d - t) / 864e5); };
+  const next = list.map(x=>({ ...x, n:daysUntil(x.b) })).sort((a,b)=>a.n-b.n);
+  const first = next.filter(x=>x.n === next[0].n);
+  return `<div class="bday"><div class="bday-title">🎂 下一位壽星 · 還有 ${first[0].n} 天</div>
+    <div class="bday-chips">${first.map(x=>chip(x)).join('')}</div></div>`;
+}
+
 function renderHome(){
   setCrumb([{label:'Home',hash:'#/index'},{label:'Index'}], {showBack:false});
   app.innerHTML = `
@@ -2551,6 +2688,7 @@ function renderHome(){
       <a href="#/grid/original" class="node-circle" id="node-a" style="left:32%; top:40%;"><span>Plurk<br>Project</span></a>
       <a href="#/coop" class="node-circle" id="node-b" style="left:68%; top:60%;"><span>Co-creation</span></a>
     </div>
+    ${birthdayBanner()}
   </div>`;
   initNodeField();
 }
@@ -2788,6 +2926,8 @@ function renderGrid(category, world){
   const randomHash = category==='original' ? '#/random/original' : `#/random/coop/${world}`;
   const hasTimeline = category==='coop' && WORLD_META[world] && (WORLD_META[world].timeline||[]).length > 0;
   const timelineLink = hasTimeline ? `<a class="pill-link" href="#/timeline/coop/${world}">🕰 時間軸</a>` : '';
+  const hasRelations = category==='coop' && buildWorldGraph(world).edges.length > 0;
+  const relationsLink = hasRelations ? `<a class="pill-link" href="#/relations/coop/${world}">🕸 關係圖</a>` : '';
 
   app.innerHTML = `
   <div class="view">
@@ -2795,6 +2935,7 @@ function renderGrid(category, world){
       <h2 class="brand-title">${title}</h2>
       <div class="section-head-right">
         ${timelineLink}
+        ${relationsLink}
         <a class="pill-link" href="${randomHash}">🎲 隨機看看</a>
         <div class="section-count">${list.length} RECORDS</div>
       </div>
@@ -3266,6 +3407,244 @@ window.addEventListener('resize', ()=>{
   }, 200);
 });
 
+/* ---------------- 世界觀關係圖 #/relations/coop/<world> ----------------
+   把同一個世界觀裡每個角色在後台「關係 Relationships」填的對象全部畫成一張網絡圖：
+   - 網站上的角色：用頭像，點了進角色頁
+   - 不在網站上、但被兩個以上角色提到的人（例如共同的上司）：虛線圓圈
+     （只被一個人提到的就不畫，不然圖會太亂；那些在個別角色頁的關係圖看得到）
+   - 線的樣式依關係稱呼自動分類：愛情（主題色粗線）、家人（虛線）、其他（細線）
+   位置用簡單的力導向排版即時算出來（互相排斥＋有關係的互相拉近＋同家族的稍微聚在一起），
+   每次打開結果都一樣，不用另外設定。滑鼠移到（手機點一下）某個人，只亮出跟他有關的線和稱呼。 */
+const REL_LOVE_RE = /愛人|戀人|摯愛|妻|丈夫|老公|老婆|伴侶|未婚|情人|曖昧|婚/;
+const REL_FAMILY_RE = /父|母|兄|弟|姐|姊|妹|子|女兒|養|叔|伯|舅|姨|嫂|孫|家人|親/;
+function relKind(label){
+  if(REL_LOVE_RE.test(label)) return 'love';
+  if(REL_FAMILY_RE.test(label)) return 'family';
+  return 'other';
+}
+/* 「馬拉斯家族→坎圖家族」這種寫法，取最後（現在）的所屬來分群 */
+const affGroup = a => String(a||'').split(/→|->/).pop().replace(/\(.*?\)|（.*?）/g,'').trim();
+
+function buildWorldGraph(world){
+  const chars = CHARACTERS.filter(c=>c.category==='coop' && c.world===world);
+  const byId = new Map(chars.map(c=>[c.id, c]));
+  const byName = new Map(chars.map(c=>[normName(c.codename), c]));
+  const resolve = t => byId.get(t) || byName.get(normName(t)) || null;
+  /* 先數每個站外名字被幾個角色提到 */
+  const extCount = new Map();
+  chars.forEach(c=>{
+    const seen = new Set();
+    (c.relationships||[]).forEach(r=>{
+      if(!r || !r.target || resolve(r.target)) return;
+      const k = normName(r.target); if(seen.has(k)) return; seen.add(k);
+      extCount.set(k, { name:r.target.trim(), n:(extCount.get(k)?.n || 0) + 1 });
+    });
+  });
+  const nodes = new Map();
+  const nodeFor = (target)=>{
+    const c = resolve(target);
+    if(c){ if(!nodes.has(c.id)) nodes.set(c.id, { key:c.id, ch:c, name:c.codename, group:affGroup(c.affiliation), deg:0 }); return nodes.get(c.id); }
+    const k = normName(target), e = extCount.get(k);
+    if(!e || e.n < 2) return null;
+    const key = 'ext:'+k;
+    if(!nodes.has(key)) nodes.set(key, { key, ch:null, name:e.name, group:'', deg:0 });
+    return nodes.get(key);
+  };
+  const edges = new Map();
+  chars.forEach(c=>{
+    (c.relationships||[]).forEach(r=>{
+      if(!r || !r.target) return;
+      const a = nodeFor(c.id), b = nodeFor(r.target);
+      if(!a || !b || a === b) return;
+      const key = [a.key, b.key].sort().join('|');
+      if(!edges.has(key)) edges.set(key, { a, b, labels:[] });
+      const label = (r.label||'').trim();
+      if(label) edges.get(key).labels.push({ from:a, text:label });
+    });
+  });
+  edges.forEach(e=>{
+    e.a.deg++; e.b.deg++;
+    const all = e.labels.map(l=>l.text).join('、');
+    e.kind = relKind(all);
+  });
+  return { nodes:[...nodes.values()], edges:[...edges.values()] };
+}
+
+/* 排版：在實際的畫面像素大小裡跑 Fruchterman–Reingold 力導向（互相排斥＋有關係的拉近＋
+   同家族稍微聚在一起＋往中心的引力），接著做「碰撞處理」——把頭像加名字的方框互相推開到
+   不重疊為止，最後再整體縮放填滿畫面。初始位置由名字算出固定值，所以每次打開結果都一樣。 */
+function layoutGraph(nodes, edges, W, H){
+  const hash = s => { let h = 2166136261; for(const ch of s){ h ^= ch.codePointAt(0); h = Math.imul(h, 16777619); } return (h >>> 0) / 4294967295; };
+  const n = nodes.length;
+  const k = 0.85 * Math.sqrt(W * H / Math.max(1, n));
+  const groups = [...new Set(nodes.map(v=>v.group).filter(Boolean))];
+  /* 找出彼此沒有連線的小群組（連通元件）：不同群組之間的排斥力打折，
+     小群組才會靠在主群旁邊，不會被推到畫面最邊邊、留下一大片空白 */
+  const comp = new Map(); let cid = 0;
+  nodes.forEach(v=>{
+    if(comp.has(v)) return;
+    const stack = [v]; comp.set(v, cid);
+    while(stack.length){ const u = stack.pop(); edges.forEach(e=>{ const o = e.a === u ? e.b : e.b === u ? e.a : null; if(o && !comp.has(o)){ comp.set(o, cid); stack.push(o); } }); }
+    cid++;
+  });
+  nodes.forEach(v=>{
+    const g = groups.indexOf(v.group);
+    const ang = g >= 0 ? (g / groups.length) * Math.PI * 2 + hash(v.key) * .6 : hash(v.key) * Math.PI * 2;
+    const r = (0.2 + hash(v.key + 'r') * 0.25) * Math.min(W, H);
+    v.x = W/2 + Math.cos(ang) * r; v.y = H/2 + Math.sin(ang) * r;
+  });
+  const ITER = 500;
+  let t = W / 8;
+  for(let it = 0; it < ITER; it++){
+    nodes.forEach(v=>{ v.dx = 0; v.dy = 0; });
+    for(let i = 0; i < n; i++) for(let j = i + 1; j < n; j++){
+      const a = nodes[i], b = nodes[j];
+      const dx = a.x - b.x, dy = a.y - b.y; const d = Math.max(1, Math.hypot(dx, dy));
+      let f = k * k / d * (comp.get(a) === comp.get(b) ? 1 : 0.12);
+      if(a.group && a.group === b.group) f -= d * d / k * 0.12;
+      a.dx += dx / d * f; a.dy += dy / d * f; b.dx -= dx / d * f; b.dy -= dy / d * f;
+    }
+    edges.forEach(e=>{
+      const dx = e.a.x - e.b.x, dy = e.a.y - e.b.y, d = Math.max(1, Math.hypot(dx, dy));
+      const f = d * d / k;
+      e.a.dx -= dx / d * f; e.a.dy -= dy / d * f; e.b.dx += dx / d * f; e.b.dy += dy / d * f;
+    });
+    nodes.forEach(v=>{
+      v.dx += (W/2 - v.x) * 0.09; v.dy += (H/2 - v.y) * 0.09 * (W / H);
+      const d = Math.max(1, Math.hypot(v.dx, v.dy));
+      v.x += v.dx / d * Math.min(d, t); v.y += v.dy / d * Math.min(d, t);
+    });
+    t = Math.max(1, t * 0.985);
+  }
+  const boxW = v => Math.max(v.size, v.label.length * v.font + 8);
+  const PAD = 10;
+  const minX = Math.min(...nodes.map(v=>v.x - boxW(v)/2)), maxX = Math.max(...nodes.map(v=>v.x + boxW(v)/2));
+  const minY = Math.min(...nodes.map(v=>v.y - v.size/2)), maxY = Math.max(...nodes.map(v=>v.y + v.size/2 + v.font + 8));
+  const sx = (W - PAD*2) / ((maxX - minX) || 1), sy = (H - PAD*2) / ((maxY - minY) || 1);
+  nodes.forEach(v=>{ v.x = PAD + (v.x - minX) * sx + boxW(v)/2 * 0; v.y = PAD + (v.y - minY) * sy; });
+  /* 碰撞處理：每個人佔一個「頭像＋名字」的方框，方框重疊就沿著重疊比較少的方向推開 */
+  for(let pass = 0; pass < 200; pass++){
+    let moved = false;
+    for(let i = 0; i < n; i++) for(let j = i + 1; j < n; j++){
+      const a = nodes[i], b = nodes[j];
+      const ox = (boxW(a) + boxW(b)) / 2 + 4 - Math.abs(a.x - b.x);
+      const oy = (a.size + b.size) / 2 + (a.font + b.font) / 2 + 12 - Math.abs(a.y - b.y);
+      if(ox > 0 && oy > 0){
+        moved = true;
+        if(ox < oy){ const s = (a.x <= b.x ? -1 : 1) * (ox / 2 + .5); a.x += s; b.x -= s; }
+        else { const s = (a.y <= b.y ? -1 : 1) * (oy / 2 + .5); a.y += s; b.y -= s; }
+      }
+    }
+    nodes.forEach(v=>{
+      v.x = Math.min(W - boxW(v)/2 - 2, Math.max(boxW(v)/2 + 2, v.x));
+      v.y = Math.min(H - v.size/2 - v.font - 10, Math.max(v.size/2 + 4, v.y));
+    });
+    if(!moved) break;
+  }
+  nodes.forEach(v=>{ v.px = v.x / W * 100; v.py = v.y / H * 100; });
+}
+
+function renderWorldRelations(world){
+  const w = WORLD_META[world];
+  const name = w ? w.name : world.toUpperCase();
+  setCrumb([{label:'Home',hash:'#/index'},{label:'Co-creation',hash:'#/coop'},{label:name, hash:`#/grid/coop/${world}`},{label:'關係圖'}]);
+  const { nodes, edges } = buildWorldGraph(world);
+  if(!edges.length){
+    app.innerHTML = `<div class="view"><div class="section-head"><h2 class="brand-title">${name} · 關係圖</h2></div><div class="empty-note">這個世界觀的角色還沒有填「關係」。到後台角色資料的「關係 Relationships」新增，關係圖就會自動出現。</div></div>`;
+    return;
+  }
+  const isMobile = window.innerWidth <= 640;
+  const maxDeg = Math.max(...nodes.map(n=>n.deg));
+  const W = Math.min(1180, (app.clientWidth || window.innerWidth) - (isMobile ? 32 : 120));
+  const H = Math.round(W * (isMobile ? 1.5 : 0.62));
+  nodes.forEach(n=>{
+    n.size = Math.round(isMobile ? 22 + (n.deg / maxDeg) * 14 : 34 + (n.deg / maxDeg) * 24);
+    n.font = isMobile ? 10 : 11.5;
+    n.label = shortName(n.name);
+  });
+  layoutGraph(nodes, edges, W, H);
+  const lines = edges.map((e,i)=>`<line class="wr-edge is-${e.kind}" data-i="${i}" x1="${e.a.px}" y1="${e.a.py}" x2="${e.b.px}" y2="${e.b.py}"/>`).join('');
+  const labels = edges.map((e,i)=>{
+    const text = e.labels.length ? e.labels.map(l=>l.text).filter((t,k,arr)=>arr.indexOf(t)===k).join(' ／ ') : '';
+    return text ? `<div class="wr-edge-label" data-i="${i}" style="left:${(e.a.px+e.b.px)/2}%; top:${(e.a.py+e.b.py)/2}%;">${text}</div>` : '';
+  }).join('');
+  const nodeHtml = nodes.map((n,i)=>{
+    const size = n.size;
+    const inner = n.ch ? avatarBlock(n.ch) : `<span class="wr-initial">${n.name.slice(0,1)}</span>`;
+    const tag = n.ch ? 'a' : 'div';
+    const href = n.ch ? ` href="#/char/${n.ch.id}"` : '';
+    return `<${tag} class="wr-node${n.ch ? '' : ' is-external'}" data-n="${i}"${href} style="left:${n.px}%; top:${n.py}%; --s:${size}px; --d:${i * 25}ms">
+      <span class="wr-avatar">${inner}</span><span class="wr-name" data-full="${n.name}">${n.label}</span>
+    </${tag}>`;
+  }).join('');
+  app.innerHTML = `
+  <div class="view wr-view">
+    <div class="section-head">
+      <h2 class="brand-title">${name} · 關係圖</h2>
+      <div class="section-head-right">
+        <a class="pill-link" href="#/grid/coop/${world}">← 角色列表</a>
+        <div class="section-count">${nodes.length} PEOPLE · ${edges.length} LINKS</div>
+      </div>
+    </div>
+    <div class="wr-legend">
+      <span><i class="wr-key is-love"></i>愛情</span>
+      <span><i class="wr-key is-family"></i>家人</span>
+      <span><i class="wr-key is-other"></i>其他</span>
+      <span><i class="wr-key-node"></i>不在網站上的人物</span>
+      <span class="wr-hint">${isMobile ? '點一下人物看關係，再點一下進入角色頁' : '滑鼠移到人物上看關係，點擊進入角色頁'}</span>
+    </div>
+    <div class="wr-stage" id="wr-stage" style="width:${W}px; height:${H}px;">
+      <svg class="wr-lines" viewBox="0 0 100 100" preserveAspectRatio="none">${lines}</svg>
+      ${labels}
+      ${nodeHtml}
+    </div>
+  </div>`;
+  initWorldRelations(nodes, edges);
+}
+
+function initWorldRelations(nodes, edges){
+  const stage = document.getElementById('wr-stage');
+  if(!stage) return;
+  const nodeEls = [...stage.querySelectorAll('.wr-node')];
+  const lineEls = [...stage.querySelectorAll('.wr-edge')];
+  const labelEls = new Map([...stage.querySelectorAll('.wr-edge-label')].map(el=>[el.dataset.i, el]));
+  let focused = null;
+  const focus = (idx)=>{
+    focused = idx;
+    stage.classList.toggle('has-focus', idx != null);
+    const node = idx != null ? nodes[idx] : null;
+    const near = new Set();
+    edges.forEach((e,i)=>{
+      const on = node && (e.a === node || e.b === node);
+      lineEls[i].classList.toggle('is-on', !!on);
+      const lab = labelEls.get(String(i));
+      if(lab){
+        lab.classList.toggle('is-on', !!on);
+        /* 稱呼放在「從這個人往對方」那段線的 58% 處，關係很多時會以他為中心往外散開，不會全擠在中間 */
+        if(on){ const o = e.a === node ? e.b : e.a; lab.style.left = (node.px + (o.px - node.px) * .58) + '%'; lab.style.top = (node.py + (o.py - node.py) * .58) + '%'; }
+      }
+      if(on){ near.add(e.a); near.add(e.b); }
+    });
+    nodeEls.forEach((el,i)=>{
+      el.classList.toggle('is-near', near.has(nodes[i])); el.classList.toggle('is-focus', i === idx);
+      const nm = el.querySelector('.wr-name'); nm.textContent = (i === idx) ? nm.dataset.full : nodes[i].label;
+    });
+  };
+  const touch = window.matchMedia('(hover:none)').matches;
+  nodeEls.forEach((el,i)=>{
+    if(!touch){
+      el.addEventListener('mouseenter', ()=>focus(i));
+      el.addEventListener('mouseleave', ()=>focus(null));
+    }
+    el.addEventListener('click', (e)=>{
+      /* 手機：第一下先亮出關係，第二下才進入角色頁 */
+      if(touch && focused !== i){ e.preventDefault(); focus(i); }
+    });
+  });
+  if(touch) stage.addEventListener('click', (e)=>{ if(!e.target.closest('.wr-node')) focus(null); });
+  requestAnimationFrame(()=>stage.classList.add('is-ready'));
+}
+
 /* ---------------- PROFILE ---------------- */
 function bioParagraphs(text){
   /* 簡介文字支援分段落：CMS 的文字框裡，空一行代表分段，這裡會自動轉成一個一個 <p> */
@@ -3311,7 +3690,7 @@ function renderProfile(id){
     ['Affiliation', ch.affiliation||'—'],
     ['Skill', ch.skill||'—'],
     ['Height', ch.height||'—'],
-    ['Birthday', ch.birthday||'—'],
+    ['Birthday', (ch.birthday||'—') + (isBirthdayToday(ch) ? ' <span class="bday-badge">🎂 今天生日！</span>' : '')],
     ['Age', ch.age||'—'],
     ['CP', cpFieldValue(ch)],
     ['Status', `${STATUS_LABEL[ch.status]||ch.status}`],
