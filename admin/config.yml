@@ -85,16 +85,28 @@ collections:
               - {label: "CP", name: "cp", widget: "string", required: false}
               - {label: "CP 介紹 CP Intro（選填；有填的話，角色頁上的 CP 名字就能點開小視窗看這段介紹。空一行代表分段）", name: "cpIntro", widget: "text", required: false}
               - {label: "CP 圖片 CP Image（選填；顯示在 CP 介紹小視窗最上面）", name: "cpImage", widget: "image", required: false}
-              - label: "CP 特質量表 CP Traits（選填；顯示在 CP 介紹小視窗裡，每一項 0～5 顆星，可以用 0.5 顆）"
-                name: "cpTraits"
-                widget: "list"
+              - label: "CP 特質量表：這個角色 → 對方（選填，每項 0～5 個點）"
+                name: "cpTraitsMine"
+                widget: "object"
                 required: false
-                label_singular: "特質"
-                summary: "{{fields.label}}：{{fields.stars}} 顆星"
-                hint: "建議項目：感情強度、忠誠度、獨佔欲、依存度、性慾強度——也可以自己取名、增減項目、拖曳調整順序"
+                collapsed: true
                 fields:
-                  - {label: "項目名稱 Label（例如：感情強度）", name: "label", widget: "string"}
-                  - {label: "星數 Stars（0～5，可以填 0.5）", name: "stars", widget: "number", value_type: "float", min: 0, max: 5, step: 0.5, default: 3}
+                  - {label: "感情強度（0～5，留空就不顯示）", name: "affection", widget: "number", value_type: "int", min: 0, max: 5, required: false}
+                  - {label: "忠誠度（0～5，留空就不顯示）", name: "loyalty", widget: "number", value_type: "int", min: 0, max: 5, required: false}
+                  - {label: "獨佔欲（0～5，留空就不顯示）", name: "possessive", widget: "number", value_type: "int", min: 0, max: 5, required: false}
+                  - {label: "依存度（0～5，留空就不顯示）", name: "dependence", widget: "number", value_type: "int", min: 0, max: 5, required: false}
+                  - {label: "性慾強度（0～5，留空就不顯示）", name: "desire", widget: "number", value_type: "int", min: 0, max: 5, required: false}
+              - label: "CP 特質量表：對方 → 這個角色（選填，每項 0～5 個點）"
+                name: "cpTraitsTheirs"
+                widget: "object"
+                required: false
+                collapsed: true
+                fields:
+                  - {label: "感情強度（0～5，留空就不顯示）", name: "affection", widget: "number", value_type: "int", min: 0, max: 5, required: false}
+                  - {label: "忠誠度（0～5，留空就不顯示）", name: "loyalty", widget: "number", value_type: "int", min: 0, max: 5, required: false}
+                  - {label: "獨佔欲（0～5，留空就不顯示）", name: "possessive", widget: "number", value_type: "int", min: 0, max: 5, required: false}
+                  - {label: "依存度（0～5，留空就不顯示）", name: "dependence", widget: "number", value_type: "int", min: 0, max: 5, required: false}
+                  - {label: "性慾強度（0～5，留空就不顯示）", name: "desire", widget: "number", value_type: "int", min: 0, max: 5, required: false}
               - {label: "狀態 Status", name: "status", widget: "select", options: [
                   {label: "生存 Alive", value: "alive"},
                   {label: "死亡 Dead", value: "dead"}
@@ -151,16 +163,28 @@ collections:
               - {label: "CP", name: "cp", widget: "string", required: false}
               - {label: "CP 介紹 CP Intro（選填；有填的話，角色頁上的 CP 名字就能點開小視窗看這段介紹。空一行代表分段）", name: "cpIntro", widget: "text", required: false}
               - {label: "CP 圖片 CP Image（選填；顯示在 CP 介紹小視窗最上面）", name: "cpImage", widget: "image", required: false}
-              - label: "CP 特質量表 CP Traits（選填；顯示在 CP 介紹小視窗裡，每一項 0～5 顆星，可以用 0.5 顆）"
-                name: "cpTraits"
-                widget: "list"
+              - label: "CP 特質量表：這個角色 → 對方（選填，每項 0～5 個點）"
+                name: "cpTraitsMine"
+                widget: "object"
                 required: false
-                label_singular: "特質"
-                summary: "{{fields.label}}：{{fields.stars}} 顆星"
-                hint: "建議項目：感情強度、忠誠度、獨佔欲、依存度、性慾強度——也可以自己取名、增減項目、拖曳調整順序"
+                collapsed: true
                 fields:
-                  - {label: "項目名稱 Label（例如：感情強度）", name: "label", widget: "string"}
-                  - {label: "星數 Stars（0～5，可以填 0.5）", name: "stars", widget: "number", value_type: "float", min: 0, max: 5, step: 0.5, default: 3}
+                  - {label: "感情強度（0～5，留空就不顯示）", name: "affection", widget: "number", value_type: "int", min: 0, max: 5, required: false}
+                  - {label: "忠誠度（0～5，留空就不顯示）", name: "loyalty", widget: "number", value_type: "int", min: 0, max: 5, required: false}
+                  - {label: "獨佔欲（0～5，留空就不顯示）", name: "possessive", widget: "number", value_type: "int", min: 0, max: 5, required: false}
+                  - {label: "依存度（0～5，留空就不顯示）", name: "dependence", widget: "number", value_type: "int", min: 0, max: 5, required: false}
+                  - {label: "性慾強度（0～5，留空就不顯示）", name: "desire", widget: "number", value_type: "int", min: 0, max: 5, required: false}
+              - label: "CP 特質量表：對方 → 這個角色（選填，每項 0～5 個點）"
+                name: "cpTraitsTheirs"
+                widget: "object"
+                required: false
+                collapsed: true
+                fields:
+                  - {label: "感情強度（0～5，留空就不顯示）", name: "affection", widget: "number", value_type: "int", min: 0, max: 5, required: false}
+                  - {label: "忠誠度（0～5，留空就不顯示）", name: "loyalty", widget: "number", value_type: "int", min: 0, max: 5, required: false}
+                  - {label: "獨佔欲（0～5，留空就不顯示）", name: "possessive", widget: "number", value_type: "int", min: 0, max: 5, required: false}
+                  - {label: "依存度（0～5，留空就不顯示）", name: "dependence", widget: "number", value_type: "int", min: 0, max: 5, required: false}
+                  - {label: "性慾強度（0～5，留空就不顯示）", name: "desire", widget: "number", value_type: "int", min: 0, max: 5, required: false}
               - {label: "狀態 Status", name: "status", widget: "select", options: [
                   {label: "生存 Alive", value: "alive"},
                   {label: "死亡 Dead", value: "dead"}
@@ -214,16 +238,28 @@ collections:
               - {label: "CP", name: "cp", widget: "string", required: false}
               - {label: "CP 介紹 CP Intro（選填；有填的話，角色頁上的 CP 名字就能點開小視窗看這段介紹。空一行代表分段）", name: "cpIntro", widget: "text", required: false}
               - {label: "CP 圖片 CP Image（選填；顯示在 CP 介紹小視窗最上面）", name: "cpImage", widget: "image", required: false}
-              - label: "CP 特質量表 CP Traits（選填；顯示在 CP 介紹小視窗裡，每一項 0～5 顆星，可以用 0.5 顆）"
-                name: "cpTraits"
-                widget: "list"
+              - label: "CP 特質量表：這個角色 → 對方（選填，每項 0～5 個點）"
+                name: "cpTraitsMine"
+                widget: "object"
                 required: false
-                label_singular: "特質"
-                summary: "{{fields.label}}：{{fields.stars}} 顆星"
-                hint: "建議項目：感情強度、忠誠度、獨佔欲、依存度、性慾強度——也可以自己取名、增減項目、拖曳調整順序"
+                collapsed: true
                 fields:
-                  - {label: "項目名稱 Label（例如：感情強度）", name: "label", widget: "string"}
-                  - {label: "星數 Stars（0～5，可以填 0.5）", name: "stars", widget: "number", value_type: "float", min: 0, max: 5, step: 0.5, default: 3}
+                  - {label: "感情強度（0～5，留空就不顯示）", name: "affection", widget: "number", value_type: "int", min: 0, max: 5, required: false}
+                  - {label: "忠誠度（0～5，留空就不顯示）", name: "loyalty", widget: "number", value_type: "int", min: 0, max: 5, required: false}
+                  - {label: "獨佔欲（0～5，留空就不顯示）", name: "possessive", widget: "number", value_type: "int", min: 0, max: 5, required: false}
+                  - {label: "依存度（0～5，留空就不顯示）", name: "dependence", widget: "number", value_type: "int", min: 0, max: 5, required: false}
+                  - {label: "性慾強度（0～5，留空就不顯示）", name: "desire", widget: "number", value_type: "int", min: 0, max: 5, required: false}
+              - label: "CP 特質量表：對方 → 這個角色（選填，每項 0～5 個點）"
+                name: "cpTraitsTheirs"
+                widget: "object"
+                required: false
+                collapsed: true
+                fields:
+                  - {label: "感情強度（0～5，留空就不顯示）", name: "affection", widget: "number", value_type: "int", min: 0, max: 5, required: false}
+                  - {label: "忠誠度（0～5，留空就不顯示）", name: "loyalty", widget: "number", value_type: "int", min: 0, max: 5, required: false}
+                  - {label: "獨佔欲（0～5，留空就不顯示）", name: "possessive", widget: "number", value_type: "int", min: 0, max: 5, required: false}
+                  - {label: "依存度（0～5，留空就不顯示）", name: "dependence", widget: "number", value_type: "int", min: 0, max: 5, required: false}
+                  - {label: "性慾強度（0～5，留空就不顯示）", name: "desire", widget: "number", value_type: "int", min: 0, max: 5, required: false}
               - {label: "狀態 Status", name: "status", widget: "select", options: [
                   {label: "生存 Alive", value: "alive"},
                   {label: "死亡 Dead", value: "dead"}
@@ -277,16 +313,28 @@ collections:
               - {label: "CP", name: "cp", widget: "string", required: false}
               - {label: "CP 介紹 CP Intro（選填；有填的話，角色頁上的 CP 名字就能點開小視窗看這段介紹。空一行代表分段）", name: "cpIntro", widget: "text", required: false}
               - {label: "CP 圖片 CP Image（選填；顯示在 CP 介紹小視窗最上面）", name: "cpImage", widget: "image", required: false}
-              - label: "CP 特質量表 CP Traits（選填；顯示在 CP 介紹小視窗裡，每一項 0～5 顆星，可以用 0.5 顆）"
-                name: "cpTraits"
-                widget: "list"
+              - label: "CP 特質量表：這個角色 → 對方（選填，每項 0～5 個點）"
+                name: "cpTraitsMine"
+                widget: "object"
                 required: false
-                label_singular: "特質"
-                summary: "{{fields.label}}：{{fields.stars}} 顆星"
-                hint: "建議項目：感情強度、忠誠度、獨佔欲、依存度、性慾強度——也可以自己取名、增減項目、拖曳調整順序"
+                collapsed: true
                 fields:
-                  - {label: "項目名稱 Label（例如：感情強度）", name: "label", widget: "string"}
-                  - {label: "星數 Stars（0～5，可以填 0.5）", name: "stars", widget: "number", value_type: "float", min: 0, max: 5, step: 0.5, default: 3}
+                  - {label: "感情強度（0～5，留空就不顯示）", name: "affection", widget: "number", value_type: "int", min: 0, max: 5, required: false}
+                  - {label: "忠誠度（0～5，留空就不顯示）", name: "loyalty", widget: "number", value_type: "int", min: 0, max: 5, required: false}
+                  - {label: "獨佔欲（0～5，留空就不顯示）", name: "possessive", widget: "number", value_type: "int", min: 0, max: 5, required: false}
+                  - {label: "依存度（0～5，留空就不顯示）", name: "dependence", widget: "number", value_type: "int", min: 0, max: 5, required: false}
+                  - {label: "性慾強度（0～5，留空就不顯示）", name: "desire", widget: "number", value_type: "int", min: 0, max: 5, required: false}
+              - label: "CP 特質量表：對方 → 這個角色（選填，每項 0～5 個點）"
+                name: "cpTraitsTheirs"
+                widget: "object"
+                required: false
+                collapsed: true
+                fields:
+                  - {label: "感情強度（0～5，留空就不顯示）", name: "affection", widget: "number", value_type: "int", min: 0, max: 5, required: false}
+                  - {label: "忠誠度（0～5，留空就不顯示）", name: "loyalty", widget: "number", value_type: "int", min: 0, max: 5, required: false}
+                  - {label: "獨佔欲（0～5，留空就不顯示）", name: "possessive", widget: "number", value_type: "int", min: 0, max: 5, required: false}
+                  - {label: "依存度（0～5，留空就不顯示）", name: "dependence", widget: "number", value_type: "int", min: 0, max: 5, required: false}
+                  - {label: "性慾強度（0～5，留空就不顯示）", name: "desire", widget: "number", value_type: "int", min: 0, max: 5, required: false}
               - {label: "狀態 Status", name: "status", widget: "select", options: [
                   {label: "生存 Alive", value: "alive"},
                   {label: "死亡 Dead", value: "dead"}
@@ -340,16 +388,28 @@ collections:
               - {label: "CP", name: "cp", widget: "string", required: false}
               - {label: "CP 介紹 CP Intro（選填；有填的話，角色頁上的 CP 名字就能點開小視窗看這段介紹。空一行代表分段）", name: "cpIntro", widget: "text", required: false}
               - {label: "CP 圖片 CP Image（選填；顯示在 CP 介紹小視窗最上面）", name: "cpImage", widget: "image", required: false}
-              - label: "CP 特質量表 CP Traits（選填；顯示在 CP 介紹小視窗裡，每一項 0～5 顆星，可以用 0.5 顆）"
-                name: "cpTraits"
-                widget: "list"
+              - label: "CP 特質量表：這個角色 → 對方（選填，每項 0～5 個點）"
+                name: "cpTraitsMine"
+                widget: "object"
                 required: false
-                label_singular: "特質"
-                summary: "{{fields.label}}：{{fields.stars}} 顆星"
-                hint: "建議項目：感情強度、忠誠度、獨佔欲、依存度、性慾強度——也可以自己取名、增減項目、拖曳調整順序"
+                collapsed: true
                 fields:
-                  - {label: "項目名稱 Label（例如：感情強度）", name: "label", widget: "string"}
-                  - {label: "星數 Stars（0～5，可以填 0.5）", name: "stars", widget: "number", value_type: "float", min: 0, max: 5, step: 0.5, default: 3}
+                  - {label: "感情強度（0～5，留空就不顯示）", name: "affection", widget: "number", value_type: "int", min: 0, max: 5, required: false}
+                  - {label: "忠誠度（0～5，留空就不顯示）", name: "loyalty", widget: "number", value_type: "int", min: 0, max: 5, required: false}
+                  - {label: "獨佔欲（0～5，留空就不顯示）", name: "possessive", widget: "number", value_type: "int", min: 0, max: 5, required: false}
+                  - {label: "依存度（0～5，留空就不顯示）", name: "dependence", widget: "number", value_type: "int", min: 0, max: 5, required: false}
+                  - {label: "性慾強度（0～5，留空就不顯示）", name: "desire", widget: "number", value_type: "int", min: 0, max: 5, required: false}
+              - label: "CP 特質量表：對方 → 這個角色（選填，每項 0～5 個點）"
+                name: "cpTraitsTheirs"
+                widget: "object"
+                required: false
+                collapsed: true
+                fields:
+                  - {label: "感情強度（0～5，留空就不顯示）", name: "affection", widget: "number", value_type: "int", min: 0, max: 5, required: false}
+                  - {label: "忠誠度（0～5，留空就不顯示）", name: "loyalty", widget: "number", value_type: "int", min: 0, max: 5, required: false}
+                  - {label: "獨佔欲（0～5，留空就不顯示）", name: "possessive", widget: "number", value_type: "int", min: 0, max: 5, required: false}
+                  - {label: "依存度（0～5，留空就不顯示）", name: "dependence", widget: "number", value_type: "int", min: 0, max: 5, required: false}
+                  - {label: "性慾強度（0～5，留空就不顯示）", name: "desire", widget: "number", value_type: "int", min: 0, max: 5, required: false}
               - {label: "狀態 Status", name: "status", widget: "select", options: [
                   {label: "生存 Alive", value: "alive"},
                   {label: "死亡 Dead", value: "dead"}
@@ -403,16 +463,28 @@ collections:
               - {label: "CP", name: "cp", widget: "string", required: false}
               - {label: "CP 介紹 CP Intro（選填；有填的話，角色頁上的 CP 名字就能點開小視窗看這段介紹。空一行代表分段）", name: "cpIntro", widget: "text", required: false}
               - {label: "CP 圖片 CP Image（選填；顯示在 CP 介紹小視窗最上面）", name: "cpImage", widget: "image", required: false}
-              - label: "CP 特質量表 CP Traits（選填；顯示在 CP 介紹小視窗裡，每一項 0～5 顆星，可以用 0.5 顆）"
-                name: "cpTraits"
-                widget: "list"
+              - label: "CP 特質量表：這個角色 → 對方（選填，每項 0～5 個點）"
+                name: "cpTraitsMine"
+                widget: "object"
                 required: false
-                label_singular: "特質"
-                summary: "{{fields.label}}：{{fields.stars}} 顆星"
-                hint: "建議項目：感情強度、忠誠度、獨佔欲、依存度、性慾強度——也可以自己取名、增減項目、拖曳調整順序"
+                collapsed: true
                 fields:
-                  - {label: "項目名稱 Label（例如：感情強度）", name: "label", widget: "string"}
-                  - {label: "星數 Stars（0～5，可以填 0.5）", name: "stars", widget: "number", value_type: "float", min: 0, max: 5, step: 0.5, default: 3}
+                  - {label: "感情強度（0～5，留空就不顯示）", name: "affection", widget: "number", value_type: "int", min: 0, max: 5, required: false}
+                  - {label: "忠誠度（0～5，留空就不顯示）", name: "loyalty", widget: "number", value_type: "int", min: 0, max: 5, required: false}
+                  - {label: "獨佔欲（0～5，留空就不顯示）", name: "possessive", widget: "number", value_type: "int", min: 0, max: 5, required: false}
+                  - {label: "依存度（0～5，留空就不顯示）", name: "dependence", widget: "number", value_type: "int", min: 0, max: 5, required: false}
+                  - {label: "性慾強度（0～5，留空就不顯示）", name: "desire", widget: "number", value_type: "int", min: 0, max: 5, required: false}
+              - label: "CP 特質量表：對方 → 這個角色（選填，每項 0～5 個點）"
+                name: "cpTraitsTheirs"
+                widget: "object"
+                required: false
+                collapsed: true
+                fields:
+                  - {label: "感情強度（0～5，留空就不顯示）", name: "affection", widget: "number", value_type: "int", min: 0, max: 5, required: false}
+                  - {label: "忠誠度（0～5，留空就不顯示）", name: "loyalty", widget: "number", value_type: "int", min: 0, max: 5, required: false}
+                  - {label: "獨佔欲（0～5，留空就不顯示）", name: "possessive", widget: "number", value_type: "int", min: 0, max: 5, required: false}
+                  - {label: "依存度（0～5，留空就不顯示）", name: "dependence", widget: "number", value_type: "int", min: 0, max: 5, required: false}
+                  - {label: "性慾強度（0～5，留空就不顯示）", name: "desire", widget: "number", value_type: "int", min: 0, max: 5, required: false}
               - {label: "狀態 Status", name: "status", widget: "select", options: [
                   {label: "生存 Alive", value: "alive"},
                   {label: "死亡 Dead", value: "dead"}
@@ -466,16 +538,28 @@ collections:
               - {label: "CP", name: "cp", widget: "string", required: false}
               - {label: "CP 介紹 CP Intro（選填；有填的話，角色頁上的 CP 名字就能點開小視窗看這段介紹。空一行代表分段）", name: "cpIntro", widget: "text", required: false}
               - {label: "CP 圖片 CP Image（選填；顯示在 CP 介紹小視窗最上面）", name: "cpImage", widget: "image", required: false}
-              - label: "CP 特質量表 CP Traits（選填；顯示在 CP 介紹小視窗裡，每一項 0～5 顆星，可以用 0.5 顆）"
-                name: "cpTraits"
-                widget: "list"
+              - label: "CP 特質量表：這個角色 → 對方（選填，每項 0～5 個點）"
+                name: "cpTraitsMine"
+                widget: "object"
                 required: false
-                label_singular: "特質"
-                summary: "{{fields.label}}：{{fields.stars}} 顆星"
-                hint: "建議項目：感情強度、忠誠度、獨佔欲、依存度、性慾強度——也可以自己取名、增減項目、拖曳調整順序"
+                collapsed: true
                 fields:
-                  - {label: "項目名稱 Label（例如：感情強度）", name: "label", widget: "string"}
-                  - {label: "星數 Stars（0～5，可以填 0.5）", name: "stars", widget: "number", value_type: "float", min: 0, max: 5, step: 0.5, default: 3}
+                  - {label: "感情強度（0～5，留空就不顯示）", name: "affection", widget: "number", value_type: "int", min: 0, max: 5, required: false}
+                  - {label: "忠誠度（0～5，留空就不顯示）", name: "loyalty", widget: "number", value_type: "int", min: 0, max: 5, required: false}
+                  - {label: "獨佔欲（0～5，留空就不顯示）", name: "possessive", widget: "number", value_type: "int", min: 0, max: 5, required: false}
+                  - {label: "依存度（0～5，留空就不顯示）", name: "dependence", widget: "number", value_type: "int", min: 0, max: 5, required: false}
+                  - {label: "性慾強度（0～5，留空就不顯示）", name: "desire", widget: "number", value_type: "int", min: 0, max: 5, required: false}
+              - label: "CP 特質量表：對方 → 這個角色（選填，每項 0～5 個點）"
+                name: "cpTraitsTheirs"
+                widget: "object"
+                required: false
+                collapsed: true
+                fields:
+                  - {label: "感情強度（0～5，留空就不顯示）", name: "affection", widget: "number", value_type: "int", min: 0, max: 5, required: false}
+                  - {label: "忠誠度（0～5，留空就不顯示）", name: "loyalty", widget: "number", value_type: "int", min: 0, max: 5, required: false}
+                  - {label: "獨佔欲（0～5，留空就不顯示）", name: "possessive", widget: "number", value_type: "int", min: 0, max: 5, required: false}
+                  - {label: "依存度（0～5，留空就不顯示）", name: "dependence", widget: "number", value_type: "int", min: 0, max: 5, required: false}
+                  - {label: "性慾強度（0～5，留空就不顯示）", name: "desire", widget: "number", value_type: "int", min: 0, max: 5, required: false}
               - {label: "狀態 Status", name: "status", widget: "select", options: [
                   {label: "生存 Alive", value: "alive"},
                   {label: "死亡 Dead", value: "dead"}
@@ -529,16 +613,28 @@ collections:
               - {label: "CP", name: "cp", widget: "string", required: false}
               - {label: "CP 介紹 CP Intro（選填；有填的話，角色頁上的 CP 名字就能點開小視窗看這段介紹。空一行代表分段）", name: "cpIntro", widget: "text", required: false}
               - {label: "CP 圖片 CP Image（選填；顯示在 CP 介紹小視窗最上面）", name: "cpImage", widget: "image", required: false}
-              - label: "CP 特質量表 CP Traits（選填；顯示在 CP 介紹小視窗裡，每一項 0～5 顆星，可以用 0.5 顆）"
-                name: "cpTraits"
-                widget: "list"
+              - label: "CP 特質量表：這個角色 → 對方（選填，每項 0～5 個點）"
+                name: "cpTraitsMine"
+                widget: "object"
                 required: false
-                label_singular: "特質"
-                summary: "{{fields.label}}：{{fields.stars}} 顆星"
-                hint: "建議項目：感情強度、忠誠度、獨佔欲、依存度、性慾強度——也可以自己取名、增減項目、拖曳調整順序"
+                collapsed: true
                 fields:
-                  - {label: "項目名稱 Label（例如：感情強度）", name: "label", widget: "string"}
-                  - {label: "星數 Stars（0～5，可以填 0.5）", name: "stars", widget: "number", value_type: "float", min: 0, max: 5, step: 0.5, default: 3}
+                  - {label: "感情強度（0～5，留空就不顯示）", name: "affection", widget: "number", value_type: "int", min: 0, max: 5, required: false}
+                  - {label: "忠誠度（0～5，留空就不顯示）", name: "loyalty", widget: "number", value_type: "int", min: 0, max: 5, required: false}
+                  - {label: "獨佔欲（0～5，留空就不顯示）", name: "possessive", widget: "number", value_type: "int", min: 0, max: 5, required: false}
+                  - {label: "依存度（0～5，留空就不顯示）", name: "dependence", widget: "number", value_type: "int", min: 0, max: 5, required: false}
+                  - {label: "性慾強度（0～5，留空就不顯示）", name: "desire", widget: "number", value_type: "int", min: 0, max: 5, required: false}
+              - label: "CP 特質量表：對方 → 這個角色（選填，每項 0～5 個點）"
+                name: "cpTraitsTheirs"
+                widget: "object"
+                required: false
+                collapsed: true
+                fields:
+                  - {label: "感情強度（0～5，留空就不顯示）", name: "affection", widget: "number", value_type: "int", min: 0, max: 5, required: false}
+                  - {label: "忠誠度（0～5，留空就不顯示）", name: "loyalty", widget: "number", value_type: "int", min: 0, max: 5, required: false}
+                  - {label: "獨佔欲（0～5，留空就不顯示）", name: "possessive", widget: "number", value_type: "int", min: 0, max: 5, required: false}
+                  - {label: "依存度（0～5，留空就不顯示）", name: "dependence", widget: "number", value_type: "int", min: 0, max: 5, required: false}
+                  - {label: "性慾強度（0～5，留空就不顯示）", name: "desire", widget: "number", value_type: "int", min: 0, max: 5, required: false}
               - {label: "狀態 Status", name: "status", widget: "select", options: [
                   {label: "生存 Alive", value: "alive"},
                   {label: "死亡 Dead", value: "dead"}

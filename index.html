@@ -1315,21 +1315,29 @@ body.cp-modal-open{ overflow:hidden; }
 .cp-divider{ color:var(--brand); font-size:12px; margin:12px 0 18px; opacity:.8; }
 .cp-image{ margin:0 0 20px; border-radius:var(--radius-sm); overflow:hidden; background:var(--panel); }
 .cp-image img{ display:block; width:100%; height:auto; max-height:42vh; object-fit:contain; }
-/* 特質量表：左邊項目名稱、右邊五顆星，整塊置中 */
+/* 特質量表：左邊是「這個角色 → 對方」、右邊是「對方 → 這個角色」，中間是項目名稱，
+   每項 0～5 個圓點，跟網站其他地方（狀態點、捲動提示點）同一種小圓點語言 */
 .cp-traits{
-  display:inline-block; text-align:left; margin:0 auto 22px; padding:14px 20px 12px;
-  border:1px solid var(--line); border-radius:var(--radius-sm); background:var(--panel);
+  display:inline-block; margin:0 auto 22px; padding:12px 18px 10px;
+  border:1px solid var(--line); border-radius:var(--radius-sm);
 }
-.cp-traits-title{
-  text-align:center; font-family:var(--font-mono); font-size:11px; letter-spacing:.3em;
-  color:var(--ink-soft); margin-bottom:8px;
+.cp-traits-head{
+  display:grid; grid-template-columns:1fr auto 1fr; align-items:center; gap:14px;
+  font-size:11.5px; color:var(--ink-soft); padding-bottom:8px; margin-bottom:4px;
+  border-bottom:1px solid var(--line);
 }
-.cp-trait{ display:flex; align-items:center; justify-content:space-between; gap:22px; padding:5px 0; }
-.cp-trait + .cp-trait{ border-top:1px dashed var(--line); }
-.cp-trait-label{ font-size:13.5px; letter-spacing:.08em; white-space:nowrap; }
-.cp-stars{ display:inline-flex; gap:3px; font-size:17px; line-height:1; white-space:nowrap; }
-.cp-star{ position:relative; display:inline-block; color:var(--line); }
-.cp-star-fill{ position:absolute; left:0; top:0; overflow:hidden; color:var(--brand); }
+.cp-traits-head span:first-child{ text-align:right; }
+.cp-traits-head span:last-child{ text-align:left; }
+.cp-traits-head em{ font-style:normal; color:var(--brand); }
+.cp-traits-title{ font-family:var(--font-mono); font-size:10px; letter-spacing:.25em; color:var(--ink-faint); }
+.cp-trait-row{ display:grid; grid-template-columns:1fr auto 1fr; align-items:center; gap:14px; padding:4px 0; }
+.cp-trait-label{ font-size:12px; letter-spacing:.06em; color:var(--ink); min-width:4.5em; }
+.cp-dots{ display:inline-flex; gap:4px; }
+.cp-trait-row .cp-dots:first-child{ justify-self:end; flex-direction:row-reverse; } /* 左邊那份從中間往外長，左右對稱 */
+.cp-trait-row .cp-dots:last-child{ justify-self:start; }
+.cp-dots i{ width:7px; height:7px; border-radius:50%; border:1px solid var(--ink-faint); box-sizing:border-box; }
+.cp-dots i.on{ background:var(--brand); border-color:var(--brand); }
+.cp-dots.is-empty{ font-size:11px; color:var(--ink-faint); }
 .cp-intro{ text-align:left; }
 .cp-intro p{ margin:0 0 1em; line-height:1.9; font-size:14.5px; }
 .cp-intro p:last-child{ margin-bottom:0; }
@@ -3325,8 +3333,8 @@ function renderProfile(id){
 }
 
 /* ---------------- 角色頁面：CP 介紹小視窗 ----------------
-   後台每個角色的「CP」欄位下面有「CP 介紹 cpIntro」「CP 圖片 cpImage」「CP 特質量表 cpTraits」
-   三個選填欄位。有填其中一個，角色頁上的 CP 名字就會變成可以點的樣子，點了跳出小視窗。
+   後台每個角色的「CP」欄位下面有「CP 介紹 cpIntro」「CP 圖片 cpImage」，以及兩份
+   「CP 特質量表 cpTraitsMine（這個角色 → 對方）／cpTraitsTheirs（對方 → 這個角色）」選填欄位。有填其中一個，角色頁上的 CP 名字就會變成可以點的樣子，點了跳出小視窗。
    如果這個角色沒填、但 CP 對象剛好也是這個網站上的角色而且那邊有填，就沿用對方的介紹，
    同一對 CP 只要在其中一邊寫一次就好。 */
 const normName = s => String(s||'').replace(/[\s·・•‧･.]/g, '');
@@ -3335,29 +3343,40 @@ function cpPartner(ch){
   const target = normName(ch.cp);
   return CHARACTERS.find(c => c.id !== ch.id && normName(c.codename) === target) || null;
 }
-const cpTraitsOf = c => (c.cpTraits || []).filter(t => t && t.label);
-const hasCpInfo = c => !!(c.cpIntro || c.cpImage || cpTraitsOf(c).length);
+/* 特質量表：固定五個項目，「這個角色 → 對方」跟「對方 → 這個角色」各一份，每項 0～5 個點 */
+const CP_TRAITS = [['affection','感情強度'],['loyalty','忠誠度'],['possessive','獨佔欲'],['dependence','依存度'],['desire','性慾強度']];
+const traitVal = (obj, k) => { const v = obj && obj[k]; return (v === '' || v == null || isNaN(v)) ? null : Math.max(0, Math.min(5, Math.round(Number(v)))); };
+const hasTraits = obj => CP_TRAITS.some(([k]) => traitVal(obj, k) != null);
+const hasCpInfo = c => !!(c.cpIntro || c.cpImage || hasTraits(c.cpTraitsMine) || hasTraits(c.cpTraitsTheirs));
 function cpInfo(ch){
   if(!ch.cp || ch.cp === '—') return null;
-  if(hasCpInfo(ch)) return { intro:ch.cpIntro, image:ch.cpImage, traits:cpTraitsOf(ch) };
+  if(hasCpInfo(ch)) return { intro:ch.cpIntro, image:ch.cpImage, mine:ch.cpTraitsMine, theirs:ch.cpTraitsTheirs };
   const p = cpPartner(ch);
-  if(p && hasCpInfo(p) && normName(p.cp) === normName(ch.codename)) return { intro:p.cpIntro, image:p.cpImage, traits:cpTraitsOf(p) };
+  /* 沿用對方的資料時，「我 → 對方」跟「對方 → 我」要左右對調 */
+  if(p && hasCpInfo(p) && normName(p.cp) === normName(ch.codename)) return { intro:p.cpIntro, image:p.cpImage, mine:p.cpTraitsTheirs, theirs:p.cpTraitsMine };
   return null;
 }
-/* 特質量表：每一項 0～5 顆星，可以有半顆。每顆星都是一顆空心底色星，
-   上面疊一顆實心彩色星、用寬度裁掉一部分，就能顯示 3.5 顆這種半顆星 */
-function cpTraitsTable(traits){
-  if(!traits.length) return '';
-  const rows = traits.map(t=>{
-    const v = Math.max(0, Math.min(5, Number(t.stars) || 0));
-    return `<div class="cp-trait">
-      <div class="cp-trait-label">${t.label}</div>
-      <div class="cp-stars" role="img" aria-label="${t.label} ${v} / 5">${
-        [0,1,2,3,4].map(i=>`<span class="cp-star" aria-hidden="true"><span class="cp-star-fill" style="width:${Math.max(0, Math.min(1, v - i))*100}%">★</span>★</span>`).join('')
-      }</div>
-    </div>`;
-  }).join('');
-  return `<div class="cp-traits"><div class="cp-traits-title">特質量表</div>${rows}</div>`;
+/* 名字太長時量表欄位只放「·」前面那一段（例如 拉涅里·桑托魯姆 → 拉涅里） */
+const shortName = n => String(n||'').split(/[·・•‧･]/)[0].trim().split(/\s*\(/)[0] || n;
+function cpDots(v){
+  if(v == null) return '<span class="cp-dots is-empty">—</span>';
+  return `<span class="cp-dots" role="img" aria-label="${v} / 5">${[0,1,2,3,4].map(i=>`<i class="${i < v ? 'on' : ''}"></i>`).join('')}</span>`;
+}
+function cpTraitsTable(ch, info){
+  if(!hasTraits(info.mine) && !hasTraits(info.theirs)) return '';
+  const rows = CP_TRAITS.map(([k,label])=>`
+    <div class="cp-trait-row">
+      ${cpDots(traitVal(info.mine, k))}
+      <span class="cp-trait-label">${label}</span>
+      ${cpDots(traitVal(info.theirs, k))}
+    </div>`).join('');
+  return `<div class="cp-traits">
+    <div class="cp-traits-head">
+      <span>${shortName(ch.codename)} <em>→</em></span>
+      <span class="cp-traits-title">特質量表</span>
+      <span><em>←</em> ${shortName(ch.cp)}</span>
+    </div>${rows}
+  </div>`;
 }
 /* 名字太長時把標題字縮小，盡量排在同一行；縮到最小還放不下才換行 */
 function fitCpTitle(){
@@ -3385,7 +3404,7 @@ function openCpModal(id){
     <h2 class="cp-title" id="cp-modal-title"><span>${ch.codename}</span><span class="cp-x">×</span><span>${ch.cp}</span></h2>
     <div class="cp-divider" aria-hidden="true">♡</div>
     ${info.image ? `<div class="cp-image"><img ${imgSrcAttr(info.image,'large')} alt="${ch.codename} × ${ch.cp}" decoding="async"></div>` : ''}
-    ${cpTraitsTable(info.traits)}
+    ${cpTraitsTable(ch, info)}
     ${info.intro ? `<div class="cp-intro">${bioParagraphs(info.intro)}</div>` : ''}
     ${partner ? `<a class="pill-link cp-partner" href="#/char/${partner.id}" onclick="closeCpModal()">查看 ${partner.codename} 的檔案 →</a>` : ''}`;
   const modal = document.getElementById('cp-modal');
