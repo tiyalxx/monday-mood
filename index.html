@@ -1288,10 +1288,16 @@ body.is-gate{overflow-x:hidden;}
 #cp-modal.open{ display:flex; animation:fadeIn .25s ease both; }
 body.cp-modal-open{ overflow:hidden; }
 .cp-card{
-  position:relative; width:min(520px, 100%); max-height:min(86vh, 760px); overflow-y:auto;
-  background:var(--bg); color:var(--ink); border:1px solid var(--line); border-radius:var(--radius);
-  box-shadow:0 30px 80px rgba(0,0,0,.28); padding:34px 30px 30px;
+  position:relative; width:min(460px, 100%); max-height:min(88vh, 820px); overflow-y:auto;
+  background:var(--bg); color:var(--ink); border:1px solid var(--line); border-radius:calc(var(--radius) + 6px);
+  box-shadow:0 30px 80px rgba(0,0,0,.28); padding:40px 30px 32px;
+  text-align:center;
   animation:cpCardIn .35s cubic-bezier(.2,.8,.2,1) both;
+}
+/* 小卡片內側再框一圈細線，像實體卡片的邊框 */
+.cp-card::before{
+  content:''; position:absolute; inset:8px; border:1px solid var(--line);
+  border-radius:calc(var(--radius) + 2px); pointer-events:none;
 }
 @keyframes cpCardIn{ from{ opacity:0; transform:translateY(14px) scale(.98); } to{ opacity:1; transform:none; } }
 .cp-close{
@@ -1299,17 +1305,40 @@ body.cp-modal-open{ overflow:hidden; }
   border:1px solid var(--line); background:var(--bg); color:var(--ink-soft); font-size:13px;
 }
 .cp-close:hover{ color:var(--brand); border-color:var(--brand); }
-.cp-label{ font-family:var(--font-mono); font-size:11px; letter-spacing:.12em; color:var(--brand); margin-bottom:8px; }
-.cp-title{ font-family:var(--font-disp); font-weight:600; font-size:clamp(20px,3.4vw,26px); line-height:1.4; margin:0 36px 18px 0; }
-.cp-x{ color:var(--brand); margin:0 .45em; font-weight:400; }
-.cp-image{ margin:0 0 18px; border-radius:var(--radius-sm); overflow:hidden; background:var(--panel); }
-.cp-image img{ display:block; width:100%; height:auto; max-height:46vh; object-fit:contain; }
+.cp-label{ font-family:var(--font-mono); font-size:11px; letter-spacing:.3em; color:var(--brand); margin-bottom:10px; }
+.cp-title{
+  font-family:var(--font-disp); font-weight:600; font-size:20px; line-height:1.4;
+  margin:0 20px; white-space:nowrap; overflow:hidden;
+}
+.cp-title.is-wrapped{ white-space:normal; }
+.cp-x{ color:var(--brand); margin:0 .5em; font-weight:400; }
+.cp-divider{ color:var(--brand); font-size:12px; margin:12px 0 18px; opacity:.8; }
+.cp-image{ margin:0 0 20px; border-radius:var(--radius-sm); overflow:hidden; background:var(--panel); }
+.cp-image img{ display:block; width:100%; height:auto; max-height:42vh; object-fit:contain; }
+/* 特質量表：左邊項目名稱、右邊五顆星，整塊置中 */
+.cp-traits{
+  display:inline-block; text-align:left; margin:0 auto 22px; padding:14px 20px 12px;
+  border:1px solid var(--line); border-radius:var(--radius-sm); background:var(--panel);
+}
+.cp-traits-title{
+  text-align:center; font-family:var(--font-mono); font-size:11px; letter-spacing:.3em;
+  color:var(--ink-soft); margin-bottom:8px;
+}
+.cp-trait{ display:flex; align-items:center; justify-content:space-between; gap:22px; padding:5px 0; }
+.cp-trait + .cp-trait{ border-top:1px dashed var(--line); }
+.cp-trait-label{ font-size:13.5px; letter-spacing:.08em; white-space:nowrap; }
+.cp-stars{ display:inline-flex; gap:3px; font-size:17px; line-height:1; white-space:nowrap; }
+.cp-star{ position:relative; display:inline-block; color:var(--line); }
+.cp-star-fill{ position:absolute; left:0; top:0; overflow:hidden; color:var(--brand); }
+.cp-intro{ text-align:left; }
 .cp-intro p{ margin:0 0 1em; line-height:1.9; font-size:14.5px; }
 .cp-intro p:last-child{ margin-bottom:0; }
-.cp-partner{ display:inline-block; margin-top:20px; }
+.cp-partner{ display:inline-block; margin-top:22px; }
 @media (max-width:640px){
   #cp-modal{ align-items:flex-end; padding:0; }
-  .cp-card{ width:100%; max-height:88vh; border-radius:var(--radius) var(--radius) 0 0; padding:30px 22px calc(26px + env(safe-area-inset-bottom, 0px)); }
+  .cp-card{ width:100%; max-height:88vh; border-radius:calc(var(--radius) + 6px) calc(var(--radius) + 6px) 0 0; padding:36px 22px calc(28px + env(safe-area-inset-bottom, 0px)); }
+  .cp-card::before{ bottom:0; border-bottom:none; border-radius:calc(var(--radius) + 2px) calc(var(--radius) + 2px) 0 0; }
+  .cp-title{ font-size:18px; }
 }
 .pf-share{ display:flex; flex-wrap:wrap; justify-content:center; gap:8px; margin-bottom:26px; }
 .pf-share .pill-link{ background:none; cursor:pointer; }
@@ -3296,8 +3325,8 @@ function renderProfile(id){
 }
 
 /* ---------------- 角色頁面：CP 介紹小視窗 ----------------
-   後台每個角色的「CP」欄位下面有「CP 介紹 cpIntro」「CP 圖片 cpImage」兩個選填欄位。
-   有填其中一個，角色頁上的 CP 名字就會變成可以點的樣子，點了跳出小視窗。
+   後台每個角色的「CP」欄位下面有「CP 介紹 cpIntro」「CP 圖片 cpImage」「CP 特質量表 cpTraits」
+   三個選填欄位。有填其中一個，角色頁上的 CP 名字就會變成可以點的樣子，點了跳出小視窗。
    如果這個角色沒填、但 CP 對象剛好也是這個網站上的角色而且那邊有填，就沿用對方的介紹，
    同一對 CP 只要在其中一邊寫一次就好。 */
 const normName = s => String(s||'').replace(/[\s·・•‧･.]/g, '');
@@ -3306,12 +3335,40 @@ function cpPartner(ch){
   const target = normName(ch.cp);
   return CHARACTERS.find(c => c.id !== ch.id && normName(c.codename) === target) || null;
 }
+const cpTraitsOf = c => (c.cpTraits || []).filter(t => t && t.label);
+const hasCpInfo = c => !!(c.cpIntro || c.cpImage || cpTraitsOf(c).length);
 function cpInfo(ch){
   if(!ch.cp || ch.cp === '—') return null;
-  if(ch.cpIntro || ch.cpImage) return { intro:ch.cpIntro, image:ch.cpImage };
+  if(hasCpInfo(ch)) return { intro:ch.cpIntro, image:ch.cpImage, traits:cpTraitsOf(ch) };
   const p = cpPartner(ch);
-  if(p && (p.cpIntro || p.cpImage) && normName(p.cp) === normName(ch.codename)) return { intro:p.cpIntro, image:p.cpImage };
+  if(p && hasCpInfo(p) && normName(p.cp) === normName(ch.codename)) return { intro:p.cpIntro, image:p.cpImage, traits:cpTraitsOf(p) };
   return null;
+}
+/* 特質量表：每一項 0～5 顆星，可以有半顆。每顆星都是一顆空心底色星，
+   上面疊一顆實心彩色星、用寬度裁掉一部分，就能顯示 3.5 顆這種半顆星 */
+function cpTraitsTable(traits){
+  if(!traits.length) return '';
+  const rows = traits.map(t=>{
+    const v = Math.max(0, Math.min(5, Number(t.stars) || 0));
+    return `<div class="cp-trait">
+      <div class="cp-trait-label">${t.label}</div>
+      <div class="cp-stars" role="img" aria-label="${t.label} ${v} / 5">${
+        [0,1,2,3,4].map(i=>`<span class="cp-star" aria-hidden="true"><span class="cp-star-fill" style="width:${Math.max(0, Math.min(1, v - i))*100}%">★</span>★</span>`).join('')
+      }</div>
+    </div>`;
+  }).join('');
+  return `<div class="cp-traits"><div class="cp-traits-title">特質量表</div>${rows}</div>`;
+}
+/* 名字太長時把標題字縮小，盡量排在同一行；縮到最小還放不下才換行 */
+function fitCpTitle(){
+  const el = document.getElementById('cp-modal-title');
+  if(!el) return;
+  el.style.fontSize = ''; el.classList.remove('is-wrapped');
+  let size = parseFloat(getComputedStyle(el).fontSize);
+  while(el.scrollWidth > el.clientWidth + 1 && size > 13){
+    size -= 1; el.style.fontSize = size + 'px';
+  }
+  if(el.scrollWidth > el.clientWidth + 1) el.classList.add('is-wrapped');
 }
 function cpFieldValue(ch){
   if(!ch.cp) return '—';
@@ -3325,13 +3382,16 @@ function openCpModal(id){
   const partner = cpPartner(ch);
   document.getElementById('cp-modal-body').innerHTML = `
     <div class="cp-label">CP</div>
-    <h2 class="cp-title" id="cp-modal-title">${ch.codename}<span class="cp-x">×</span>${ch.cp}</h2>
+    <h2 class="cp-title" id="cp-modal-title"><span>${ch.codename}</span><span class="cp-x">×</span><span>${ch.cp}</span></h2>
+    <div class="cp-divider" aria-hidden="true">♡</div>
     ${info.image ? `<div class="cp-image"><img ${imgSrcAttr(info.image,'large')} alt="${ch.codename} × ${ch.cp}" decoding="async"></div>` : ''}
+    ${cpTraitsTable(info.traits)}
     ${info.intro ? `<div class="cp-intro">${bioParagraphs(info.intro)}</div>` : ''}
     ${partner ? `<a class="pill-link cp-partner" href="#/char/${partner.id}" onclick="closeCpModal()">查看 ${partner.codename} 的檔案 →</a>` : ''}`;
   const modal = document.getElementById('cp-modal');
   modal.classList.add('open');
   document.body.classList.add('cp-modal-open');
+  fitCpTitle();
   document.addEventListener('keydown', cpKeyHandler);
   modal.querySelector('.cp-close').focus({preventScroll:true});
 }
