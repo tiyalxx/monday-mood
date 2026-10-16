@@ -1828,8 +1828,9 @@ body.has-fullbody-bg footer{ border-top:none; }
 .cursor-trail{
   position:fixed; top:0; left:0; z-index:9998;
   border-radius:50%;
-  background:#fff;
-  mix-blend-mode:difference;
+  /* 殘影不用反色混合（mix-blend-mode 每一格都要跟底下的畫面重新合成，很吃顯示卡），
+     直接用主題的文字色，深底自動是淺色、淺底自動是深色 */
+  background:var(--ink);
   pointer-events:none;
   will-change:transform;
 }
@@ -4347,9 +4348,9 @@ function revealImg(e){
 document.addEventListener('load', revealImg, true);
 document.addEventListener('error', revealImg, true);
 
-const TRAIL_COUNT = 4;
-const TRAIL_SIZES    = [14, 11, 8, 6];
-const TRAIL_OPACITY  = [1, 1, 1, 1];
+const TRAIL_COUNT = 2;
+const TRAIL_SIZES    = [11, 7];
+const TRAIL_OPACITY  = [.38, .22];
 const trailDots = Array.from({length:TRAIL_COUNT}, (_, i)=>{
   const d = document.createElement('div');
   d.className = 'cursor-trail';
@@ -4407,6 +4408,7 @@ const CURSOR_PULL_STRENGTH = 0.38;
 let cursorRAF = null;
 let cursorIdleFrames = 0;
 let lastCursorState = null;
+let cursorEasing = false; /* 剛離開卡片時，被磁吸偏掉的位置也要滑順地回到滑鼠上 */
 function wakeCursor(){
   cursorIdleFrames = 0;
   if(!cursorRAF) cursorRAF = requestAnimationFrame(cursorLoop);
@@ -4421,8 +4423,16 @@ function cursorLoop(){
     targetX = mouseX + (cx - mouseX) * CURSOR_PULL_STRENGTH;
     targetY = mouseY + (cy - mouseY) * CURSOR_PULL_STRENGTH;
   }
-  curX += (targetX - curX) * 0.5;
-  curY += (targetY - curY) * 0.5;
+  /* 主圓圈直接貼在滑鼠位置，不做追趕（追趕會有一點延遲感）；
+     只有在卡片上被「磁吸」的時候才滑順地移過去，免得一碰到卡片就瞬間跳位 */
+  if(state==='view') cursorEasing = true;
+  if(cursorEasing){
+    curX += (targetX - curX) * 0.5;
+    curY += (targetY - curY) * 0.5;
+    if(state!=='view' && Math.abs(targetX - curX) + Math.abs(targetY - curY) < 1) cursorEasing = false;
+  }else{
+    curX = targetX; curY = targetY;
+  }
   cursor.style.transform = `translate(${curX}px, ${curY}px)`;
 
   cursor.classList.toggle('is-view', state==='view');
@@ -4431,7 +4441,7 @@ function cursorLoop(){
   let prevX = curX, prevY = curY;
   let maxGap = Math.abs(targetX - curX) + Math.abs(targetY - curY);
   trailDots.forEach((t, i)=>{
-    const lerp = Math.max(0.45 - i*0.06, 0.16); /* 越後面跟得越慢，自然拉開間距 */
+    const lerp = 0.42 - i*0.12; /* 越後面跟得越慢，自然拉開間距 */
     t.x += (prevX - t.x) * lerp;
     t.y += (prevY - t.y) * lerp;
     t.el.style.transform = `translate(${t.x}px, ${t.y}px)`;
