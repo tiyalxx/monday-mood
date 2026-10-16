@@ -72,72 +72,90 @@ collections:
             name: "characters"
             widget: "list"
             summary: "{{fields.codename}} — {{fields.role}}"
-            fields:
-              - {label: "ID（例如 orig-01，同一個資料夾底下不要重複）", name: "id", widget: "string"}
-              - {label: "代號 Codename", name: "codename", widget: "string"}
-              - {label: "本名 Real Name", name: "realname", widget: "string", required: false, default: "—"}
+            fields: &character_fields
+              # ---- 這一段角色欄位只寫一次，8 個角色資料夾都共用（下面其他資料夾寫 fields: *character_fields）。
+              # ---- 要新增／修改角色欄位，只要改這裡，所有世界觀會一起套用。
+              - label: "ID"
+                name: "id"
+                widget: "string"
+                pattern: ["^[A-Za-z0-9-]+$", "只能用英文、數字和 -（不能有空格或中文）"]
+                hint: "例如 coop-mafia-23。同一個資料夾裡不能重複；建立後不要再改，角色的分享網址會用到它。"
+              - {label: "代號 Codename", name: "codename", widget: "string", hint: "角色名字，顯示在卡片和角色頁標題"}
               - {label: "身分 Role", name: "role", widget: "string", required: false, default: "—"}
+              - {label: "本名 Real Name", name: "realname", widget: "string", required: false, default: "—"}
               - {label: "所屬 Affiliation", name: "affiliation", widget: "string", required: false, default: "—"}
               - {label: "專長 Skill", name: "skill", widget: "string", required: false, default: "—"}
               - {label: "身高 Height", name: "height", widget: "string", required: false}
               - {label: "生日 Birthday", name: "birthday", widget: "string", required: false}
               - {label: "年齡 Age", name: "age", widget: "string", required: false}
-              - {label: "CP", name: "cp", widget: "string", required: false}
-              - {label: "CP 介紹 CP Intro（選填；有填的話，角色頁上的 CP 名字就能點開小視窗看這段介紹。空一行代表分段）", name: "cpIntro", widget: "text", required: false}
-              - {label: "CP 圖片 CP Image（選填；顯示在 CP 介紹小視窗最上面）", name: "cpImage", widget: "image", required: false}
-              - label: "CP 特質量表：這個角色 → 對方（選填，每項 0～5 個點）"
+              - label: "狀態 Status"
+                name: "status"
+                widget: "select"
+                default: "alive"
+                options: [{label: "生存 Alive", value: "alive"}, {label: "死亡 Dead", value: "dead"}]
+              - {label: "簡介 Bio", name: "bio", widget: "text", required: false, hint: "中間空一行就會自動分段；想加粗可以寫 <b>文字</b>"}
+              - {label: "大頭照 Avatar", name: "avatarImg", widget: "image", required: false, hint: "直接上傳原圖就好，網站部署時會自動壓縮成縮圖和大圖，不用自己縮小。"}
+              - {label: "全身立繪 Fullbody", name: "fullbodyImg", widget: "image", required: false, hint: "直接上傳原圖就好，網站部署時會自動壓縮成縮圖和大圖，不用自己縮小。"}
+              - {label: "CP", name: "cp", widget: "string", required: false, hint: "對方的名字。下面的 CP 介紹／圖片／特質量表有填任何一項，角色頁上的 CP 名字就能點開小卡"}
+              - {label: "CP 介紹 CP Intro", name: "cpIntro", widget: "text", required: false, hint: "選填。中間空一行就會自動分段"}
+              - {label: "CP 圖片 CP Image", name: "cpImage", widget: "image", required: false, hint: "選填。顯示在 CP 小卡上方。直接上傳原圖就好，網站部署時會自動壓縮成縮圖和大圖，不用自己縮小。"}
+              - label: "CP 特質量表：這個角色 → 對方"
                 name: "cpTraitsMine"
                 widget: "object"
                 required: false
                 collapsed: true
+                hint: "每項 0～5 個點，留空的項目在網站上會顯示「—」"
                 fields:
-                  - {label: "感情強度（0～5，留空就不顯示）", name: "affection", widget: "number", value_type: "int", min: 0, max: 5, required: false}
-                  - {label: "忠誠度（0～5，留空就不顯示）", name: "loyalty", widget: "number", value_type: "int", min: 0, max: 5, required: false}
-                  - {label: "獨佔欲（0～5，留空就不顯示）", name: "possessive", widget: "number", value_type: "int", min: 0, max: 5, required: false}
-                  - {label: "依存度（0～5，留空就不顯示）", name: "dependence", widget: "number", value_type: "int", min: 0, max: 5, required: false}
-                  - {label: "性慾強度（0～5，留空就不顯示）", name: "desire", widget: "number", value_type: "int", min: 0, max: 5, required: false}
-              - label: "CP 特質量表：對方 → 這個角色（選填，每項 0～5 個點）"
+                  - {label: "感情強度", name: "affection", widget: "number", value_type: "int", min: 0, max: 5, required: false}
+                  - {label: "忠誠度", name: "loyalty", widget: "number", value_type: "int", min: 0, max: 5, required: false}
+                  - {label: "獨佔欲", name: "possessive", widget: "number", value_type: "int", min: 0, max: 5, required: false}
+                  - {label: "依存度", name: "dependence", widget: "number", value_type: "int", min: 0, max: 5, required: false}
+                  - {label: "性慾強度", name: "desire", widget: "number", value_type: "int", min: 0, max: 5, required: false}
+              - label: "CP 特質量表：對方 → 這個角色"
                 name: "cpTraitsTheirs"
                 widget: "object"
                 required: false
                 collapsed: true
+                hint: "每項 0～5 個點，留空的項目在網站上會顯示「—」"
                 fields:
-                  - {label: "感情強度（0～5，留空就不顯示）", name: "affection", widget: "number", value_type: "int", min: 0, max: 5, required: false}
-                  - {label: "忠誠度（0～5，留空就不顯示）", name: "loyalty", widget: "number", value_type: "int", min: 0, max: 5, required: false}
-                  - {label: "獨佔欲（0～5，留空就不顯示）", name: "possessive", widget: "number", value_type: "int", min: 0, max: 5, required: false}
-                  - {label: "依存度（0～5，留空就不顯示）", name: "dependence", widget: "number", value_type: "int", min: 0, max: 5, required: false}
-                  - {label: "性慾強度（0～5，留空就不顯示）", name: "desire", widget: "number", value_type: "int", min: 0, max: 5, required: false}
-              - {label: "狀態 Status", name: "status", widget: "select", options: [
-                  {label: "生存 Alive", value: "alive"},
-                  {label: "死亡 Dead", value: "dead"}
-                ], default: "alive"}
-              - {label: "簡介 Bio（想分段的話，中間空一行就會自動分段）", name: "bio", widget: "text", required: false}
-              - {label: "大頭照 Avatar Image", name: "avatarImg", widget: "image", required: false}
-              - {label: "全身立繪 Fullbody Image", name: "fullbodyImg", widget: "image", required: false}
-              - label: "外連文章 Articles"
-                name: "articles"
-                widget: "list"
-                required: false
-                fields:
-                  - {label: "標題 Title", name: "title", widget: "string"}
-                  - {label: "連結 URL", name: "url", widget: "string"}
+                  - {label: "感情強度", name: "affection", widget: "number", value_type: "int", min: 0, max: 5, required: false}
+                  - {label: "忠誠度", name: "loyalty", widget: "number", value_type: "int", min: 0, max: 5, required: false}
+                  - {label: "獨佔欲", name: "possessive", widget: "number", value_type: "int", min: 0, max: 5, required: false}
+                  - {label: "依存度", name: "dependence", widget: "number", value_type: "int", min: 0, max: 5, required: false}
+                  - {label: "性慾強度", name: "desire", widget: "number", value_type: "int", min: 0, max: 5, required: false}
               - label: "圖片 Gallery"
                 name: "gallery"
                 widget: "list"
                 required: false
+                collapsed: true
+                label_singular: "圖片"
+                summary: "{{fields.sensitive | ternary('⚠ 敏感　', '')}}{{fields.caption}}　{{fields.image}}"
+                hint: "可以拖曳調整順序；網站上的 Gallery 會照這個順序排列"
                 fields:
-                  - {label: "圖片 Image（新照片只要傳這一個欄位就好）", name: "image", widget: "image", required: false, hint: "只要上傳一張圖，網站會自動當縮圖和放大圖使用，不用另外做縮圖"}
+                  - {label: "圖片 Image", name: "image", widget: "image", hint: "直接上傳原圖就好，網站部署時會自動壓縮成縮圖和大圖，不用自己縮小。"}
                   - {label: "說明 Caption", name: "caption", widget: "string", required: false}
-                  - {label: "R18／血腥等敏感內容（縮圖先模糊遮蔽）", name: "sensitive", widget: "boolean", default: false, required: false}
-                  - {label: "縮圖 Thumbnail（舊照片用，新照片不用填）", name: "thumb", widget: "image", required: false}
-                  - {label: "原圖 Full Image（舊照片用，新照片不用填）", name: "full", widget: "image", required: false}
-              - label: "關係 Relationships（會顯示在角色關係圖上）"
+                  - {label: "R18／血腥等敏感內容", name: "sensitive", widget: "boolean", default: false, required: false, hint: "打開的話，網站上的縮圖會先模糊遮住，點一下才顯示"}
+              - label: "外連文章 Articles"
+                name: "articles"
+                widget: "list"
+                required: false
+                collapsed: true
+                label_singular: "文章"
+                summary: "{{fields.title}}"
+                fields:
+                  - {label: "標題 Title", name: "title", widget: "string"}
+                  - {label: "連結 URL", name: "url", widget: "string"}
+              - label: "關係 Relationships"
                 name: "relationships"
                 widget: "list"
                 required: false
+                collapsed: true
+                label_singular: "關係"
+                summary: "{{fields.label}}：{{fields.target}}"
+                hint: "會顯示在角色頁的關係圖上"
                 fields:
-                  - {label: "對方的角色 ID（到對方的角色資料裡複製 ID 欄位貼過來，例如 coop-mafia-03；如果對方不在這個網站的資料庫裡，直接打對方的名字也可以，只是不會有頭像、也不能點進去）", name: "target", widget: "string"}
-                  - {label: "關係稱呼（例如：戀人、上司、宿敵、青梅竹馬）", name: "label", widget: "string"}
+                  - {label: "對方", name: "target", widget: "string", hint: "對方在這個網站上的話，填對方的角色 ID（例如 coop-mafia-03），頭像會出現而且可以點進去；不在這個網站上的話，直接打名字就好"}
+                  - {label: "關係稱呼", name: "label", widget: "string", hint: "例如：戀人、上司、宿敵、青梅竹馬"}
 
   - name: "coop"
     label: "共構 Collab"
@@ -150,72 +168,7 @@ collections:
             name: "characters"
             widget: "list"
             summary: "{{fields.codename}} — {{fields.role}}"
-            fields:
-              - {label: "ID（例如 coop-mafia-22，同一個資料夾底下不要重複）", name: "id", widget: "string"}
-              - {label: "代號 Codename", name: "codename", widget: "string"}
-              - {label: "本名 Real Name", name: "realname", widget: "string", required: false, default: "—"}
-              - {label: "身分 Role", name: "role", widget: "string", required: false, default: "—"}
-              - {label: "所屬 Affiliation", name: "affiliation", widget: "string", required: false, default: "—"}
-              - {label: "專長 Skill", name: "skill", widget: "string", required: false, default: "—"}
-              - {label: "身高 Height", name: "height", widget: "string", required: false}
-              - {label: "生日 Birthday", name: "birthday", widget: "string", required: false}
-              - {label: "年齡 Age", name: "age", widget: "string", required: false}
-              - {label: "CP", name: "cp", widget: "string", required: false}
-              - {label: "CP 介紹 CP Intro（選填；有填的話，角色頁上的 CP 名字就能點開小視窗看這段介紹。空一行代表分段）", name: "cpIntro", widget: "text", required: false}
-              - {label: "CP 圖片 CP Image（選填；顯示在 CP 介紹小視窗最上面）", name: "cpImage", widget: "image", required: false}
-              - label: "CP 特質量表：這個角色 → 對方（選填，每項 0～5 個點）"
-                name: "cpTraitsMine"
-                widget: "object"
-                required: false
-                collapsed: true
-                fields:
-                  - {label: "感情強度（0～5，留空就不顯示）", name: "affection", widget: "number", value_type: "int", min: 0, max: 5, required: false}
-                  - {label: "忠誠度（0～5，留空就不顯示）", name: "loyalty", widget: "number", value_type: "int", min: 0, max: 5, required: false}
-                  - {label: "獨佔欲（0～5，留空就不顯示）", name: "possessive", widget: "number", value_type: "int", min: 0, max: 5, required: false}
-                  - {label: "依存度（0～5，留空就不顯示）", name: "dependence", widget: "number", value_type: "int", min: 0, max: 5, required: false}
-                  - {label: "性慾強度（0～5，留空就不顯示）", name: "desire", widget: "number", value_type: "int", min: 0, max: 5, required: false}
-              - label: "CP 特質量表：對方 → 這個角色（選填，每項 0～5 個點）"
-                name: "cpTraitsTheirs"
-                widget: "object"
-                required: false
-                collapsed: true
-                fields:
-                  - {label: "感情強度（0～5，留空就不顯示）", name: "affection", widget: "number", value_type: "int", min: 0, max: 5, required: false}
-                  - {label: "忠誠度（0～5，留空就不顯示）", name: "loyalty", widget: "number", value_type: "int", min: 0, max: 5, required: false}
-                  - {label: "獨佔欲（0～5，留空就不顯示）", name: "possessive", widget: "number", value_type: "int", min: 0, max: 5, required: false}
-                  - {label: "依存度（0～5，留空就不顯示）", name: "dependence", widget: "number", value_type: "int", min: 0, max: 5, required: false}
-                  - {label: "性慾強度（0～5，留空就不顯示）", name: "desire", widget: "number", value_type: "int", min: 0, max: 5, required: false}
-              - {label: "狀態 Status", name: "status", widget: "select", options: [
-                  {label: "生存 Alive", value: "alive"},
-                  {label: "死亡 Dead", value: "dead"}
-                ], default: "alive"}
-              - {label: "簡介 Bio（想分段的話，中間空一行就會自動分段）", name: "bio", widget: "text", required: false}
-              - {label: "大頭照 Avatar Image", name: "avatarImg", widget: "image", required: false}
-              - {label: "全身立繪 Fullbody Image", name: "fullbodyImg", widget: "image", required: false}
-              - label: "外連文章 Articles"
-                name: "articles"
-                widget: "list"
-                required: false
-                fields:
-                  - {label: "標題 Title", name: "title", widget: "string"}
-                  - {label: "連結 URL", name: "url", widget: "string"}
-              - label: "圖片 Gallery"
-                name: "gallery"
-                widget: "list"
-                required: false
-                fields:
-                  - {label: "圖片 Image（新照片只要傳這一個欄位就好）", name: "image", widget: "image", required: false, hint: "只要上傳一張圖，網站會自動當縮圖和放大圖使用，不用另外做縮圖"}
-                  - {label: "說明 Caption", name: "caption", widget: "string", required: false}
-                  - {label: "R18／血腥等敏感內容（縮圖先模糊遮蔽）", name: "sensitive", widget: "boolean", default: false, required: false}
-                  - {label: "縮圖 Thumbnail（舊照片用，新照片不用填）", name: "thumb", widget: "image", required: false}
-                  - {label: "原圖 Full Image（舊照片用，新照片不用填）", name: "full", widget: "image", required: false}
-              - label: "關係 Relationships（會顯示在角色關係圖上）"
-                name: "relationships"
-                widget: "list"
-                required: false
-                fields:
-                  - {label: "對方的角色 ID（到對方的角色資料裡複製 ID 欄位貼過來，例如 coop-mafia-03；如果對方不在這個網站的資料庫裡，直接打對方的名字也可以，只是不會有頭像、也不能點進去）", name: "target", widget: "string"}
-                  - {label: "關係稱呼（例如：戀人、上司、宿敵、青梅竹馬）", name: "label", widget: "string"}
+            fields: *character_fields
 
       - file: "characters-ancient.json"
         label: "ANCIENT"
@@ -225,72 +178,7 @@ collections:
             name: "characters"
             widget: "list"
             summary: "{{fields.codename}} — {{fields.role}}"
-            fields:
-              - {label: "ID（例如 coop-ancient-01，同一個資料夾底下不要重複）", name: "id", widget: "string"}
-              - {label: "代號 Codename", name: "codename", widget: "string"}
-              - {label: "本名 Real Name", name: "realname", widget: "string", required: false, default: "—"}
-              - {label: "身分 Role", name: "role", widget: "string", required: false, default: "—"}
-              - {label: "所屬 Affiliation", name: "affiliation", widget: "string", required: false, default: "—"}
-              - {label: "專長 Skill", name: "skill", widget: "string", required: false, default: "—"}
-              - {label: "身高 Height", name: "height", widget: "string", required: false}
-              - {label: "生日 Birthday", name: "birthday", widget: "string", required: false}
-              - {label: "年齡 Age", name: "age", widget: "string", required: false}
-              - {label: "CP", name: "cp", widget: "string", required: false}
-              - {label: "CP 介紹 CP Intro（選填；有填的話，角色頁上的 CP 名字就能點開小視窗看這段介紹。空一行代表分段）", name: "cpIntro", widget: "text", required: false}
-              - {label: "CP 圖片 CP Image（選填；顯示在 CP 介紹小視窗最上面）", name: "cpImage", widget: "image", required: false}
-              - label: "CP 特質量表：這個角色 → 對方（選填，每項 0～5 個點）"
-                name: "cpTraitsMine"
-                widget: "object"
-                required: false
-                collapsed: true
-                fields:
-                  - {label: "感情強度（0～5，留空就不顯示）", name: "affection", widget: "number", value_type: "int", min: 0, max: 5, required: false}
-                  - {label: "忠誠度（0～5，留空就不顯示）", name: "loyalty", widget: "number", value_type: "int", min: 0, max: 5, required: false}
-                  - {label: "獨佔欲（0～5，留空就不顯示）", name: "possessive", widget: "number", value_type: "int", min: 0, max: 5, required: false}
-                  - {label: "依存度（0～5，留空就不顯示）", name: "dependence", widget: "number", value_type: "int", min: 0, max: 5, required: false}
-                  - {label: "性慾強度（0～5，留空就不顯示）", name: "desire", widget: "number", value_type: "int", min: 0, max: 5, required: false}
-              - label: "CP 特質量表：對方 → 這個角色（選填，每項 0～5 個點）"
-                name: "cpTraitsTheirs"
-                widget: "object"
-                required: false
-                collapsed: true
-                fields:
-                  - {label: "感情強度（0～5，留空就不顯示）", name: "affection", widget: "number", value_type: "int", min: 0, max: 5, required: false}
-                  - {label: "忠誠度（0～5，留空就不顯示）", name: "loyalty", widget: "number", value_type: "int", min: 0, max: 5, required: false}
-                  - {label: "獨佔欲（0～5，留空就不顯示）", name: "possessive", widget: "number", value_type: "int", min: 0, max: 5, required: false}
-                  - {label: "依存度（0～5，留空就不顯示）", name: "dependence", widget: "number", value_type: "int", min: 0, max: 5, required: false}
-                  - {label: "性慾強度（0～5，留空就不顯示）", name: "desire", widget: "number", value_type: "int", min: 0, max: 5, required: false}
-              - {label: "狀態 Status", name: "status", widget: "select", options: [
-                  {label: "生存 Alive", value: "alive"},
-                  {label: "死亡 Dead", value: "dead"}
-                ], default: "alive"}
-              - {label: "簡介 Bio（想分段的話，中間空一行就會自動分段）", name: "bio", widget: "text", required: false}
-              - {label: "大頭照 Avatar Image", name: "avatarImg", widget: "image", required: false}
-              - {label: "全身立繪 Fullbody Image", name: "fullbodyImg", widget: "image", required: false}
-              - label: "外連文章 Articles"
-                name: "articles"
-                widget: "list"
-                required: false
-                fields:
-                  - {label: "標題 Title", name: "title", widget: "string"}
-                  - {label: "連結 URL", name: "url", widget: "string"}
-              - label: "圖片 Gallery"
-                name: "gallery"
-                widget: "list"
-                required: false
-                fields:
-                  - {label: "圖片 Image（新照片只要傳這一個欄位就好）", name: "image", widget: "image", required: false, hint: "只要上傳一張圖，網站會自動當縮圖和放大圖使用，不用另外做縮圖"}
-                  - {label: "說明 Caption", name: "caption", widget: "string", required: false}
-                  - {label: "R18／血腥等敏感內容（縮圖先模糊遮蔽）", name: "sensitive", widget: "boolean", default: false, required: false}
-                  - {label: "縮圖 Thumbnail（舊照片用，新照片不用填）", name: "thumb", widget: "image", required: false}
-                  - {label: "原圖 Full Image（舊照片用，新照片不用填）", name: "full", widget: "image", required: false}
-              - label: "關係 Relationships（會顯示在角色關係圖上）"
-                name: "relationships"
-                widget: "list"
-                required: false
-                fields:
-                  - {label: "對方的角色 ID（到對方的角色資料裡複製 ID 欄位貼過來，例如 coop-mafia-03；如果對方不在這個網站的資料庫裡，直接打對方的名字也可以，只是不會有頭像、也不能點進去）", name: "target", widget: "string"}
-                  - {label: "關係稱呼（例如：戀人、上司、宿敵、青梅竹馬）", name: "label", widget: "string"}
+            fields: *character_fields
 
       - file: "characters-hero.json"
         label: "HERO"
@@ -300,72 +188,7 @@ collections:
             name: "characters"
             widget: "list"
             summary: "{{fields.codename}} — {{fields.role}}"
-            fields:
-              - {label: "ID（例如 coop-hero-13，同一個資料夾底下不要重複）", name: "id", widget: "string"}
-              - {label: "代號 Codename", name: "codename", widget: "string"}
-              - {label: "本名 Real Name", name: "realname", widget: "string", required: false, default: "—"}
-              - {label: "身分 Role", name: "role", widget: "string", required: false, default: "—"}
-              - {label: "所屬 Affiliation", name: "affiliation", widget: "string", required: false, default: "—"}
-              - {label: "專長 Skill", name: "skill", widget: "string", required: false, default: "—"}
-              - {label: "身高 Height", name: "height", widget: "string", required: false}
-              - {label: "生日 Birthday", name: "birthday", widget: "string", required: false}
-              - {label: "年齡 Age", name: "age", widget: "string", required: false}
-              - {label: "CP", name: "cp", widget: "string", required: false}
-              - {label: "CP 介紹 CP Intro（選填；有填的話，角色頁上的 CP 名字就能點開小視窗看這段介紹。空一行代表分段）", name: "cpIntro", widget: "text", required: false}
-              - {label: "CP 圖片 CP Image（選填；顯示在 CP 介紹小視窗最上面）", name: "cpImage", widget: "image", required: false}
-              - label: "CP 特質量表：這個角色 → 對方（選填，每項 0～5 個點）"
-                name: "cpTraitsMine"
-                widget: "object"
-                required: false
-                collapsed: true
-                fields:
-                  - {label: "感情強度（0～5，留空就不顯示）", name: "affection", widget: "number", value_type: "int", min: 0, max: 5, required: false}
-                  - {label: "忠誠度（0～5，留空就不顯示）", name: "loyalty", widget: "number", value_type: "int", min: 0, max: 5, required: false}
-                  - {label: "獨佔欲（0～5，留空就不顯示）", name: "possessive", widget: "number", value_type: "int", min: 0, max: 5, required: false}
-                  - {label: "依存度（0～5，留空就不顯示）", name: "dependence", widget: "number", value_type: "int", min: 0, max: 5, required: false}
-                  - {label: "性慾強度（0～5，留空就不顯示）", name: "desire", widget: "number", value_type: "int", min: 0, max: 5, required: false}
-              - label: "CP 特質量表：對方 → 這個角色（選填，每項 0～5 個點）"
-                name: "cpTraitsTheirs"
-                widget: "object"
-                required: false
-                collapsed: true
-                fields:
-                  - {label: "感情強度（0～5，留空就不顯示）", name: "affection", widget: "number", value_type: "int", min: 0, max: 5, required: false}
-                  - {label: "忠誠度（0～5，留空就不顯示）", name: "loyalty", widget: "number", value_type: "int", min: 0, max: 5, required: false}
-                  - {label: "獨佔欲（0～5，留空就不顯示）", name: "possessive", widget: "number", value_type: "int", min: 0, max: 5, required: false}
-                  - {label: "依存度（0～5，留空就不顯示）", name: "dependence", widget: "number", value_type: "int", min: 0, max: 5, required: false}
-                  - {label: "性慾強度（0～5，留空就不顯示）", name: "desire", widget: "number", value_type: "int", min: 0, max: 5, required: false}
-              - {label: "狀態 Status", name: "status", widget: "select", options: [
-                  {label: "生存 Alive", value: "alive"},
-                  {label: "死亡 Dead", value: "dead"}
-                ], default: "alive"}
-              - {label: "簡介 Bio（想分段的話，中間空一行就會自動分段）", name: "bio", widget: "text", required: false}
-              - {label: "大頭照 Avatar Image", name: "avatarImg", widget: "image", required: false}
-              - {label: "全身立繪 Fullbody Image", name: "fullbodyImg", widget: "image", required: false}
-              - label: "外連文章 Articles"
-                name: "articles"
-                widget: "list"
-                required: false
-                fields:
-                  - {label: "標題 Title", name: "title", widget: "string"}
-                  - {label: "連結 URL", name: "url", widget: "string"}
-              - label: "圖片 Gallery"
-                name: "gallery"
-                widget: "list"
-                required: false
-                fields:
-                  - {label: "圖片 Image（新照片只要傳這一個欄位就好）", name: "image", widget: "image", required: false, hint: "只要上傳一張圖，網站會自動當縮圖和放大圖使用，不用另外做縮圖"}
-                  - {label: "說明 Caption", name: "caption", widget: "string", required: false}
-                  - {label: "R18／血腥等敏感內容（縮圖先模糊遮蔽）", name: "sensitive", widget: "boolean", default: false, required: false}
-                  - {label: "縮圖 Thumbnail（舊照片用，新照片不用填）", name: "thumb", widget: "image", required: false}
-                  - {label: "原圖 Full Image（舊照片用，新照片不用填）", name: "full", widget: "image", required: false}
-              - label: "關係 Relationships（會顯示在角色關係圖上）"
-                name: "relationships"
-                widget: "list"
-                required: false
-                fields:
-                  - {label: "對方的角色 ID（到對方的角色資料裡複製 ID 欄位貼過來，例如 coop-mafia-03；如果對方不在這個網站的資料庫裡，直接打對方的名字也可以，只是不會有頭像、也不能點進去）", name: "target", widget: "string"}
-                  - {label: "關係稱呼（例如：戀人、上司、宿敵、青梅竹馬）", name: "label", widget: "string"}
+            fields: *character_fields
 
       - file: "characters-fantasy.json"
         label: "FANTASY"
@@ -375,72 +198,7 @@ collections:
             name: "characters"
             widget: "list"
             summary: "{{fields.codename}} — {{fields.role}}"
-            fields:
-              - {label: "ID（例如 coop-fantasy-01，同一個資料夾底下不要重複）", name: "id", widget: "string"}
-              - {label: "代號 Codename", name: "codename", widget: "string"}
-              - {label: "本名 Real Name", name: "realname", widget: "string", required: false, default: "—"}
-              - {label: "身分 Role", name: "role", widget: "string", required: false, default: "—"}
-              - {label: "所屬 Affiliation", name: "affiliation", widget: "string", required: false, default: "—"}
-              - {label: "專長 Skill", name: "skill", widget: "string", required: false, default: "—"}
-              - {label: "身高 Height", name: "height", widget: "string", required: false}
-              - {label: "生日 Birthday", name: "birthday", widget: "string", required: false}
-              - {label: "年齡 Age", name: "age", widget: "string", required: false}
-              - {label: "CP", name: "cp", widget: "string", required: false}
-              - {label: "CP 介紹 CP Intro（選填；有填的話，角色頁上的 CP 名字就能點開小視窗看這段介紹。空一行代表分段）", name: "cpIntro", widget: "text", required: false}
-              - {label: "CP 圖片 CP Image（選填；顯示在 CP 介紹小視窗最上面）", name: "cpImage", widget: "image", required: false}
-              - label: "CP 特質量表：這個角色 → 對方（選填，每項 0～5 個點）"
-                name: "cpTraitsMine"
-                widget: "object"
-                required: false
-                collapsed: true
-                fields:
-                  - {label: "感情強度（0～5，留空就不顯示）", name: "affection", widget: "number", value_type: "int", min: 0, max: 5, required: false}
-                  - {label: "忠誠度（0～5，留空就不顯示）", name: "loyalty", widget: "number", value_type: "int", min: 0, max: 5, required: false}
-                  - {label: "獨佔欲（0～5，留空就不顯示）", name: "possessive", widget: "number", value_type: "int", min: 0, max: 5, required: false}
-                  - {label: "依存度（0～5，留空就不顯示）", name: "dependence", widget: "number", value_type: "int", min: 0, max: 5, required: false}
-                  - {label: "性慾強度（0～5，留空就不顯示）", name: "desire", widget: "number", value_type: "int", min: 0, max: 5, required: false}
-              - label: "CP 特質量表：對方 → 這個角色（選填，每項 0～5 個點）"
-                name: "cpTraitsTheirs"
-                widget: "object"
-                required: false
-                collapsed: true
-                fields:
-                  - {label: "感情強度（0～5，留空就不顯示）", name: "affection", widget: "number", value_type: "int", min: 0, max: 5, required: false}
-                  - {label: "忠誠度（0～5，留空就不顯示）", name: "loyalty", widget: "number", value_type: "int", min: 0, max: 5, required: false}
-                  - {label: "獨佔欲（0～5，留空就不顯示）", name: "possessive", widget: "number", value_type: "int", min: 0, max: 5, required: false}
-                  - {label: "依存度（0～5，留空就不顯示）", name: "dependence", widget: "number", value_type: "int", min: 0, max: 5, required: false}
-                  - {label: "性慾強度（0～5，留空就不顯示）", name: "desire", widget: "number", value_type: "int", min: 0, max: 5, required: false}
-              - {label: "狀態 Status", name: "status", widget: "select", options: [
-                  {label: "生存 Alive", value: "alive"},
-                  {label: "死亡 Dead", value: "dead"}
-                ], default: "alive"}
-              - {label: "簡介 Bio（想分段的話，中間空一行就會自動分段）", name: "bio", widget: "text", required: false}
-              - {label: "大頭照 Avatar Image", name: "avatarImg", widget: "image", required: false}
-              - {label: "全身立繪 Fullbody Image", name: "fullbodyImg", widget: "image", required: false}
-              - label: "外連文章 Articles"
-                name: "articles"
-                widget: "list"
-                required: false
-                fields:
-                  - {label: "標題 Title", name: "title", widget: "string"}
-                  - {label: "連結 URL", name: "url", widget: "string"}
-              - label: "圖片 Gallery"
-                name: "gallery"
-                widget: "list"
-                required: false
-                fields:
-                  - {label: "圖片 Image（新照片只要傳這一個欄位就好）", name: "image", widget: "image", required: false, hint: "只要上傳一張圖，網站會自動當縮圖和放大圖使用，不用另外做縮圖"}
-                  - {label: "說明 Caption", name: "caption", widget: "string", required: false}
-                  - {label: "R18／血腥等敏感內容（縮圖先模糊遮蔽）", name: "sensitive", widget: "boolean", default: false, required: false}
-                  - {label: "縮圖 Thumbnail（舊照片用，新照片不用填）", name: "thumb", widget: "image", required: false}
-                  - {label: "原圖 Full Image（舊照片用，新照片不用填）", name: "full", widget: "image", required: false}
-              - label: "關係 Relationships（會顯示在角色關係圖上）"
-                name: "relationships"
-                widget: "list"
-                required: false
-                fields:
-                  - {label: "對方的角色 ID（到對方的角色資料裡複製 ID 欄位貼過來，例如 coop-mafia-03；如果對方不在這個網站的資料庫裡，直接打對方的名字也可以，只是不會有頭像、也不能點進去）", name: "target", widget: "string"}
-                  - {label: "關係稱呼（例如：戀人、上司、宿敵、青梅竹馬）", name: "label", widget: "string"}
+            fields: *character_fields
 
       - file: "characters-football.json"
         label: "FOOTBALL"
@@ -450,72 +208,7 @@ collections:
             name: "characters"
             widget: "list"
             summary: "{{fields.codename}} — {{fields.role}}"
-            fields:
-              - {label: "ID（例如 coop-football-01，同一個資料夾底下不要重複）", name: "id", widget: "string"}
-              - {label: "代號 Codename", name: "codename", widget: "string"}
-              - {label: "本名 Real Name", name: "realname", widget: "string", required: false, default: "—"}
-              - {label: "身分 Role", name: "role", widget: "string", required: false, default: "—"}
-              - {label: "所屬 Affiliation", name: "affiliation", widget: "string", required: false, default: "—"}
-              - {label: "專長 Skill", name: "skill", widget: "string", required: false, default: "—"}
-              - {label: "身高 Height", name: "height", widget: "string", required: false}
-              - {label: "生日 Birthday", name: "birthday", widget: "string", required: false}
-              - {label: "年齡 Age", name: "age", widget: "string", required: false}
-              - {label: "CP", name: "cp", widget: "string", required: false}
-              - {label: "CP 介紹 CP Intro（選填；有填的話，角色頁上的 CP 名字就能點開小視窗看這段介紹。空一行代表分段）", name: "cpIntro", widget: "text", required: false}
-              - {label: "CP 圖片 CP Image（選填；顯示在 CP 介紹小視窗最上面）", name: "cpImage", widget: "image", required: false}
-              - label: "CP 特質量表：這個角色 → 對方（選填，每項 0～5 個點）"
-                name: "cpTraitsMine"
-                widget: "object"
-                required: false
-                collapsed: true
-                fields:
-                  - {label: "感情強度（0～5，留空就不顯示）", name: "affection", widget: "number", value_type: "int", min: 0, max: 5, required: false}
-                  - {label: "忠誠度（0～5，留空就不顯示）", name: "loyalty", widget: "number", value_type: "int", min: 0, max: 5, required: false}
-                  - {label: "獨佔欲（0～5，留空就不顯示）", name: "possessive", widget: "number", value_type: "int", min: 0, max: 5, required: false}
-                  - {label: "依存度（0～5，留空就不顯示）", name: "dependence", widget: "number", value_type: "int", min: 0, max: 5, required: false}
-                  - {label: "性慾強度（0～5，留空就不顯示）", name: "desire", widget: "number", value_type: "int", min: 0, max: 5, required: false}
-              - label: "CP 特質量表：對方 → 這個角色（選填，每項 0～5 個點）"
-                name: "cpTraitsTheirs"
-                widget: "object"
-                required: false
-                collapsed: true
-                fields:
-                  - {label: "感情強度（0～5，留空就不顯示）", name: "affection", widget: "number", value_type: "int", min: 0, max: 5, required: false}
-                  - {label: "忠誠度（0～5，留空就不顯示）", name: "loyalty", widget: "number", value_type: "int", min: 0, max: 5, required: false}
-                  - {label: "獨佔欲（0～5，留空就不顯示）", name: "possessive", widget: "number", value_type: "int", min: 0, max: 5, required: false}
-                  - {label: "依存度（0～5，留空就不顯示）", name: "dependence", widget: "number", value_type: "int", min: 0, max: 5, required: false}
-                  - {label: "性慾強度（0～5，留空就不顯示）", name: "desire", widget: "number", value_type: "int", min: 0, max: 5, required: false}
-              - {label: "狀態 Status", name: "status", widget: "select", options: [
-                  {label: "生存 Alive", value: "alive"},
-                  {label: "死亡 Dead", value: "dead"}
-                ], default: "alive"}
-              - {label: "簡介 Bio（想分段的話，中間空一行就會自動分段）", name: "bio", widget: "text", required: false}
-              - {label: "大頭照 Avatar Image", name: "avatarImg", widget: "image", required: false}
-              - {label: "全身立繪 Fullbody Image", name: "fullbodyImg", widget: "image", required: false}
-              - label: "外連文章 Articles"
-                name: "articles"
-                widget: "list"
-                required: false
-                fields:
-                  - {label: "標題 Title", name: "title", widget: "string"}
-                  - {label: "連結 URL", name: "url", widget: "string"}
-              - label: "圖片 Gallery"
-                name: "gallery"
-                widget: "list"
-                required: false
-                fields:
-                  - {label: "圖片 Image（新照片只要傳這一個欄位就好）", name: "image", widget: "image", required: false, hint: "只要上傳一張圖，網站會自動當縮圖和放大圖使用，不用另外做縮圖"}
-                  - {label: "說明 Caption", name: "caption", widget: "string", required: false}
-                  - {label: "R18／血腥等敏感內容（縮圖先模糊遮蔽）", name: "sensitive", widget: "boolean", default: false, required: false}
-                  - {label: "縮圖 Thumbnail（舊照片用，新照片不用填）", name: "thumb", widget: "image", required: false}
-                  - {label: "原圖 Full Image（舊照片用，新照片不用填）", name: "full", widget: "image", required: false}
-              - label: "關係 Relationships（會顯示在角色關係圖上）"
-                name: "relationships"
-                widget: "list"
-                required: false
-                fields:
-                  - {label: "對方的角色 ID（到對方的角色資料裡複製 ID 欄位貼過來，例如 coop-mafia-03；如果對方不在這個網站的資料庫裡，直接打對方的名字也可以，只是不會有頭像、也不能點進去）", name: "target", widget: "string"}
-                  - {label: "關係稱呼（例如：戀人、上司、宿敵、青梅竹馬）", name: "label", widget: "string"}
+            fields: *character_fields
 
       - file: "characters-victorian.json"
         label: "VICTORIAN"
@@ -525,72 +218,7 @@ collections:
             name: "characters"
             widget: "list"
             summary: "{{fields.codename}} — {{fields.role}}"
-            fields:
-              - {label: "ID（例如 coop-victorian-01，同一個資料夾底下不要重複）", name: "id", widget: "string"}
-              - {label: "代號 Codename", name: "codename", widget: "string"}
-              - {label: "本名 Real Name", name: "realname", widget: "string", required: false, default: "—"}
-              - {label: "身分 Role", name: "role", widget: "string", required: false, default: "—"}
-              - {label: "所屬 Affiliation", name: "affiliation", widget: "string", required: false, default: "—"}
-              - {label: "專長 Skill", name: "skill", widget: "string", required: false, default: "—"}
-              - {label: "身高 Height", name: "height", widget: "string", required: false}
-              - {label: "生日 Birthday", name: "birthday", widget: "string", required: false}
-              - {label: "年齡 Age", name: "age", widget: "string", required: false}
-              - {label: "CP", name: "cp", widget: "string", required: false}
-              - {label: "CP 介紹 CP Intro（選填；有填的話，角色頁上的 CP 名字就能點開小視窗看這段介紹。空一行代表分段）", name: "cpIntro", widget: "text", required: false}
-              - {label: "CP 圖片 CP Image（選填；顯示在 CP 介紹小視窗最上面）", name: "cpImage", widget: "image", required: false}
-              - label: "CP 特質量表：這個角色 → 對方（選填，每項 0～5 個點）"
-                name: "cpTraitsMine"
-                widget: "object"
-                required: false
-                collapsed: true
-                fields:
-                  - {label: "感情強度（0～5，留空就不顯示）", name: "affection", widget: "number", value_type: "int", min: 0, max: 5, required: false}
-                  - {label: "忠誠度（0～5，留空就不顯示）", name: "loyalty", widget: "number", value_type: "int", min: 0, max: 5, required: false}
-                  - {label: "獨佔欲（0～5，留空就不顯示）", name: "possessive", widget: "number", value_type: "int", min: 0, max: 5, required: false}
-                  - {label: "依存度（0～5，留空就不顯示）", name: "dependence", widget: "number", value_type: "int", min: 0, max: 5, required: false}
-                  - {label: "性慾強度（0～5，留空就不顯示）", name: "desire", widget: "number", value_type: "int", min: 0, max: 5, required: false}
-              - label: "CP 特質量表：對方 → 這個角色（選填，每項 0～5 個點）"
-                name: "cpTraitsTheirs"
-                widget: "object"
-                required: false
-                collapsed: true
-                fields:
-                  - {label: "感情強度（0～5，留空就不顯示）", name: "affection", widget: "number", value_type: "int", min: 0, max: 5, required: false}
-                  - {label: "忠誠度（0～5，留空就不顯示）", name: "loyalty", widget: "number", value_type: "int", min: 0, max: 5, required: false}
-                  - {label: "獨佔欲（0～5，留空就不顯示）", name: "possessive", widget: "number", value_type: "int", min: 0, max: 5, required: false}
-                  - {label: "依存度（0～5，留空就不顯示）", name: "dependence", widget: "number", value_type: "int", min: 0, max: 5, required: false}
-                  - {label: "性慾強度（0～5，留空就不顯示）", name: "desire", widget: "number", value_type: "int", min: 0, max: 5, required: false}
-              - {label: "狀態 Status", name: "status", widget: "select", options: [
-                  {label: "生存 Alive", value: "alive"},
-                  {label: "死亡 Dead", value: "dead"}
-                ], default: "alive"}
-              - {label: "簡介 Bio（想分段的話，中間空一行就會自動分段）", name: "bio", widget: "text", required: false}
-              - {label: "大頭照 Avatar Image", name: "avatarImg", widget: "image", required: false}
-              - {label: "全身立繪 Fullbody Image", name: "fullbodyImg", widget: "image", required: false}
-              - label: "外連文章 Articles"
-                name: "articles"
-                widget: "list"
-                required: false
-                fields:
-                  - {label: "標題 Title", name: "title", widget: "string"}
-                  - {label: "連結 URL", name: "url", widget: "string"}
-              - label: "圖片 Gallery"
-                name: "gallery"
-                widget: "list"
-                required: false
-                fields:
-                  - {label: "圖片 Image（新照片只要傳這一個欄位就好）", name: "image", widget: "image", required: false, hint: "只要上傳一張圖，網站會自動當縮圖和放大圖使用，不用另外做縮圖"}
-                  - {label: "說明 Caption", name: "caption", widget: "string", required: false}
-                  - {label: "R18／血腥等敏感內容（縮圖先模糊遮蔽）", name: "sensitive", widget: "boolean", default: false, required: false}
-                  - {label: "縮圖 Thumbnail（舊照片用，新照片不用填）", name: "thumb", widget: "image", required: false}
-                  - {label: "原圖 Full Image（舊照片用，新照片不用填）", name: "full", widget: "image", required: false}
-              - label: "關係 Relationships（會顯示在角色關係圖上）"
-                name: "relationships"
-                widget: "list"
-                required: false
-                fields:
-                  - {label: "對方的角色 ID（到對方的角色資料裡複製 ID 欄位貼過來，例如 coop-mafia-03；如果對方不在這個網站的資料庫裡，直接打對方的名字也可以，只是不會有頭像、也不能點進去）", name: "target", widget: "string"}
-                  - {label: "關係稱呼（例如：戀人、上司、宿敵、青梅竹馬）", name: "label", widget: "string"}
+            fields: *character_fields
 
       - file: "characters-other.json"
         label: "OTHER"
@@ -600,69 +228,4 @@ collections:
             name: "characters"
             widget: "list"
             summary: "{{fields.codename}} — {{fields.role}}"
-            fields:
-              - {label: "ID（例如 coop-other-01，同一個資料夾底下不要重複）", name: "id", widget: "string"}
-              - {label: "代號 Codename", name: "codename", widget: "string"}
-              - {label: "本名 Real Name", name: "realname", widget: "string", required: false, default: "—"}
-              - {label: "身分 Role", name: "role", widget: "string", required: false, default: "—"}
-              - {label: "所屬 Affiliation", name: "affiliation", widget: "string", required: false, default: "—"}
-              - {label: "專長 Skill", name: "skill", widget: "string", required: false, default: "—"}
-              - {label: "身高 Height", name: "height", widget: "string", required: false}
-              - {label: "生日 Birthday", name: "birthday", widget: "string", required: false}
-              - {label: "年齡 Age", name: "age", widget: "string", required: false}
-              - {label: "CP", name: "cp", widget: "string", required: false}
-              - {label: "CP 介紹 CP Intro（選填；有填的話，角色頁上的 CP 名字就能點開小視窗看這段介紹。空一行代表分段）", name: "cpIntro", widget: "text", required: false}
-              - {label: "CP 圖片 CP Image（選填；顯示在 CP 介紹小視窗最上面）", name: "cpImage", widget: "image", required: false}
-              - label: "CP 特質量表：這個角色 → 對方（選填，每項 0～5 個點）"
-                name: "cpTraitsMine"
-                widget: "object"
-                required: false
-                collapsed: true
-                fields:
-                  - {label: "感情強度（0～5，留空就不顯示）", name: "affection", widget: "number", value_type: "int", min: 0, max: 5, required: false}
-                  - {label: "忠誠度（0～5，留空就不顯示）", name: "loyalty", widget: "number", value_type: "int", min: 0, max: 5, required: false}
-                  - {label: "獨佔欲（0～5，留空就不顯示）", name: "possessive", widget: "number", value_type: "int", min: 0, max: 5, required: false}
-                  - {label: "依存度（0～5，留空就不顯示）", name: "dependence", widget: "number", value_type: "int", min: 0, max: 5, required: false}
-                  - {label: "性慾強度（0～5，留空就不顯示）", name: "desire", widget: "number", value_type: "int", min: 0, max: 5, required: false}
-              - label: "CP 特質量表：對方 → 這個角色（選填，每項 0～5 個點）"
-                name: "cpTraitsTheirs"
-                widget: "object"
-                required: false
-                collapsed: true
-                fields:
-                  - {label: "感情強度（0～5，留空就不顯示）", name: "affection", widget: "number", value_type: "int", min: 0, max: 5, required: false}
-                  - {label: "忠誠度（0～5，留空就不顯示）", name: "loyalty", widget: "number", value_type: "int", min: 0, max: 5, required: false}
-                  - {label: "獨佔欲（0～5，留空就不顯示）", name: "possessive", widget: "number", value_type: "int", min: 0, max: 5, required: false}
-                  - {label: "依存度（0～5，留空就不顯示）", name: "dependence", widget: "number", value_type: "int", min: 0, max: 5, required: false}
-                  - {label: "性慾強度（0～5，留空就不顯示）", name: "desire", widget: "number", value_type: "int", min: 0, max: 5, required: false}
-              - {label: "狀態 Status", name: "status", widget: "select", options: [
-                  {label: "生存 Alive", value: "alive"},
-                  {label: "死亡 Dead", value: "dead"}
-                ], default: "alive"}
-              - {label: "簡介 Bio（想分段的話，中間空一行就會自動分段）", name: "bio", widget: "text", required: false}
-              - {label: "大頭照 Avatar Image", name: "avatarImg", widget: "image", required: false}
-              - {label: "全身立繪 Fullbody Image", name: "fullbodyImg", widget: "image", required: false}
-              - label: "外連文章 Articles"
-                name: "articles"
-                widget: "list"
-                required: false
-                fields:
-                  - {label: "標題 Title", name: "title", widget: "string"}
-                  - {label: "連結 URL", name: "url", widget: "string"}
-              - label: "圖片 Gallery"
-                name: "gallery"
-                widget: "list"
-                required: false
-                fields:
-                  - {label: "圖片 Image（新照片只要傳這一個欄位就好）", name: "image", widget: "image", required: false, hint: "只要上傳一張圖，網站會自動當縮圖和放大圖使用，不用另外做縮圖"}
-                  - {label: "說明 Caption", name: "caption", widget: "string", required: false}
-                  - {label: "R18／血腥等敏感內容（縮圖先模糊遮蔽）", name: "sensitive", widget: "boolean", default: false, required: false}
-                  - {label: "縮圖 Thumbnail（舊照片用，新照片不用填）", name: "thumb", widget: "image", required: false}
-                  - {label: "原圖 Full Image（舊照片用，新照片不用填）", name: "full", widget: "image", required: false}
-              - label: "關係 Relationships（會顯示在角色關係圖上）"
-                name: "relationships"
-                widget: "list"
-                required: false
-                fields:
-                  - {label: "對方的角色 ID（到對方的角色資料裡複製 ID 欄位貼過來，例如 coop-mafia-03；如果對方不在這個網站的資料庫裡，直接打對方的名字也可以，只是不會有頭像、也不能點進去）", name: "target", widget: "string"}
-                  - {label: "關係稱呼（例如：戀人、上司、宿敵、青梅竹馬）", name: "label", widget: "string"}
+            fields: *character_fields
