@@ -245,6 +245,7 @@ body.is-gate{overflow-x:hidden;}
   .nav-links .index-dropdown{
     position:static; opacity:1; transform:none; pointer-events:auto;
     padding-top:0; display:none;
+    --dd-x:0px; /* 收在漢堡選單裡時不用置中位移（見下方 max-width:640px 那段），不然會往左歪出選單外 */
   }
   .nav-links .nav-index.open .index-dropdown{ display:block; }
   .nav-links .index-dropdown-card{
@@ -870,7 +871,8 @@ body.is-gate{overflow-x:hidden;}
 }
 .world-row:hover{ padding:30px 22px; }
 /* 還沒有角色的世界觀：變淡、滑過去沒有任何效果 */
-.world-row.is-empty{ opacity:.38; pointer-events:none; }
+.world-row.is-empty,
+.view.enter-stagger.enter-run .world-row.is-empty{ opacity:.38; pointer-events:none; } /* 第二行：換頁淡入動畫跑完後，不要被它的 opacity:1 蓋掉 */
 .wr-soon{ letter-spacing:.12em; }
 .world-row:hover::before{ transform:scaleX(1); }
 .world-list:hover .world-row:not(:hover){ opacity:.42; }
@@ -898,6 +900,7 @@ body.is-gate{overflow-x:hidden;}
   .world-row:hover .wr-name{ transform:translateX(4px) scale(1.9); }
   .wr-meta{ gap:10px; }
   .wr-count{ display:none; } /* 手機版位置窄，數量先讓位給名字跟代號 */
+  .wr-count.wr-soon{ display:inline; font-size:10px; } /* 但 COMING SOON 還是要顯示 */
 }
 @media (prefers-reduced-motion: reduce){
   .world-row, .world-row::before, .wr-name{ transition:none !important; }
@@ -1269,7 +1272,85 @@ body.is-gate{overflow-x:hidden;}
 }
 .pf-basic .p-code{font-family:var(--font-mono); font-size:12px; color:var(--ink-soft); margin-bottom:10px;}
 .pf-basic h1{font-family:var(--font-disp); font-weight:600; font-size:clamp(26px,4vw,38px); margin:0 0 6px;}
-.pf-basic .p-role{color:var(--ink-soft); font-size:14px; margin-bottom:26px;}
+.pf-basic .p-role{color:var(--ink-soft); font-size:14px; margin-bottom:18px;}
+/* CP 名字：有介紹時可以點，點了開 CP 小視窗 */
+.cp-link{
+  font:inherit; color:var(--brand); background:none; border:none; padding:0; cursor:pointer;
+  text-decoration:underline dotted; text-underline-offset:4px; text-align:right;
+}
+.cp-link:hover{ text-decoration-style:solid; }
+.cp-link-icon{ font-size:.85em; margin-left:6px; }
+#cp-modal{
+  position:fixed; inset:0; z-index:210;
+  background:rgba(20,18,20,.55); backdrop-filter:blur(4px); -webkit-backdrop-filter:blur(4px);
+  display:none; align-items:center; justify-content:center; padding:20px;
+}
+#cp-modal.open{ display:flex; animation:fadeIn .25s ease both; }
+body.cp-modal-open{ overflow:hidden; }
+.cp-card{
+  position:relative; width:min(460px, 100%); max-height:min(88vh, 820px); overflow-y:auto;
+  background:var(--bg); color:var(--ink); border:1px solid var(--line); border-radius:calc(var(--radius) + 6px);
+  box-shadow:0 30px 80px rgba(0,0,0,.28); padding:40px 30px 32px;
+  text-align:center;
+  animation:cpCardIn .35s cubic-bezier(.2,.8,.2,1) both;
+}
+/* 小卡片內側再框一圈細線，像實體卡片的邊框 */
+.cp-card::before{
+  content:''; position:absolute; inset:8px; border:1px solid var(--line);
+  border-radius:calc(var(--radius) + 2px); pointer-events:none;
+}
+@keyframes cpCardIn{ from{ opacity:0; transform:translateY(14px) scale(.98); } to{ opacity:1; transform:none; } }
+.cp-close{
+  position:absolute; top:14px; right:14px; width:34px; height:34px; border-radius:50%;
+  border:1px solid var(--line); background:var(--bg); color:var(--ink-soft); font-size:13px;
+}
+.cp-close:hover{ color:var(--brand); border-color:var(--brand); }
+.cp-label{ font-family:var(--font-mono); font-size:11px; letter-spacing:.3em; color:var(--brand); margin-bottom:10px; }
+.cp-title{
+  font-family:var(--font-disp); font-weight:600; font-size:20px; line-height:1.4;
+  margin:0 20px; white-space:nowrap; overflow:hidden;
+}
+.cp-title.is-wrapped{ white-space:normal; }
+.cp-x{ color:var(--brand); margin:0 .5em; font-weight:400; }
+.cp-divider{ color:var(--brand); font-size:12px; margin:12px 0 18px; opacity:.8; }
+.cp-image{ margin:0 0 20px; border-radius:var(--radius-sm); overflow:hidden; background:var(--panel); }
+.cp-image img{ display:block; width:100%; height:auto; max-height:42vh; object-fit:contain; }
+/* 特質量表：左邊是「這個角色 → 對方」、右邊是「對方 → 這個角色」，中間是項目名稱，
+   每項 0～5 個圓點，跟網站其他地方（狀態點、捲動提示點）同一種小圓點語言 */
+.cp-traits{
+  display:inline-block; margin:0 auto 22px; padding:12px 18px 10px;
+  border:1px solid var(--line); border-radius:var(--radius-sm);
+}
+.cp-traits-head{
+  display:grid; grid-template-columns:1fr auto 1fr; align-items:center; gap:14px;
+  font-size:11.5px; color:var(--ink-soft); padding-bottom:8px; margin-bottom:4px;
+  border-bottom:1px solid var(--line);
+}
+.cp-traits-head span:first-child{ text-align:right; }
+.cp-traits-head span:last-child{ text-align:left; }
+.cp-traits-head em{ font-style:normal; color:var(--brand); }
+.cp-traits-title{ font-family:var(--font-mono); font-size:10px; letter-spacing:.25em; color:var(--ink-faint); }
+.cp-trait-row{ display:grid; grid-template-columns:1fr auto 1fr; align-items:center; gap:14px; padding:4px 0; }
+.cp-trait-label{ font-size:12px; letter-spacing:.06em; color:var(--ink); min-width:4.5em; }
+.cp-dots{ display:inline-flex; gap:4px; }
+.cp-trait-row .cp-dots:first-child{ justify-self:end; flex-direction:row-reverse; } /* 左邊那份從中間往外長，左右對稱 */
+.cp-trait-row .cp-dots:last-child{ justify-self:start; }
+.cp-dots i{ width:7px; height:7px; border-radius:50%; border:1px solid var(--ink-faint); box-sizing:border-box; }
+.cp-dots i.on{ background:var(--brand); border-color:var(--brand); }
+.cp-dots.is-empty{ font-size:11px; color:var(--ink-faint); }
+.cp-intro{ text-align:left; }
+.cp-intro p{ margin:0 0 1em; line-height:1.9; font-size:14.5px; }
+.cp-intro p:last-child{ margin-bottom:0; }
+.cp-partner{ display:inline-block; margin-top:22px; }
+@media (max-width:640px){
+  #cp-modal{ align-items:flex-end; padding:0; }
+  .cp-card{ width:100%; max-height:88vh; border-radius:calc(var(--radius) + 6px) calc(var(--radius) + 6px) 0 0; padding:36px 22px calc(28px + env(safe-area-inset-bottom, 0px)); }
+  .cp-card::before{ bottom:0; border-bottom:none; border-radius:calc(var(--radius) + 2px) calc(var(--radius) + 2px) 0 0; }
+  .cp-title{ font-size:18px; }
+}
+.pf-share{ display:flex; flex-wrap:wrap; justify-content:center; gap:8px; margin-bottom:26px; }
+.pf-share .pill-link{ background:none; cursor:pointer; }
+.pf-share .pill-link.is-done{ color:var(--brand); border-color:var(--brand); }
 .pf-basic .field-list{
   text-align:left; background:var(--panel); border-radius:var(--radius);
   padding:2px 20px; margin-bottom:24px;
@@ -1543,10 +1624,18 @@ body.is-gate{overflow-x:hidden;}
   position:absolute; top:50%; transform:translateY(-50%);
   width:44px; height:44px; border:1px solid var(--line); border-radius:50%; background:var(--bg);
   display:flex; align-items:center; justify-content:center; font-family:var(--font-mono);
+  color:var(--ink);
 }
 .lb-nav:hover{border-color:var(--accent); color:var(--accent);}
 .lb-prev{left:clamp(14px,4vw,48px);}
 .lb-next{right:clamp(14px,4vw,48px);}
+/* 手機：左右箭頭移到畫面下方，不要蓋住圖片的左右兩側；也可以直接左右滑動圖片切換 */
+@media (max-width:640px){
+  .lb-nav{ top:auto; bottom:calc(24px + env(safe-area-inset-bottom, 0px)); transform:none; }
+  .lb-prev{ left:calc(50% - 60px); }
+  .lb-next{ right:calc(50% - 60px); }
+  .lb-cap{ padding:0 20px; text-align:center; }
+}
 
 footer{
   position:relative; z-index:1;
@@ -1713,6 +1802,14 @@ body.has-fullbody-bg footer{ border-top:none; }
 
 <!-- 角色頁往下捲動時出現的「回到最頂」按鈕 -->
 <button id="to-top-btn" class="to-top-btn" type="button" aria-label="Back to top">↑</button>
+
+<!-- CP 介紹小視窗：角色頁點 CP 名字時打開（內容由 openCpModal() 填入） -->
+<div id="cp-modal" role="dialog" aria-modal="true" aria-labelledby="cp-modal-title" onclick="if(event.target===this) closeCpModal()">
+  <div class="cp-card">
+    <button class="cp-close" type="button" onclick="closeCpModal()" aria-label="關閉">✕</button>
+    <div id="cp-modal-body"></div>
+  </div>
+</div>
 
 <div id="lightbox">
   <button class="lb-close" onclick="closeLightbox()">CLOSE ✕</button>
@@ -2185,6 +2282,7 @@ function setCrumb(parts, opts){
     const isLast = i===parts.length-1;
     return `<span class="seg" ${p.hash?`onclick="location.hash='${p.hash}'"`:''} style="${isLast?'color:var(--ink)':''}">${p.label}</span>` + (isLast?'':'<span class="sep">/</span>');
   }).join('');
+  el.scrollLeft = el.scrollWidth; /* 手機版麵包屑可以左右滑，預設停在最右邊顯示目前頁面 */
 
   /* 上一頁按鈕：除了首頁，其他頁面都會顯示，回到麵包屑往前一個有連結的層級 */
   const backBtn = document.getElementById('back-btn');
@@ -3172,7 +3270,7 @@ function renderProfile(id){
     ['Height', ch.height||'—'],
     ['Birthday', ch.birthday||'—'],
     ['Age', ch.age||'—'],
-    ['CP', ch.cp||'—'],
+    ['CP', cpFieldValue(ch)],
     ['Status', `${STATUS_LABEL[ch.status]||ch.status}`],
   ].map(([k,v])=>`<div class="field"><div class="k">${k}</div><div class="v">${v}</div></div>`).join('');
 
@@ -3202,6 +3300,7 @@ function renderProfile(id){
       <div class="p-code">${ch.id.toUpperCase()} · ${STATUS_LABEL[ch.status]||ch.status}</div>
       <h1>${ch.codename}</h1>
       <div class="p-role">${ch.role}</div>
+      ${shareButtons(ch)}
       <div class="field-list">${fields}</div>
       ${ch.bio ? `<div class="pf-bio">${bioParagraphs(ch.bio)}</div>` : ''}
     </div>
@@ -3231,6 +3330,137 @@ function renderProfile(id){
   initProfileReveal();
   setupFullbodyBackground(ch);
   initGalleryParallax();
+}
+
+/* ---------------- 角色頁面：CP 介紹小視窗 ----------------
+   後台每個角色的「CP」欄位下面有「CP 介紹 cpIntro」「CP 圖片 cpImage」，以及兩份
+   「CP 特質量表 cpTraitsMine（這個角色 → 對方）／cpTraitsTheirs（對方 → 這個角色）」選填欄位。有填其中一個，角色頁上的 CP 名字就會變成可以點的樣子，點了跳出小視窗。
+   如果這個角色沒填、但 CP 對象剛好也是這個網站上的角色而且那邊有填，就沿用對方的介紹，
+   同一對 CP 只要在其中一邊寫一次就好。 */
+const normName = s => String(s||'').replace(/[\s·・•‧･.]/g, '');
+function cpPartner(ch){
+  if(!ch.cp) return null;
+  const target = normName(ch.cp);
+  return CHARACTERS.find(c => c.id !== ch.id && normName(c.codename) === target) || null;
+}
+/* 特質量表：固定五個項目，「這個角色 → 對方」跟「對方 → 這個角色」各一份，每項 0～5 個點 */
+const CP_TRAITS = [['affection','感情強度'],['loyalty','忠誠度'],['possessive','獨佔欲'],['dependence','依存度'],['desire','性慾強度']];
+const traitVal = (obj, k) => { const v = obj && obj[k]; return (v === '' || v == null || isNaN(v)) ? null : Math.max(0, Math.min(5, Math.round(Number(v)))); };
+const hasTraits = obj => CP_TRAITS.some(([k]) => traitVal(obj, k) != null);
+const hasCpInfo = c => !!(c.cpIntro || c.cpImage || hasTraits(c.cpTraitsMine) || hasTraits(c.cpTraitsTheirs));
+function cpInfo(ch){
+  if(!ch.cp || ch.cp === '—') return null;
+  if(hasCpInfo(ch)) return { intro:ch.cpIntro, image:ch.cpImage, mine:ch.cpTraitsMine, theirs:ch.cpTraitsTheirs };
+  const p = cpPartner(ch);
+  /* 沿用對方的資料時，「我 → 對方」跟「對方 → 我」要左右對調 */
+  if(p && hasCpInfo(p) && normName(p.cp) === normName(ch.codename)) return { intro:p.cpIntro, image:p.cpImage, mine:p.cpTraitsTheirs, theirs:p.cpTraitsMine };
+  return null;
+}
+/* 名字太長時量表欄位只放「·」前面那一段（例如 拉涅里·桑托魯姆 → 拉涅里） */
+const shortName = n => String(n||'').split(/[·・•‧･]/)[0].trim().split(/\s*\(/)[0] || n;
+function cpDots(v){
+  if(v == null) return '<span class="cp-dots is-empty">—</span>';
+  return `<span class="cp-dots" role="img" aria-label="${v} / 5">${[0,1,2,3,4].map(i=>`<i class="${i < v ? 'on' : ''}"></i>`).join('')}</span>`;
+}
+function cpTraitsTable(ch, info){
+  if(!hasTraits(info.mine) && !hasTraits(info.theirs)) return '';
+  const rows = CP_TRAITS.map(([k,label])=>`
+    <div class="cp-trait-row">
+      ${cpDots(traitVal(info.mine, k))}
+      <span class="cp-trait-label">${label}</span>
+      ${cpDots(traitVal(info.theirs, k))}
+    </div>`).join('');
+  return `<div class="cp-traits">
+    <div class="cp-traits-head">
+      <span>${shortName(ch.codename)} <em>→</em></span>
+      <span class="cp-traits-title">特質量表</span>
+      <span><em>←</em> ${shortName(ch.cp)}</span>
+    </div>${rows}
+  </div>`;
+}
+/* 名字太長時把標題字縮小，盡量排在同一行；縮到最小還放不下才換行 */
+function fitCpTitle(){
+  const el = document.getElementById('cp-modal-title');
+  if(!el) return;
+  el.style.fontSize = ''; el.classList.remove('is-wrapped');
+  let size = parseFloat(getComputedStyle(el).fontSize);
+  while(el.scrollWidth > el.clientWidth + 1 && size > 13){
+    size -= 1; el.style.fontSize = size + 'px';
+  }
+  if(el.scrollWidth > el.clientWidth + 1) el.classList.add('is-wrapped');
+}
+function cpFieldValue(ch){
+  if(!ch.cp) return '—';
+  if(!cpInfo(ch)) return ch.cp;
+  return `<button type="button" class="cp-link" onclick="openCpModal('${ch.id}')">${ch.cp}<span class="cp-link-icon" aria-hidden="true">♡</span></button>`;
+}
+function openCpModal(id){
+  const ch = CHARACTERS.find(c=>c.id===id);
+  const info = ch && cpInfo(ch);
+  if(!info) return;
+  const partner = cpPartner(ch);
+  document.getElementById('cp-modal-body').innerHTML = `
+    <div class="cp-label">CP</div>
+    <h2 class="cp-title" id="cp-modal-title"><span>${ch.codename}</span><span class="cp-x">×</span><span>${ch.cp}</span></h2>
+    <div class="cp-divider" aria-hidden="true">♡</div>
+    ${info.image ? `<div class="cp-image"><img ${imgSrcAttr(info.image,'large')} alt="${ch.codename} × ${ch.cp}" decoding="async"></div>` : ''}
+    ${cpTraitsTable(ch, info)}
+    ${info.intro ? `<div class="cp-intro">${bioParagraphs(info.intro)}</div>` : ''}
+    ${partner ? `<a class="pill-link cp-partner" href="#/char/${partner.id}" onclick="closeCpModal()">查看 ${partner.codename} 的檔案 →</a>` : ''}`;
+  const modal = document.getElementById('cp-modal');
+  modal.classList.add('open');
+  document.body.classList.add('cp-modal-open');
+  fitCpTitle();
+  document.addEventListener('keydown', cpKeyHandler);
+  modal.querySelector('.cp-close').focus({preventScroll:true});
+}
+function closeCpModal(){
+  document.getElementById('cp-modal').classList.remove('open');
+  document.body.classList.remove('cp-modal-open');
+  document.removeEventListener('keydown', cpKeyHandler);
+}
+function cpKeyHandler(e){ if(e.key === 'Escape') closeCpModal(); }
+/* 換頁時（例如按上一頁）小視窗要跟著關掉 */
+window.addEventListener('hashchange', ()=>{ if(document.getElementById('cp-modal').classList.contains('open')) closeCpModal(); });
+
+/* ---------------- 角色頁面：分享按鈕 ----------------
+   分享出去的不是網址列上的 /#/char/xxx（X、Plurk 抓不到 # 後面，預覽會變成首頁），
+   而是部署時 scripts/build-share.mjs 幫每個角色產生的 /char/xxx/ 分享頁：
+   那一頁有這個角色自己的標題、簡介跟預覽圖，真人點進去會自動跳回角色頁。 */
+function shareUrlFor(ch){
+  return `${location.origin}/char/${encodeURIComponent(ch.id)}/`;
+}
+function shareButtons(ch){
+  const url = shareUrlFor(ch);
+  const title = `${ch.codename} — Monday's Mood`;
+  const xHref = `https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(url)}`;
+  /* Plurk 的「網址 (文字)」格式會變成一個有標題的連結 */
+  const plurkHref = `https://www.plurk.com/?qualifier=shares&status=${encodeURIComponent(`${url} (${title})`)}`;
+  return `<div class="pf-share">
+    <button type="button" class="pill-link" onclick="copyShareLink(this, '${ch.id}')">🔗 複製分享連結</button>
+    <a class="pill-link" href="${xHref}" target="_blank" rel="noopener">分享到 X</a>
+    <a class="pill-link" href="${plurkHref}" target="_blank" rel="noopener">分享到 Plurk</a>
+  </div>`;
+}
+async function copyShareLink(btn, id){
+  const ch = CHARACTERS.find(c=>c.id===id);
+  if(!ch) return;
+  const url = shareUrlFor(ch);
+  let ok = false;
+  try{ await navigator.clipboard.writeText(url); ok = true; }
+  catch(e){
+    /* 舊瀏覽器／沒有權限時的備援：用隱藏的文字框複製 */
+    const ta = document.createElement('textarea');
+    ta.value = url; ta.setAttribute('readonly',''); ta.style.cssText = 'position:fixed; opacity:0;';
+    document.body.appendChild(ta); ta.select();
+    try{ ok = document.execCommand('copy'); }catch(err){}
+    ta.remove();
+  }
+  if(!ok){ window.prompt('複製這個連結：', url); return; }
+  const label = btn.textContent;
+  btn.textContent = '✓ 已複製';
+  btn.classList.add('is-done');
+  setTimeout(()=>{ btn.textContent = label; btn.classList.remove('is-done'); }, 1600);
 }
 
 /* ---------------- 角色頁面：這個角色的關係 ---------------- */
@@ -3536,6 +3766,22 @@ function lbKeyHandler(e){
   if(e.key==='ArrowLeft') lbNav(-1);
   if(e.key==='ArrowRight') lbNav(1);
 }
+/* 手機：在燈箱裡左右滑動就能切換上一張／下一張（上下滑或滑動距離太短不算） */
+(function initLightboxSwipe(){
+  const lb = document.getElementById('lightbox');
+  let sx = null, sy = null;
+  lb.addEventListener('touchstart', (e)=>{
+    if(e.touches.length !== 1){ sx = null; return; }
+    sx = e.touches[0].clientX; sy = e.touches[0].clientY;
+  }, {passive:true});
+  lb.addEventListener('touchend', (e)=>{
+    if(sx == null) return;
+    const t = e.changedTouches[0];
+    const dx = t.clientX - sx, dy = t.clientY - sy;
+    sx = null;
+    if(Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) lbNav(dx < 0 ? 1 : -1);
+  }, {passive:true});
+})();
 function renderLightbox(){
   const ch = CHARACTERS.find(c=>c.id===lbState.charId);
   const item = ch.gallery[lbState.index];

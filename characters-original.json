@@ -11,56 +11,43 @@
       "fullbodyImg": "/images/uploads/052515157111.png",
       "gallery": [
         {
-          "full": "/images/uploads/人設圖-拉爾2.jpg",
-          "thumb": "/images/uploads/人設圖-拉爾2.jpg"
+          "image": "/images/uploads/人設圖-拉爾2.jpg"
         },
         {
-          "full": "/images/uploads/091992.jpg",
-          "thumb": "/images/uploads/091992.jpg"
+          "image": "/images/uploads/091992.jpg"
         },
         {
-          "full": "/images/uploads/3728822.jpg",
-          "thumb": "/images/uploads/3728822.jpg"
+          "image": "/images/uploads/3728822.jpg"
         },
         {
-          "full": "/images/uploads/172882.jpg",
-          "thumb": "/images/uploads/172882.jpg"
+          "image": "/images/uploads/172882.jpg"
         },
         {
-          "full": "/images/uploads/25277272.jpg",
-          "thumb": "/images/uploads/25277272.jpg"
+          "image": "/images/uploads/25277272.jpg"
         },
         {
-          "full": "/images/uploads/hcppxjzbeaqeqre.jpg",
-          "thumb": "/images/uploads/hcppxjzbeaqeqre.jpg"
+          "image": "/images/uploads/hcppxjzbeaqeqre.jpg"
         },
         {
-          "full": "/images/uploads/7488383.jpg",
-          "thumb": "/images/uploads/7488383.jpg"
+          "image": "/images/uploads/7488383.jpg"
         },
         {
-          "full": "/images/uploads/363673.jpg",
-          "thumb": "/images/uploads/363673.jpg"
+          "image": "/images/uploads/363673.jpg"
         },
         {
-          "full": "/images/uploads/插圖-20260810.jpg",
-          "thumb": "/images/uploads/插圖-20260810.jpg"
+          "image": "/images/uploads/插圖-20260810.jpg"
         },
         {
-          "full": "/images/uploads/插圖-20260819.jpg",
-          "thumb": "/images/uploads/插圖-20260819.jpg"
+          "image": "/images/uploads/插圖-20260819.jpg"
         },
         {
-          "full": "/images/uploads/插圖-20260826.jpg",
-          "thumb": "/images/uploads/插圖-20260826.jpg"
+          "image": "/images/uploads/插圖-20260826.jpg"
         },
         {
-          "full": "/images/uploads/插圖-20260824.png",
-          "thumb": "/images/uploads/插圖-20260824.png"
+          "image": "/images/uploads/插圖-20260824.png"
         },
         {
-          "full": "/images/uploads/插圖-20260914.jpg",
-          "thumb": "/images/uploads/插圖-20260914.jpg"
+          "image": "/images/uploads/插圖-20260914.jpg"
         }
       ],
       "status": "alive",
@@ -80,36 +67,28 @@
       "fullbodyImg": "/images/uploads/15167171-1-.png",
       "gallery": [
         {
-          "thumb": "/images/uploads/人設圖-瓦萊麗.jpg",
-          "full": "/images/uploads/人設圖-瓦萊麗.jpg"
+          "image": "/images/uploads/人設圖-瓦萊麗.jpg"
         },
         {
-          "thumb": "/images/uploads/091992-2.jpg",
-          "full": "/images/uploads/091992-2.jpg"
+          "image": "/images/uploads/091992-2.jpg"
         },
         {
-          "thumb": "/images/uploads/262622.jpg",
-          "full": "/images/uploads/262622.jpg"
+          "image": "/images/uploads/262622.jpg"
         },
         {
-          "thumb": "/images/uploads/2672722.jpg",
-          "full": "/images/uploads/2672722.jpg"
+          "image": "/images/uploads/2672722.jpg"
         },
         {
-          "thumb": "/images/uploads/526262.jpg",
-          "full": "/images/uploads/526262.jpg"
+          "image": "/images/uploads/526262.jpg"
         },
         {
-          "thumb": "/images/uploads/插圖-20260914-2.jpg",
-          "full": "/images/uploads/插圖-20260914-2.jpg"
+          "image": "/images/uploads/插圖-20260914-2.jpg"
         },
         {
-          "thumb": "/images/uploads/05133.png",
-          "full": "/images/uploads/05133.png"
+          "image": "/images/uploads/05133.png"
         },
         {
-          "thumb": "/images/uploads/08044.jpg",
-          "full": "/images/uploads/08044.jpg"
+          "image": "/images/uploads/08044.jpg"
         }
       ],
       "status": "alive",
@@ -129,48 +108,37 @@
       "fullbodyImg": "/images/uploads/09981111.png",
       "gallery": [
         {
-          "thumb": "/images/uploads/望叔人設.jpg",
-          "full": "/images/uploads/望叔人設.jpg"
+          "image": "/images/uploads/望叔人設.jpg"
         },
         {
-          "thumb": "/images/uploads/21671711.jpg",
-          "full": "/images/uploads/21671711.jpg"
+          "image": "/images/uploads/21671711.jpg"
         },
         {
-          "thumb": "/images/uploads/32777.jpg",
-          "full": "/images/uploads/32777.jpg"
+          "image": "/images/uploads/32777.jpg"
         },
         {
-          "thumb": "/images/uploads/3525262727.jpg",
-          "full": "/images/uploads/3525262727.jpg"
+          "image": "/images/uploads/3525262727.jpg"
         },
         {
-          "thumb": "/images/uploads/6382892.jpg",
-          "full": "/images/uploads/6382892.jpg"
+          "image": "/images/uploads/6382892.jpg"
         },
         {
-          "thumb": "/images/uploads/望_1.jpg",
-          "full": "/images/uploads/望_1.jpg"
+          "image": "/images/uploads/望_1.jpg"
         },
         {
-          "thumb": "/images/uploads/望_122-1.jpg",
-          "full": "/images/uploads/望_122-1.jpg"
+          "image": "/images/uploads/望_122-1.jpg"
         },
         {
-          "thumb": "/images/uploads/望_122-2.jpg",
-          "full": "/images/uploads/望_122-2.jpg"
+          "image": "/images/uploads/望_122-2.jpg"
         },
         {
-          "thumb": "/images/uploads/望_223_1.jpg",
-          "full": "/images/uploads/望_223_1.jpg"
+          "image": "/images/uploads/望_223_1.jpg"
         },
         {
-          "thumb": "/images/uploads/望_223_2.jpg",
-          "full": "/images/uploads/望_223_2.jpg"
+          "image": "/images/uploads/望_223_2.jpg"
         },
         {
-          "thumb": "/images/uploads/363773.jpg",
-          "full": "/images/uploads/363773.jpg"
+          "image": "/images/uploads/363773.jpg"
         }
       ],
       "status": "dead",
@@ -237,105 +205,80 @@
       "fullbodyImg": "/images/uploads/1091616111.png",
       "gallery": [
         {
-          "thumb": "/images/uploads/reo人設.jpg",
-          "full": "/images/uploads/reo人設.jpg"
+          "image": "/images/uploads/reo人設.jpg"
         },
         {
-          "thumb": "/images/uploads/10444-1.jpg",
-          "full": "/images/uploads/10444-1.jpg"
+          "image": "/images/uploads/10444-1.jpg"
         },
         {
-          "thumb": "/images/uploads/10337272.jpg",
-          "full": "/images/uploads/10337272.jpg"
+          "image": "/images/uploads/10337272.jpg"
         },
         {
-          "thumb": "/images/uploads/0118182.jpg",
-          "full": "/images/uploads/0118182.jpg"
+          "image": "/images/uploads/0118182.jpg"
         },
         {
-          "thumb": "/images/uploads/122278.jpg",
-          "full": "/images/uploads/122278.jpg"
+          "image": "/images/uploads/122278.jpg"
         },
         {
-          "thumb": "/images/uploads/021118-1.jpg",
-          "full": "/images/uploads/021118-1.jpg"
+          "image": "/images/uploads/021118-1.jpg"
         },
         {
-          "thumb": "/images/uploads/021118-2.jpg",
-          "full": "/images/uploads/021118-2.jpg"
+          "image": "/images/uploads/021118-2.jpg"
         },
         {
-          "thumb": "/images/uploads/1100303.jpg",
-          "full": "/images/uploads/1100303.jpg"
+          "image": "/images/uploads/1100303.jpg"
         },
         {
-          "thumb": "/images/uploads/0999211.jpg",
-          "full": "/images/uploads/0999211.jpg"
+          "image": "/images/uploads/0999211.jpg"
         },
         {
-          "thumb": "/images/uploads/123353553.jpg",
-          "full": "/images/uploads/123353553.jpg"
+          "image": "/images/uploads/123353553.jpg"
         },
         {
-          "thumb": "/images/uploads/099222.jpg",
-          "full": "/images/uploads/099222.jpg"
+          "image": "/images/uploads/099222.jpg"
         },
         {
-          "thumb": "/images/uploads/992722.jpg",
-          "full": "/images/uploads/992722.jpg"
+          "image": "/images/uploads/992722.jpg"
         },
         {
-          "thumb": "/images/uploads/5untdefqjusismavzoesfv.jpg",
-          "full": "/images/uploads/5untdefqjusismavzoesfv.jpg"
+          "image": "/images/uploads/5untdefqjusismavzoesfv.jpg"
         },
         {
-          "thumb": "/images/uploads/9882811.jpg",
-          "full": "/images/uploads/9882811.jpg"
+          "image": "/images/uploads/9882811.jpg"
         },
         {
-          "thumb": "/images/uploads/088822.jpg",
-          "full": "/images/uploads/088822.jpg"
+          "image": "/images/uploads/088822.jpg"
         },
         {
-          "thumb": "/images/uploads/066611.jpg",
-          "full": "/images/uploads/066611.jpg"
+          "image": "/images/uploads/066611.jpg"
         },
         {
-          "thumb": "/images/uploads/1114411.jpg",
-          "full": "/images/uploads/1114411.jpg"
+          "image": "/images/uploads/1114411.jpg"
         },
         {
-          "thumb": "/images/uploads/095522.jpg",
-          "full": "/images/uploads/095522.jpg",
+          "image": "/images/uploads/095522.jpg",
           "caption": "跟哥哥合圖"
         },
         {
-          "thumb": "/images/uploads/0255000.jpg",
-          "full": "/images/uploads/0255000.jpg"
+          "image": "/images/uploads/0255000.jpg"
         },
         {
-          "thumb": "/images/uploads/133443.jpg",
-          "full": "/images/uploads/133443.jpg"
+          "image": "/images/uploads/133443.jpg"
         },
         {
-          "thumb": "/images/uploads/10262722.jpg",
-          "full": "/images/uploads/10262722.jpg"
+          "image": "/images/uploads/10262722.jpg"
         },
         {
-          "thumb": "/images/uploads/36828822.jpg",
-          "full": "/images/uploads/36828822.jpg"
+          "image": "/images/uploads/36828822.jpg"
         },
         {
-          "thumb": "/images/uploads/63738383.jpg",
-          "full": "/images/uploads/63738383.jpg"
+          "image": "/images/uploads/63738383.jpg"
         },
         {
-          "thumb": "/images/uploads/認親卡_523.jpg",
-          "full": "/images/uploads/認親卡_523.jpg"
+          "image": "/images/uploads/認親卡_523.jpg"
         },
         {
-          "thumb": "/images/uploads/4190501.jpg",
-          "full": "/images/uploads/4190501.jpg"
+          "image": "/images/uploads/4190501.jpg"
         }
       ],
       "status": "alive",

@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "node scripts/build-images.mjs"
+    "build": "node scripts/build-images.mjs && node scripts/build-share.mjs"
   },
   "dependencies": {
     "sharp": "0.34.4"
