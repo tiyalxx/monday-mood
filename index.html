@@ -218,7 +218,7 @@ body.is-gate{overflow-x:hidden;}
      隱形項目，用來把第一行（Logo＋漢堡）跟第二行隔開 */
   .topbar{ row-gap:0; }
   .topbar::after{ content:''; order:2; flex:0 0 100%; height:0; }
-  .back-btn{ order:3; flex:none; margin:8px 12px 0 0; padding:0; border-right:none; font-size:11px; }
+  .back-btn{ order:3; flex:none; margin:0 4px -8px -8px; padding:8px 12px 8px 8px; border-right:none; font-size:11px; } /* 字的位置不變，只把可以點的範圍往四周放大，手指比較好按 */
   .crumb{ order:4; flex:1 1 0; min-width:0; margin-top:8px; width:auto; }
   /* 平常橫排的那一排連結，收合狀態下變成貼在漢堡按鈕下方的卡片選單，
      預設不顯示，點漢堡按鈕才用 .open 切出來（JS 控制） */
@@ -259,6 +259,8 @@ body.is-gate{overflow-x:hidden;}
     font-size:11px;
   }
   .crumb .seg, .crumb .sep{white-space:nowrap; flex:none;}
+  /* 麵包屑太長、左邊被捲出去的時候，左側淡出，看得出還有前面的層級，不是字被切斷 */
+  .crumb.is-scrolled{ -webkit-mask-image:linear-gradient(90deg, transparent, #000 28px); mask-image:linear-gradient(90deg, transparent, #000 28px); }
 }
 @media (max-width:640px){
   .topbar{ padding:9px 18px; }
@@ -728,6 +730,7 @@ body.is-gate{overflow-x:hidden;}
   opacity:0; transition:opacity .6s ease var(--d, 0ms);
 }
 .rg-stage.is-ready .rg-node{ opacity:1; }
+.rg-node::before{ content:''; position:absolute; inset:-8px; border-radius:50%; } /* 隱形的放大點擊範圍：手機上頭像很小，手指比較好點到 */
 .rg-avatar{
   width:100%; height:100%; border-radius:50%; overflow:hidden; display:block; position:relative;
   background:var(--panel); box-shadow:0 0 0 2px var(--bg);
@@ -1023,7 +1026,12 @@ body.is-gate{overflow-x:hidden;}
 .section-head h2.brand-title{color:var(--brand);}
 .section-count{font-family:var(--font-mono); font-size:12px; color:var(--ink-soft);}
 .section-head-right{display:flex; align-items:center; gap:16px;}
+@media (max-width:640px){
+  /* 手機版按鈕多的時候整顆換到下一行，不要讓按鈕裡的字被擠成兩行 */
+  .section-head-right{flex-wrap:wrap; gap:10px 12px;}
+}
 .pill-link{
+  white-space:nowrap;
   font-family:var(--font-mono); font-size:11.5px; letter-spacing:.03em;
   color:var(--ink-soft); border:1px solid var(--line); border-radius:999px;
   padding:6px 14px; transition:color .2s ease, border-color .2s ease;
@@ -1249,6 +1257,20 @@ body.is-gate{overflow-x:hidden;}
   .pf-rel-node{width:76px; gap:4px;}
   .pf-rel-name{font-size:10px; max-width:76px;}
   .pf-rel-edge-label{font-size:9px; padding:2px 7px;}
+  .pf-rel-stage.has-list{ display:none; }
+}
+.pf-rel-list{ display:none; }
+@media (max-width:640px){
+  .pf-rel-list{ display:flex; flex-direction:column; margin-top:8px; }
+  .pf-rel-row{
+    display:grid; grid-template-columns:40px 1fr auto; align-items:center; gap:12px;
+    padding:10px 2px; border-bottom:1px solid var(--line); text-decoration:none;
+  }
+  .pf-rel-row .pf-rel-avatar{ width:40px; height:40px; border-width:1.5px; }
+  .pf-rel-row.is-external .pf-rel-avatar{ border-style:dashed; border-color:var(--ink-soft); background:transparent; }
+  .pf-rel-row-name{ font-family:var(--font-cjk); font-size:14px; color:var(--ink); min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .pf-rel-row.is-external .pf-rel-row-name{ color:var(--ink-soft); }
+  .pf-rel-row-label{ font-family:var(--font-mono); font-size:11px; color:var(--brand); text-align:right; max-width:42vw; }
 }
 
 /* 角色列表：橫向重疊排列的弧形卡片牆（電腦滾輪橫向瀏覽，手機直接上下滑）。
@@ -2435,6 +2457,8 @@ function setCrumb(parts, opts){
     return `<span class="seg" ${p.hash?`onclick="location.hash='${p.hash}'"`:''} style="${isLast?'color:var(--ink)':''}">${p.label}</span>` + (isLast?'':'<span class="sep">/</span>');
   }).join('');
   el.scrollLeft = el.scrollWidth; /* 手機版麵包屑可以左右滑，預設停在最右邊顯示目前頁面 */
+  el.classList.toggle('is-scrolled', el.scrollLeft > 0);
+  if(!el.dataset.fadeBound){ el.dataset.fadeBound = '1'; el.addEventListener('scroll', ()=>el.classList.toggle('is-scrolled', el.scrollLeft > 0), {passive:true}); }
 
   /* 上一頁按鈕：除了首頁，其他頁面都會顯示，回到麵包屑往前一個有連結的層級 */
   const backBtn = document.getElementById('back-btn');
@@ -3996,15 +4020,28 @@ function buildCharRelations(ch){
     </${tag}>`;
   }).join('');
 
+  /* 手機版關係人多（超過 5 個）的時候，圓形圖會擠成一團、字也太小，
+     改用一行一個人的清單（電腦版照舊顯示圓形圖） */
+  const listHtml = links.map(l=>{
+    const tag = l.external ? 'div' : 'a';
+    const hrefAttr = l.external ? '' : ` href="#/char/${l.target.id}"`;
+    return `<${tag} class="pf-rel-row${l.external ? ' is-external' : ''}"${hrefAttr}>
+      <span class="pf-rel-avatar">${l.external ? '' : avatarBlock(l.target)}</span>
+      <span class="pf-rel-row-name">${l.target.codename}</span>
+      <span class="pf-rel-row-label">${l.label || ''}</span>
+    </${tag}>`;
+  }).join('');
+
   return `
   <div class="pf-reveal">
     <div class="section-head"><h2>Relationships</h2><div class="section-count">${n} LINKED</div></div>
-    <div class="pf-rel-stage ${sizeClass}">
+    <div class="pf-rel-stage ${sizeClass}${n > 5 ? ' has-list' : ''}">
       <svg class="pf-rel-lines" viewBox="0 0 100 100" preserveAspectRatio="none">${linesSvg}</svg>
       ${labelsHtml}
       <div class="pf-rel-hub">${avatarBlock(ch)}</div>
       ${nodesHtml}
     </div>
+    ${n > 5 ? `<div class="pf-rel-list">${listHtml}</div>` : ''}
   </div>`;
 }
 
