@@ -288,6 +288,10 @@ body.is-gate{overflow-x:hidden;}
 .gate-scene{position:relative; z-index:2;}
 .gate-scene-hero{
   min-height:100vh;
+  /* 手機瀏覽器（Safari、LINE 內建瀏覽器）的 100vh 是「網址列收起來時」的高度，
+     比剛打開時實際看得到的畫面高，底部 LOGO 就會被擠到畫面外；svh 是網址列
+     還在時的可見高度，支援的瀏覽器會用這個，不支援的照舊用上面的 100vh */
+  min-height:100svh;
   display:flex; flex-direction:column;
   overflow:hidden;
 }
@@ -341,11 +345,11 @@ body.is-gate{overflow-x:hidden;}
 @media (max-width:640px){
   .gate-center{ gap:20px; padding:16px 20px 10px; }
   .gate-enter{ padding:10px 24px; font-size:12px; }
-  .gate-bottom-logo{ width:58%; padding-bottom:14px; }
+  /* 手機版 LOGO 撐滿整個寬度，左右只留一點點邊 */
+  .gate-bottom-logo{ width:auto; margin:0 12px; padding-bottom:16px; }
 }
 @media (max-height:700px) and (max-width:640px){
   .gate-center{ gap:12px; padding:10px 20px 6px; }
-  .gate-bottom-logo{ width:48%; }
 }
 
 /* 提醒訪客這頁可以捲動的小提示，固定在左下角（避開底部的 logo 圖案），
@@ -364,7 +368,8 @@ body.is-gate{overflow-x:hidden;}
   50%{ transform:translate(0,7px); }
 }
 @media (max-width:640px){
-  .gate-scroll-hint{left:16px; bottom:16px;}
+  /* 手機版 LOGO 撐滿整個寬度，提示放在 LOGO 上方，不要疊在字上 */
+  .gate-scroll-hint{left:16px; bottom:calc((100vw - 24px) * 0.17 + 34px);}
 }
 
 /* 第一屏捲完之後，直接淡出淡入一張張滿版的完稿大圖（不會先變藍色），
@@ -374,10 +379,15 @@ body.is-gate{overflow-x:hidden;}
 .gate-scene-photos{position:relative;}
 .gate-photo-layer{
   position:absolute; inset:0;
+  background-image:var(--img-d);
   background-size:cover; background-position:center;
   opacity:0; will-change:opacity;
   display:flex; align-items:flex-end; justify-content:center;
   padding-bottom:4vh;
+}
+/* 直的畫面（手機）：有另外上傳手機版直圖就用直圖，沒有的話照舊用電腦版的圖裁切 */
+@media (max-aspect-ratio:1/1){
+  .gate-photo-layer{ background-image:var(--img-m, var(--img-d)); }
 }
 .gate-photo-layer.is-placeholder{
   background-image:linear-gradient(155deg, var(--ph-a), var(--ph-b));
@@ -2221,7 +2231,7 @@ window.addEventListener('hashchange', ()=>{
 });
 window.addEventListener('DOMContentLoaded', ()=>{
   document.getElementById('foot-time').textContent = 'REV. ' + new Date().toISOString().slice(0,10);
-  Promise.all([loadWorldMeta(), loadImageManifest()]).then(()=>loadCharacters()).then(populateIndexDropdown);
+  Promise.all([loadWorldMeta(), loadImageManifest(), loadGateSlides()]).then(()=>loadCharacters()).then(populateIndexDropdown);
   runIntroSplash();
   initIndexNav();
   initNavBurger();
@@ -2507,19 +2517,28 @@ function route(){
 /* ---------------- GATE (首頁入口) ---------------- */
 /* ============================================================
    首頁入口往下捲動後、滿版淡出淡入的完稿大圖。
-   把你要秀出來的圖片路徑填進這個陣列就會換成真正的圖片
-   （路徑寫法跟角色圖片一樣，例如先把圖傳到 gate-art 資料夾，
-   這裡就填 './gate-art/01.jpg'）。陣列留空的話會先顯示彩色漸層的
-   佔位畫面，方便你確認捲動效果，不影響其他功能。
-   每次重新整理頁面，圖片出現的順序都會重新隨機排列一次。 */
-const GATE_SHOWCASE = [
-  './gate-art/01.jpg',
-  './gate-art/02.jpg',
-  './gate-art/03.jpg',
-  './gate-art/04.jpg',
-  './gate-art/05.jpg',
-  './gate-art/06.jpg',
+   圖片清單放在 gate.json（後台「首頁 Gate」可以新增／換圖），每張可以另外
+   上傳一張手機版的直圖，手機上就會用直圖，不會被裁掉一大半。
+   下面這份只是 gate.json 讀取失敗時的備援。清單是空的話會先顯示彩色漸層的
+   佔位畫面。每次重新整理頁面，圖片出現的順序都會重新隨機排列一次。 */
+let GATE_SHOWCASE = [
+  { image:'./gate-art/01.jpg' },
+  { image:'./gate-art/02.jpg' },
+  { image:'./gate-art/03.jpg' },
+  { image:'./gate-art/04.jpg' },
+  { image:'./gate-art/05.jpg' },
+  { image:'./gate-art/06.jpg' },
 ];
+async function loadGateSlides(){
+  try{
+    const res = await fetch('./gate.json', {cache:'no-cache'});
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    const data = await res.json();
+    GATE_SHOWCASE = (data.slides || []).filter(s=>s && s.image);
+  }catch(err){
+    console.warn('無法讀取 gate.json，改用內建的首頁圖片。', err);
+  }
+}
 
 function buildGatePhotos(){
   const useReal = GATE_SHOWCASE.length > 0;
@@ -2532,7 +2551,9 @@ function buildGatePhotos(){
   let html = '';
   order.forEach(srcIdx=>{
     if(useReal){
-      html += `<div class="gate-photo-layer" style="background-image:url('${largeSrc(GATE_SHOWCASE[srcIdx])}');"></div>`;
+      const s = GATE_SHOWCASE[srcIdx];
+      const mobile = s.mobileImage ? ` --img-m:url('${largeSrc(s.mobileImage)}');` : '';
+      html += `<div class="gate-photo-layer" style="--img-d:url('${largeSrc(s.image)}');${mobile}"></div>`;
     } else {
       const hue = (srcIdx*63) % 360;
       html += `<div class="gate-photo-layer is-placeholder" style="--ph-a:hsl(${hue},70%,55%); --ph-b:hsl(${(hue+40)%360},70%,36%);">
