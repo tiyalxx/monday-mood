@@ -218,7 +218,7 @@ body.is-gate{overflow-x:hidden;}
      隱形項目，用來把第一行（Logo＋漢堡）跟第二行隔開 */
   .topbar{ row-gap:0; }
   .topbar::after{ content:''; order:2; flex:0 0 100%; height:0; }
-  .back-btn{ order:3; flex:none; margin:8px 12px 0 0; padding:0; border-right:none; font-size:11px; }
+  .back-btn{ order:3; flex:none; margin:0 4px -8px -8px; padding:8px 12px 8px 8px; border-right:none; font-size:11px; } /* 字的位置不變，只把可以點的範圍往四周放大，手指比較好按 */
   .crumb{ order:4; flex:1 1 0; min-width:0; margin-top:8px; width:auto; }
   /* 平常橫排的那一排連結，收合狀態下變成貼在漢堡按鈕下方的卡片選單，
      預設不顯示，點漢堡按鈕才用 .open 切出來（JS 控制） */
@@ -259,6 +259,8 @@ body.is-gate{overflow-x:hidden;}
     font-size:11px;
   }
   .crumb .seg, .crumb .sep{white-space:nowrap; flex:none;}
+  /* 麵包屑太長、左邊被捲出去的時候，左側淡出，看得出還有前面的層級，不是字被切斷 */
+  .crumb.is-scrolled{ -webkit-mask-image:linear-gradient(90deg, transparent, #000 28px); mask-image:linear-gradient(90deg, transparent, #000 28px); }
 }
 @media (max-width:640px){
   .topbar{ padding:9px 18px; }
@@ -288,6 +290,10 @@ body.is-gate{overflow-x:hidden;}
 .gate-scene{position:relative; z-index:2;}
 .gate-scene-hero{
   min-height:100vh;
+  /* 手機瀏覽器（Safari、LINE 內建瀏覽器）的 100vh 是「網址列收起來時」的高度，
+     比剛打開時實際看得到的畫面高，底部 LOGO 就會被擠到畫面外；svh 是網址列
+     還在時的可見高度，支援的瀏覽器會用這個，不支援的照舊用上面的 100vh */
+  min-height:100svh;
   display:flex; flex-direction:column;
   overflow:hidden;
 }
@@ -341,11 +347,11 @@ body.is-gate{overflow-x:hidden;}
 @media (max-width:640px){
   .gate-center{ gap:20px; padding:16px 20px 10px; }
   .gate-enter{ padding:10px 24px; font-size:12px; }
-  .gate-bottom-logo{ width:58%; padding-bottom:14px; }
+  /* 手機版 LOGO 撐滿整個寬度，左右只留一點點邊 */
+  .gate-bottom-logo{ width:auto; margin:0 12px; padding-bottom:16px; }
 }
 @media (max-height:700px) and (max-width:640px){
   .gate-center{ gap:12px; padding:10px 20px 6px; }
-  .gate-bottom-logo{ width:48%; }
 }
 
 /* 提醒訪客這頁可以捲動的小提示，固定在左下角（避開底部的 logo 圖案），
@@ -364,7 +370,8 @@ body.is-gate{overflow-x:hidden;}
   50%{ transform:translate(0,7px); }
 }
 @media (max-width:640px){
-  .gate-scroll-hint{left:16px; bottom:16px;}
+  /* 手機版 LOGO 撐滿整個寬度，提示放在 LOGO 上方，不要疊在字上 */
+  .gate-scroll-hint{left:16px; bottom:calc((100vw - 24px) * 0.17 + 34px);}
 }
 
 /* 第一屏捲完之後，直接淡出淡入一張張滿版的完稿大圖（不會先變藍色），
@@ -374,10 +381,15 @@ body.is-gate{overflow-x:hidden;}
 .gate-scene-photos{position:relative;}
 .gate-photo-layer{
   position:absolute; inset:0;
+  background-image:var(--img-d);
   background-size:cover; background-position:center;
   opacity:0; will-change:opacity;
   display:flex; align-items:flex-end; justify-content:center;
   padding-bottom:4vh;
+}
+/* 直的畫面（手機）：有另外上傳手機版直圖就用直圖，沒有的話照舊用電腦版的圖裁切 */
+@media (max-aspect-ratio:1/1){
+  .gate-photo-layer{ background-image:var(--img-m, var(--img-d)); }
 }
 .gate-photo-layer.is-placeholder{
   background-image:linear-gradient(155deg, var(--ph-a), var(--ph-b));
@@ -718,6 +730,7 @@ body.is-gate{overflow-x:hidden;}
   opacity:0; transition:opacity .6s ease var(--d, 0ms);
 }
 .rg-stage.is-ready .rg-node{ opacity:1; }
+.rg-node::before{ content:''; position:absolute; inset:-8px; border-radius:50%; } /* 隱形的放大點擊範圍：手機上頭像很小，手指比較好點到 */
 .rg-avatar{
   width:100%; height:100%; border-radius:50%; overflow:hidden; display:block; position:relative;
   background:var(--panel); box-shadow:0 0 0 2px var(--bg);
@@ -1013,7 +1026,12 @@ body.is-gate{overflow-x:hidden;}
 .section-head h2.brand-title{color:var(--brand);}
 .section-count{font-family:var(--font-mono); font-size:12px; color:var(--ink-soft);}
 .section-head-right{display:flex; align-items:center; gap:16px;}
+@media (max-width:640px){
+  /* 手機版按鈕多的時候整顆換到下一行，不要讓按鈕裡的字被擠成兩行 */
+  .section-head-right{flex-wrap:wrap; gap:10px 12px;}
+}
 .pill-link{
+  white-space:nowrap;
   font-family:var(--font-mono); font-size:11.5px; letter-spacing:.03em;
   color:var(--ink-soft); border:1px solid var(--line); border-radius:999px;
   padding:6px 14px; transition:color .2s ease, border-color .2s ease;
@@ -1154,7 +1172,7 @@ body.is-gate{overflow-x:hidden;}
 .tl-char-avatar .avatar-fill{ width:100%; height:100%; display:flex; align-items:center; justify-content:center; color:#fff; font-family:var(--font-disp); font-size:13px; }
 .tl-char:hover .tl-char-avatar{ transform:scale(1.12); border-color:var(--brand); }
 .tl-char-name{
-  font-size:9px; color:var(--ink-soft); text-align:center; max-width:44px;
+  font-size:10px; color:var(--ink-soft); text-align:center; max-width:56px;
   overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
 }
 .tl-char.is-external{ cursor:default; }
@@ -1167,6 +1185,7 @@ body.is-gate{overflow-x:hidden;}
   }
   .tl-item.tl-left .tl-dot, .tl-item.tl-right .tl-dot{ left:9px; right:auto; }
   .tl-item.tl-left .tl-card, .tl-item.tl-right .tl-card{ margin-left:0; margin-right:0; max-width:none; }
+  .tl-card{ display:block; } /* 手機版每張卡片都撐滿同樣寬度，排起來比較整齊 */
 }
 
 /* ---------------- 角色頁面：這個角色的關係（只顯示自己填過的對象） ---------------- */
@@ -1239,6 +1258,20 @@ body.is-gate{overflow-x:hidden;}
   .pf-rel-node{width:76px; gap:4px;}
   .pf-rel-name{font-size:10px; max-width:76px;}
   .pf-rel-edge-label{font-size:9px; padding:2px 7px;}
+  .pf-rel-stage.has-list{ display:none; }
+}
+.pf-rel-list{ display:none; }
+@media (max-width:640px){
+  .pf-rel-list{ display:flex; flex-direction:column; margin-top:8px; }
+  .pf-rel-row{
+    display:grid; grid-template-columns:40px 1fr auto; align-items:center; gap:12px;
+    padding:10px 2px; border-bottom:1px solid var(--line); text-decoration:none;
+  }
+  .pf-rel-row .pf-rel-avatar{ width:40px; height:40px; border-width:1.5px; }
+  .pf-rel-row.is-external .pf-rel-avatar{ border-style:dashed; border-color:var(--ink-soft); background:transparent; }
+  .pf-rel-row-name{ font-family:var(--font-cjk); font-size:14px; color:var(--ink); min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .pf-rel-row.is-external .pf-rel-row-name{ color:var(--ink-soft); }
+  .pf-rel-row-label{ font-family:var(--font-mono); font-size:11px; color:var(--brand); text-align:right; max-width:42vw; }
 }
 
 /* 角色列表：橫向重疊排列的弧形卡片牆（電腦滾輪橫向瀏覽，手機直接上下滑）。
@@ -2221,7 +2254,7 @@ window.addEventListener('hashchange', ()=>{
 });
 window.addEventListener('DOMContentLoaded', ()=>{
   document.getElementById('foot-time').textContent = 'REV. ' + new Date().toISOString().slice(0,10);
-  Promise.all([loadWorldMeta(), loadImageManifest()]).then(()=>loadCharacters()).then(populateIndexDropdown);
+  Promise.all([loadWorldMeta(), loadImageManifest(), loadGateSlides()]).then(()=>loadCharacters()).then(populateIndexDropdown);
   runIntroSplash();
   initIndexNav();
   initNavBurger();
@@ -2425,6 +2458,8 @@ function setCrumb(parts, opts){
     return `<span class="seg" ${p.hash?`onclick="location.hash='${p.hash}'"`:''} style="${isLast?'color:var(--ink)':''}">${p.label}</span>` + (isLast?'':'<span class="sep">/</span>');
   }).join('');
   el.scrollLeft = el.scrollWidth; /* 手機版麵包屑可以左右滑，預設停在最右邊顯示目前頁面 */
+  el.classList.toggle('is-scrolled', el.scrollLeft > 0);
+  if(!el.dataset.fadeBound){ el.dataset.fadeBound = '1'; el.addEventListener('scroll', ()=>el.classList.toggle('is-scrolled', el.scrollLeft > 0), {passive:true}); }
 
   /* 上一頁按鈕：除了首頁，其他頁面都會顯示，回到麵包屑往前一個有連結的層級 */
   const backBtn = document.getElementById('back-btn');
@@ -2507,19 +2542,28 @@ function route(){
 /* ---------------- GATE (首頁入口) ---------------- */
 /* ============================================================
    首頁入口往下捲動後、滿版淡出淡入的完稿大圖。
-   把你要秀出來的圖片路徑填進這個陣列就會換成真正的圖片
-   （路徑寫法跟角色圖片一樣，例如先把圖傳到 gate-art 資料夾，
-   這裡就填 './gate-art/01.jpg'）。陣列留空的話會先顯示彩色漸層的
-   佔位畫面，方便你確認捲動效果，不影響其他功能。
-   每次重新整理頁面，圖片出現的順序都會重新隨機排列一次。 */
-const GATE_SHOWCASE = [
-  './gate-art/01.jpg',
-  './gate-art/02.jpg',
-  './gate-art/03.jpg',
-  './gate-art/04.jpg',
-  './gate-art/05.jpg',
-  './gate-art/06.jpg',
+   圖片清單放在 gate.json（後台「首頁 Gate」可以新增／換圖），每張可以另外
+   上傳一張手機版的直圖，手機上就會用直圖，不會被裁掉一大半。
+   下面這份只是 gate.json 讀取失敗時的備援。清單是空的話會先顯示彩色漸層的
+   佔位畫面。每次重新整理頁面，圖片出現的順序都會重新隨機排列一次。 */
+let GATE_SHOWCASE = [
+  { image:'./gate-art/01.jpg' },
+  { image:'./gate-art/02.jpg' },
+  { image:'./gate-art/03.jpg' },
+  { image:'./gate-art/04.jpg' },
+  { image:'./gate-art/05.jpg' },
+  { image:'./gate-art/06.jpg' },
 ];
+async function loadGateSlides(){
+  try{
+    const res = await fetch('./gate.json', {cache:'no-cache'});
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    const data = await res.json();
+    GATE_SHOWCASE = (data.slides || []).filter(s=>s && s.image);
+  }catch(err){
+    console.warn('無法讀取 gate.json，改用內建的首頁圖片。', err);
+  }
+}
 
 function buildGatePhotos(){
   const useReal = GATE_SHOWCASE.length > 0;
@@ -2532,7 +2576,9 @@ function buildGatePhotos(){
   let html = '';
   order.forEach(srcIdx=>{
     if(useReal){
-      html += `<div class="gate-photo-layer" style="background-image:url('${largeSrc(GATE_SHOWCASE[srcIdx])}');"></div>`;
+      const s = GATE_SHOWCASE[srcIdx];
+      const mobile = s.mobileImage ? ` --img-m:url('${largeSrc(s.mobileImage)}');` : '';
+      html += `<div class="gate-photo-layer" style="--img-d:url('${largeSrc(s.image)}');${mobile}"></div>`;
     } else {
       const hue = (srcIdx*63) % 360;
       html += `<div class="gate-photo-layer is-placeholder" style="--ph-a:hsl(${hue},70%,55%); --ph-b:hsl(${(hue+40)%360},70%,36%);">
@@ -2964,7 +3010,7 @@ function renderTimeline(world){
       <div class="tl-empty">
         <div class="tl-empty-track"><div class="tl-empty-dot"></div></div>
         <div class="tl-empty-text">時間軸還是空的</div>
-        <div class="tl-empty-hint">到後台「世界觀 Worlds → 世界觀列表 → 時間軸」新增，填時間標籤、標題、說明，還可以選填相關角色。</div>
+        <div class="tl-empty-hint">到後台「世界觀 Worlds → 世界觀介紹 → 這個世界觀 → 時間軸 Timeline」新增事件，填時間、標題、說明，還可以選填相關角色。</div>
       </div>
     </div>`;
     return;
@@ -2972,7 +3018,8 @@ function renderTimeline(world){
 
   const itemsHtml = events.map((ev,i)=>{
     const charsHtml = (ev.characters||[]).filter(Boolean).map(ref=>{
-      const match = CHARACTERS.find(c=>c.id===ref);
+      /* 填角色 ID 或名字都可以（名字忽略空白和「·」，跟關係圖的比對方式一樣） */
+      const match = CHARACTERS.find(c=>c.id===ref) || CHARACTERS.find(c=>normName(c.codename)===normName(ref));
       const ch = match || { codename: ref, avatarImg: null };
       const external = !match;
       const tag = external ? 'div' : 'a';
@@ -2981,7 +3028,7 @@ function renderTimeline(world){
       return `
       <${tag} class="tl-char${external?' is-external':''}"${hrefAttr}>
         <div class="tl-char-avatar">${avatarInner}</div>
-        <div class="tl-char-name">${ch.codename}</div>
+        <div class="tl-char-name" title="${ch.codename}">${shortName(ch.codename)}</div>
       </${tag}>`;
     }).join('');
 
@@ -3975,15 +4022,28 @@ function buildCharRelations(ch){
     </${tag}>`;
   }).join('');
 
+  /* 手機版關係人多（超過 5 個）的時候，圓形圖會擠成一團、字也太小，
+     改用一行一個人的清單（電腦版照舊顯示圓形圖） */
+  const listHtml = links.map(l=>{
+    const tag = l.external ? 'div' : 'a';
+    const hrefAttr = l.external ? '' : ` href="#/char/${l.target.id}"`;
+    return `<${tag} class="pf-rel-row${l.external ? ' is-external' : ''}"${hrefAttr}>
+      <span class="pf-rel-avatar">${l.external ? '' : avatarBlock(l.target)}</span>
+      <span class="pf-rel-row-name">${l.target.codename}</span>
+      <span class="pf-rel-row-label">${l.label || ''}</span>
+    </${tag}>`;
+  }).join('');
+
   return `
   <div class="pf-reveal">
     <div class="section-head"><h2>Relationships</h2><div class="section-count">${n} LINKED</div></div>
-    <div class="pf-rel-stage ${sizeClass}">
+    <div class="pf-rel-stage ${sizeClass}${n > 5 ? ' has-list' : ''}">
       <svg class="pf-rel-lines" viewBox="0 0 100 100" preserveAspectRatio="none">${linesSvg}</svg>
       ${labelsHtml}
       <div class="pf-rel-hub">${avatarBlock(ch)}</div>
       ${nodesHtml}
     </div>
+    ${n > 5 ? `<div class="pf-rel-list">${listHtml}</div>` : ''}
   </div>`;
 }
 
