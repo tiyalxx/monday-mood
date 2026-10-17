@@ -1172,7 +1172,7 @@ body.is-gate{overflow-x:hidden;}
 .tl-char-avatar .avatar-fill{ width:100%; height:100%; display:flex; align-items:center; justify-content:center; color:#fff; font-family:var(--font-disp); font-size:13px; }
 .tl-char:hover .tl-char-avatar{ transform:scale(1.12); border-color:var(--brand); }
 .tl-char-name{
-  font-size:9px; color:var(--ink-soft); text-align:center; max-width:44px;
+  font-size:10px; color:var(--ink-soft); text-align:center; max-width:56px;
   overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
 }
 .tl-char.is-external{ cursor:default; }
@@ -1185,6 +1185,7 @@ body.is-gate{overflow-x:hidden;}
   }
   .tl-item.tl-left .tl-dot, .tl-item.tl-right .tl-dot{ left:9px; right:auto; }
   .tl-item.tl-left .tl-card, .tl-item.tl-right .tl-card{ margin-left:0; margin-right:0; max-width:none; }
+  .tl-card{ display:block; } /* 手機版每張卡片都撐滿同樣寬度，排起來比較整齊 */
 }
 
 /* ---------------- 角色頁面：這個角色的關係（只顯示自己填過的對象） ---------------- */
@@ -3009,7 +3010,7 @@ function renderTimeline(world){
       <div class="tl-empty">
         <div class="tl-empty-track"><div class="tl-empty-dot"></div></div>
         <div class="tl-empty-text">時間軸還是空的</div>
-        <div class="tl-empty-hint">到後台「世界觀 Worlds → 世界觀列表 → 時間軸」新增，填時間標籤、標題、說明，還可以選填相關角色。</div>
+        <div class="tl-empty-hint">到後台「世界觀 Worlds → 世界觀介紹 → 這個世界觀 → 時間軸 Timeline」新增事件，填時間、標題、說明，還可以選填相關角色。</div>
       </div>
     </div>`;
     return;
@@ -3017,7 +3018,8 @@ function renderTimeline(world){
 
   const itemsHtml = events.map((ev,i)=>{
     const charsHtml = (ev.characters||[]).filter(Boolean).map(ref=>{
-      const match = CHARACTERS.find(c=>c.id===ref);
+      /* 填角色 ID 或名字都可以（名字忽略空白和「·」，跟關係圖的比對方式一樣） */
+      const match = CHARACTERS.find(c=>c.id===ref) || CHARACTERS.find(c=>normName(c.codename)===normName(ref));
       const ch = match || { codename: ref, avatarImg: null };
       const external = !match;
       const tag = external ? 'div' : 'a';
@@ -3026,7 +3028,7 @@ function renderTimeline(world){
       return `
       <${tag} class="tl-char${external?' is-external':''}"${hrefAttr}>
         <div class="tl-char-avatar">${avatarInner}</div>
-        <div class="tl-char-name">${ch.codename}</div>
+        <div class="tl-char-name" title="${ch.codename}">${shortName(ch.codename)}</div>
       </${tag}>`;
     }).join('');
 
