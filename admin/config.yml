@@ -91,10 +91,12 @@ collections:
             name: "slides"
             widget: "list"
             label_singular: "大圖"
-            summary: "{{fields.image}}{{fields.mobileImage | ternary('　＋手機直圖', '')}}"
+            summary: "{{fields.caption}}　{{fields.image}}{{fields.mobileImage | ternary('　＋手機直圖', '')}}"
             fields:
               - {label: "電腦版 Image（橫圖）", name: "image", widget: "image", hint: "直接上傳原圖就好，網站部署時會自動壓縮。"}
               - {label: "手機版 Mobile Image（直圖，選填）", name: "mobileImage", widget: "image", required: false, hint: "手機（直的畫面）會改用這張。建議 9:16 左右的直圖，例如 1080×1920；留空的話手機上會把電腦版的橫圖裁切顯示。"}
+              - {label: "說明 Caption（選填）", name: "caption", widget: "string", required: false, hint: "捲到這張圖時左下角會淡入這行小字，例如作品名稱或「拉涅里與克里斯蒂亞諾」。留空就只顯示頁碼"}
+              - {label: "連結 Link（選填）", name: "link", widget: "string", required: false, hint: "填角色 ID（例如 coop-mafia-02）或角色名字，說明文字就能點進那個角色頁"}
 
   - name: "original"
     label: "企劃 Original"

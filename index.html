@@ -371,7 +371,6 @@ body.is-gate{overflow-x:hidden;}
 /* 提醒訪客這頁可以捲動的小提示，固定在左下角（避開底部的 logo 圖案），
    一開始滾動就淡出，跟右下角的常駐 ENTER 按鈕左右呼應 */
 .gate-scroll-hint{
-  position:fixed; left:24px; bottom:26px; z-index:8;
   display:flex; flex-direction:column; align-items:center; gap:4px;
   font-family:var(--font-mono); font-size:10.5px; letter-spacing:.14em; color:var(--ink-faint);
   animation:gateHintBob 1.8s ease-in-out infinite;
@@ -383,9 +382,23 @@ body.is-gate{overflow-x:hidden;}
   0%,100%{ transform:translate(0,0); }
   50%{ transform:translate(0,7px); }
 }
+/* 第一屏的雜誌式小資訊：左上角刊頭、LOGO 正上方一排（角色數／捲動提示／今天日期） */
+.gate-corner-tl{
+  position:absolute; top:32px; left:clamp(20px,4vw,56px); z-index:2;
+  font-family:var(--font-mono); font-size:10.5px; letter-spacing:.18em; color:var(--ink-soft);
+}
+.gate-corner-tl b{ font-weight:400; color:var(--brand); }
+.gate-meta{
+  position:relative; z-index:2; width:90%; margin:0 auto 10px;
+  display:flex; justify-content:space-between; align-items:flex-end;
+  font-family:var(--font-mono); font-size:10.5px; letter-spacing:.16em; color:var(--ink-soft);
+}
+.gate-meta > span:first-child, .gate-meta > span:last-child{ flex:1; }
+.gate-meta > span:last-child{ text-align:right; }
+.gate-meta b{ font-weight:400; color:var(--ink); }
 @media (max-width:640px){
-  /* 手機版 LOGO 撐滿整個寬度，提示放在 LOGO 上方，不要疊在字上 */
-  .gate-scroll-hint{left:16px; bottom:calc((100vw - 24px) * 0.17 + 34px);}
+  .gate-corner-tl{ top:30px; left:16px; font-size:9.5px; letter-spacing:.14em; }
+  .gate-meta{ width:auto; margin:0 12px 8px; font-size:9px; letter-spacing:.1em; }
 }
 
 /* 第一屏捲完之後，直接淡出淡入一張張滿版的完稿大圖（不會先變藍色），
@@ -404,6 +417,36 @@ body.is-gate{overflow-x:hidden;}
 /* 直的畫面（手機）：有另外上傳手機版直圖就用直圖，沒有的話照舊用電腦版的圖裁切 */
 @media (max-aspect-ratio:1/1){
   .gate-photo-layer{ background-image:var(--img-m, var(--img-d)); }
+}
+.gate-photo-layer{ will-change:opacity, transform; }
+/* 大圖的說明＋頁碼：固定在畫面上，跟著目前看到的那張圖切換（不跟著捲動） */
+#gate-photo-ui{
+  position:fixed; inset:0; z-index:7; pointer-events:none;
+  opacity:0; transition:opacity .4s ease;
+}
+#gate-photo-ui.show{ opacity:1; }
+.gate-cap{
+  position:absolute; left:clamp(20px,4vw,56px); bottom:clamp(22px,5vh,48px); max-width:min(46vw, 420px);
+  color:#fff; text-shadow:0 1px 12px rgba(0,0,0,.45); text-decoration:none; pointer-events:auto;
+  transition:opacity .35s ease, transform .35s ease;
+}
+.gate-cap.swap{ opacity:0; transform:translateY(6px); }
+.gate-cap-no{ display:block; font-family:var(--font-mono); font-size:10.5px; letter-spacing:.2em; opacity:.8; margin-bottom:6px; }
+.gate-cap-text{ font-family:var(--font-cjk); font-size:15px; line-height:1.5; }
+a.gate-cap .gate-cap-text::after{ content:' →'; font-family:var(--font-mono); opacity:.75; }
+a.gate-cap:hover .gate-cap-text{ text-decoration:underline; text-underline-offset:4px; }
+.gate-count{
+  position:absolute; right:clamp(20px,4vw,56px); top:50%; transform:translateY(-50%);
+  display:flex; flex-direction:column; align-items:center; gap:10px;
+  font-family:var(--font-mono); font-size:10.5px; letter-spacing:.12em; color:#fff; text-shadow:0 1px 10px rgba(0,0,0,.4);
+}
+.gate-count i{ display:block; width:1px; height:56px; background:rgba(255,255,255,.35); position:relative; overflow:hidden; }
+.gate-count i::after{ content:''; position:absolute; left:0; right:0; top:0; height:var(--fill, 0%); background:#fff; transition:height .3s ease; }
+@media (max-width:640px){
+  .gate-cap{ max-width:62vw; bottom:calc(16% + 70px); }
+  .gate-cap-text{ font-size:13.5px; }
+  .gate-count{ right:14px; }
+  .gate-count i{ height:40px; }
 }
 .gate-photo-layer.is-placeholder{
   background-image:linear-gradient(155deg, var(--ph-a), var(--ph-b));
@@ -470,9 +513,19 @@ body.is-gate{overflow-x:hidden;}
   background:transparent; border:1px solid var(--ink);
   border-radius:999px;
   color:var(--ink); padding:14px 32px; font-family:var(--font-mono); font-size:13px; letter-spacing:.08em;
-  transition:background .3s ease, border-color .3s ease, color .3s ease;
+  position:relative; overflow:hidden; isolation:isolate;
+  transition:color .35s ease .05s;
 }
-.gate-enter:hover{background:var(--ink); color:#fff; border-color:var(--ink);}
+/* 滑過去：底色由左往右刷滿（跟換頁的掃色轉場同一種手法），箭頭往右滑一下 */
+.gate-enter::before{
+  content:''; position:absolute; inset:0; z-index:-1; background:var(--ink);
+  transform:scaleX(0); transform-origin:left center;
+  transition:transform .45s cubic-bezier(.76,0,.24,1);
+}
+.gate-enter span{ display:inline-block; transition:transform .45s cubic-bezier(.76,0,.24,1); }
+.gate-enter:hover{ color:#fff; }
+.gate-enter:hover::before{ transform:scaleX(1); }
+.gate-enter:hover span{ transform:translateX(5px); }
 
 .brand{
   display:flex; align-items:center; gap:10px;
@@ -2705,7 +2758,7 @@ function buildGatePhotos(){
     if(useReal){
       const s = GATE_SHOWCASE[srcIdx];
       const mobile = s.mobileImage ? ` --img-m:url('${largeSrc(s.mobileImage)}');` : '';
-      html += `<div class="gate-photo-layer" style="--img-d:url('${largeSrc(s.image)}');${mobile}"></div>`;
+      html += `<div class="gate-photo-layer" data-i="${srcIdx}" style="--img-d:url('${largeSrc(s.image)}');${mobile}"></div>`;
     } else {
       const hue = (srcIdx*63) % 360;
       html += `<div class="gate-photo-layer is-placeholder" style="--ph-a:hsl(${hue},70%,55%); --ph-b:hsl(${(hue+40)%360},70%,36%);">
@@ -2714,6 +2767,27 @@ function buildGatePhotos(){
     }
   });
   return { html, count:n };
+}
+
+/* 第一屏小資訊：角色數、有角色的世界觀數（從資料自動算）、今天的日期 */
+function gateStatsText(){
+  const worlds = new Set(CHARACTERS.filter(c=>c.category==='coop' && c.world).map(c=>c.world)).size;
+  return `<b>${CHARACTERS.length}</b> CHARACTERS · <b>${worlds}</b> WORLDS`;
+}
+function gateDateText(){
+  const d = new Date();
+  if(d.getDay() === 1) return `<b>IT'S MONDAY.</b>`; /* 呼應網站名字 */
+  const day = ['SUN','MON','TUE','WED','THU','FRI','SAT'][d.getDay()];
+  const mon = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'][d.getMonth()];
+  return `${day} <b>${String(d.getDate()).padStart(2,'0')}</b> ${mon}`;
+}
+/* 大圖說明的連結：填角色 ID 或角色名字會連到那個角色頁；填 # 或 http 開頭就照填的網址 */
+function gateCapHref(link){
+  const v = String(link||'').trim();
+  if(!v) return '';
+  if(/^(#|https?:)/.test(v)) return v;
+  const ch = CHARACTERS.find(c=>c.id===v) || CHARACTERS.find(c=>normName(c.codename)===normName(v));
+  return ch ? '#/char/' + ch.id : '';
 }
 
 function renderGate(){
@@ -2732,8 +2806,14 @@ function renderGate(){
         </video>
         <div class="gate-fallback" id="gate-fallback"></div>
       </div>
+      <div class="gate-corner-tl">CHARACTER ARCHIVE <b>—</b> VOL.01</div>
       <div class="gate-center">
         <button class="gate-enter" onclick="location.hash='#/index'">ENTER<span aria-hidden="true">→</span></button>
+      </div>
+      <div class="gate-meta">
+        <span>${gateStatsText()}</span>
+        <div class="gate-scroll-hint" id="gate-scroll-hint"><span>SCROLL</span><span aria-hidden="true">↓</span></div>
+        <span>${gateDateText()}</span>
       </div>
       <div class="gate-bottom-logo">
         <svg class="logo-mark" viewBox="0 0 362.84 61.52" xmlns="http://www.w3.org/2000/svg">
@@ -2743,7 +2823,11 @@ function renderGate(){
 <path d="M174.09,15.23h-29.18c-.36,0-.66.3-.66.66v6.86h-7.69c-.36,0-.66.3-.66.66v11.42c0,.36.3.66.66.66h5.58v5.01c0,.36.3.66.66.66h22.28v8.12h-28.52c-.36,0-.66.3-.66.66v7.59c0,.36.3.66.66.66h29.18c.36,0,.66-.3.66-.66v-6.93h7.69c.36,0,.66-.3.66-.66v-11.35c0-.36-.3-.66-.66-.66h-7.69v-5.01c0-.36-.3-.66-.66-.66h-20.17v-8.18h28.52c.36,0,.66-.3.66-.66v-7.52c0-.36-.3-.66-.66-.66Z"/>
 </svg>
       </div>
-      <div class="gate-scroll-hint" id="gate-scroll-hint"><span>SCROLL</span><span aria-hidden="true">↓</span></div>
+    </div>
+
+    <div id="gate-photo-ui">
+      <a class="gate-cap" id="gate-cap"><span class="gate-cap-no"></span><span class="gate-cap-text"></span></a>
+      <div class="gate-count"><span id="gate-count-cur">01</span><i id="gate-count-bar"></i><span>${String(photos.count).padStart(2,'0')}</span></div>
     </div>
 
     <div class="gate-scene gate-scene-photos" id="gate-scene-photos" style="height:${photos.count*100+30}vh;"></div>
@@ -2807,7 +2891,32 @@ function updateGateScroll(){
         else op = 1;
       }
       layer.style.opacity = op.toFixed(3);
+      /* 淡入的過程中，圖從 106% 慢慢縮回 100%，像鏡頭緩慢推近 */
+      const s = raw < inEnd ? 1 + 0.06 * (1 - op) : 1;
+      layer.style.transform = `scale(${s.toFixed(4)})`;
     });
+    /* 說明＋頁碼：顯示目前最清楚的那一張 */
+    const ui = document.getElementById('gate-photo-ui');
+    if(ui){
+      const cur = Math.max(0, Math.min(n - 1, Math.floor(raw))); /* 兩張交叉淡化到一半時切換 */
+      ui.classList.toggle('show', raw > -0.35);
+      document.getElementById('gate-count-cur').textContent = String(cur + 1).padStart(2, '0');
+      document.getElementById('gate-count-bar').style.setProperty('--fill', ((cur + 1) / n * 100).toFixed(1) + '%');
+      const cap = document.getElementById('gate-cap');
+      if(cap.dataset.cur !== String(cur)){
+        cap.dataset.cur = String(cur);
+        const slide = GATE_SHOWCASE[+layers[cur].dataset.i] || {};
+        cap.classList.add('swap');
+        setTimeout(()=>{
+          const href = gateCapHref(slide.link);
+          cap.querySelector('.gate-cap-no').textContent = 'NO.' + String(cur + 1).padStart(2, '0');
+          cap.querySelector('.gate-cap-text').textContent = slide.caption || '';
+          cap.style.display = slide.caption ? '' : 'none';
+          if(href) cap.setAttribute('href', href); else cap.removeAttribute('href');
+          cap.classList.remove('swap');
+        }, 180);
+      }
+    }
   }
 }
 let gateScrollTicking = false;
