@@ -1445,6 +1445,76 @@ body.is-gate{overflow-x:hidden;}
 }
 .cp-link:hover{ text-decoration-style:solid; }
 .cp-link-icon{ font-size:.85em; margin-left:6px; }
+/* ================= 全站搜尋 ================= */
+.search-link{ display:inline-flex; align-items:center; gap:6px; background:none; border-top:0; border-bottom:0; border-left:0; cursor:pointer; }
+.search-link kbd{
+  font-family:var(--font-mono); font-size:10px; line-height:1; color:var(--ink-faint);
+  border:1px solid var(--line); border-radius:4px; padding:2px 5px; margin-left:2px;
+}
+.search-ico{ width:14px; height:14px; display:block; flex:none; }
+.search-btn{ display:none; }
+@media (max-width:860px){
+  .search-link{ display:none !important; } /* 手機版改用右上角的放大鏡，不放在選單裡 */
+  .search-btn{
+    display:flex; align-items:center; justify-content:center; order:1; margin-left:auto;
+    width:40px; height:40px; background:none; border:0; color:var(--ink-soft);
+  }
+  .search-btn .search-ico{ width:19px; height:19px; }
+  .nav-burger{ margin-left:2px !important; }
+}
+#search-modal{
+  position:fixed; inset:0; z-index:220;
+  background:rgba(20,18,20,.45); backdrop-filter:blur(4px); -webkit-backdrop-filter:blur(4px);
+  display:none; justify-content:center; align-items:flex-start; padding:12vh 20px 20px;
+}
+#search-modal.open{ display:flex; animation:fadeIn .2s ease both; }
+body.search-open{ overflow:hidden; }
+.search-card{
+  width:min(560px, 100%); max-height:76vh; display:flex; flex-direction:column;
+  background:var(--bg); color:var(--ink); border:1px solid var(--line); border-radius:calc(var(--radius) + 4px);
+  box-shadow:0 30px 80px rgba(0,0,0,.28); overflow:hidden;
+  animation:cpCardIn .3s cubic-bezier(.2,.8,.2,1) both;
+}
+.search-field{
+  display:flex; align-items:center; gap:12px; padding:16px 18px;
+  border-bottom:1px solid var(--line); color:var(--ink-soft);
+}
+.search-field .search-ico{ width:18px; height:18px; }
+#search-input{
+  flex:1; min-width:0; border:0; outline:0; background:none; color:var(--ink);
+  font-family:var(--font-cjk); font-size:16px; /* 16px 以上 iPhone 才不會自動放大畫面 */
+}
+#search-input::placeholder{ color:var(--ink-faint); }
+#search-input::-webkit-search-cancel-button{ display:none; }
+.search-esc{
+  font-family:var(--font-mono); font-size:10px; letter-spacing:.06em; color:var(--ink-faint);
+  border:1px solid var(--line); border-radius:4px; padding:3px 6px; background:none; cursor:pointer;
+}
+.search-results{ overflow-y:auto; padding:6px; }
+.search-item{
+  display:grid; grid-template-columns:40px 1fr auto; align-items:center; gap:12px;
+  padding:8px 10px; border-radius:var(--radius-sm); text-decoration:none; color:var(--ink);
+}
+.search-item.is-active{ background:var(--panel); }
+.search-av{ width:40px; height:40px; border-radius:50%; overflow:hidden; background:var(--panel); }
+.search-av img{ width:100%; height:100%; object-fit:cover; display:block; }
+.search-av .avatar-fill{ width:100%; height:100%; display:flex; align-items:center; justify-content:center; color:#fff; font-size:14px; }
+.search-name{ font-family:var(--font-cjk); font-size:14.5px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.search-name mark{ background:none; color:var(--brand); font-weight:600; }
+.search-sub{ font-size:11.5px; color:var(--ink-soft); margin-top:2px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.search-tag{
+  font-family:var(--font-mono); font-size:10px; letter-spacing:.08em; color:var(--tag, var(--ink-soft));
+  border:1px solid currentColor; border-radius:999px; padding:2px 8px; white-space:nowrap; opacity:.85;
+}
+.search-empty{ padding:26px 16px; text-align:center; font-size:13px; color:var(--ink-soft); line-height:1.8; }
+.search-empty small{ display:block; font-family:var(--font-mono); font-size:10.5px; color:var(--ink-faint); margin-top:6px; letter-spacing:.04em; }
+@media (max-width:640px){
+  #search-modal{ padding:10px; align-items:flex-start; }
+  .search-card{ max-height:calc(100svh - 20px); }
+  .search-esc{ font-size:0; padding:6px 8px; }
+  .search-esc::before{ content:'✕'; font-size:12px; }
+}
+
 #cp-modal{
   position:fixed; inset:0; z-index:210;
   background:rgba(20,18,20,.55); backdrop-filter:blur(4px); -webkit-backdrop-filter:blur(4px);
@@ -1961,9 +2031,11 @@ body.has-fullbody-bg footer{ border-top:none; }
           </div>
         </div>
       </div>
+      <button type="button" class="about-link search-link" onclick="openSearch()" aria-label="搜尋角色"><svg class="search-ico" viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.75" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M13 13l4.5 4.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>Search<kbd>/</kbd></button>
       <a href="#/random" class="about-link">🎲 Random</a>
       <a href="#/about" class="about-link">About</a>
     </div>
+    <button class="search-btn" type="button" onclick="openSearch()" aria-label="搜尋角色"><svg class="search-ico" viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.75" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M13 13l4.5 4.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button>
     <button class="nav-burger" id="nav-burger" type="button" aria-label="選單" aria-expanded="false">
       <span></span><span></span><span></span>
     </button>
@@ -1975,6 +2047,18 @@ body.has-fullbody-bg footer{ border-top:none; }
 
 <!-- 角色頁往下捲動時出現的「回到最頂」按鈕 -->
 <button id="to-top-btn" class="to-top-btn" type="button" aria-label="Back to top">↑</button>
+
+<!-- 全站搜尋：選單的 Search（手機版是右上角放大鏡）、或按鍵盤 / 打開 -->
+<div id="search-modal" role="dialog" aria-modal="true" aria-label="搜尋角色" onclick="if(event.target===this) closeSearch()">
+  <div class="search-card">
+    <div class="search-field">
+      <svg class="search-ico" viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.75" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M13 13l4.5 4.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+      <input id="search-input" type="search" placeholder="搜尋角色：名字、本名、所屬、身分…" autocomplete="off" spellcheck="false" enterkeyhint="go">
+      <button type="button" class="search-esc" onclick="closeSearch()" aria-label="關閉">ESC</button>
+    </div>
+    <div class="search-results" id="search-results"></div>
+  </div>
+</div>
 
 <!-- CP 介紹小視窗：角色頁點 CP 名字時打開（內容由 openCpModal() 填入） -->
 <div id="cp-modal" role="dialog" aria-modal="true" aria-labelledby="cp-modal-title" onclick="if(event.target===this) closeCpModal()">
@@ -3720,6 +3804,106 @@ function initWorldRelations(nodes, edges){
   if(touch) stage.addEventListener('click', (e)=>{ if(!e.target.closest('.rg-node')) focus(null); });
   requestAnimationFrame(()=>stage.classList.add('is-ready'));
 }
+
+/* ---------------- 全站搜尋 ----------------
+   選單的「Search」（手機版是右上角的放大鏡）或按鍵盤 / 打開。
+   名字、本名、所屬、身分、專長、CP、世界觀名稱都搜得到，空白和「·」不影響比對；
+   名字開頭符合的排最前面。上下鍵選擇、Enter 進入角色頁、Esc 關閉。 */
+const searchNorm = s => String(s||'').toLowerCase().replace(/[\s·・•‧･.\-_]/g, '');
+let searchHits = [], searchActive = 0;
+function charWorldLabel(ch){
+  if(ch.category === 'original') return 'PLURK';
+  return (WORLD_META[ch.world] && WORLD_META[ch.world].name) || String(ch.world||'').toUpperCase();
+}
+function searchCharacters(q){
+  const nq = searchNorm(q);
+  if(!nq) return [];
+  const scored = [];
+  CHARACTERS.forEach(ch=>{
+    const name = searchNorm(ch.codename), real = searchNorm(ch.realname);
+    let score = 0;
+    if(name.startsWith(nq)) score = 100;
+    else if(name.includes(nq)) score = 80;
+    else if(real.includes(nq)) score = 60;
+    else if([ch.affiliation, ch.role, ch.skill, ch.cp, charWorldLabel(ch)].some(v=>searchNorm(v).includes(nq))) score = 30;
+    if(score) scored.push({ ch, score });
+  });
+  return scored.sort((a,b)=>b.score - a.score || a.ch.codename.localeCompare(b.ch.codename, 'zh-Hant')).slice(0, 30).map(s=>s.ch);
+}
+const escHtml = s => String(s ?? '').replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+/* 把名字裡符合的那一段標成主題色（比對時忽略空白和「·」，所以逐字對回原本的名字） */
+function highlightName(name, q){
+  const nq = searchNorm(q); if(!nq) return escHtml(name);
+  const chars = [...name]; const map = [];
+  chars.forEach((c,i)=>{ if(searchNorm(c)) map.push(i); });
+  const flat = map.map(i=>searchNorm(chars[i])).join('');
+  const at = flat.indexOf(nq); if(at < 0) return escHtml(name);
+  const from = map[at], to = map[at + nq.length - 1];
+  return escHtml(chars.slice(0, from).join('')) + '<mark>' + escHtml(chars.slice(from, to + 1).join('')) + '</mark>' + escHtml(chars.slice(to + 1).join(''));
+}
+function renderSearchResults(){
+  const q = document.getElementById('search-input').value;
+  const box = document.getElementById('search-results');
+  searchHits = searchCharacters(q); searchActive = 0;
+  if(!q.trim()){
+    box.innerHTML = `<div class="search-empty">輸入角色名字、本名、所屬或身分<small>${CHARACTERS.length} CHARACTERS · ↑↓ 選擇 · ENTER 開啟</small></div>`;
+    return;
+  }
+  if(!searchHits.length){
+    box.innerHTML = `<div class="search-empty">找不到「${escHtml(q.trim())}」<small>試試看只打名字的一部分</small></div>`;
+    return;
+  }
+  box.innerHTML = searchHits.map((ch,i)=>{
+    const sub = [ch.role, ch.affiliation].filter(v=>v && v !== '—').join(' · ');
+    const color = ch.category === 'coop' ? (WORLD_COLORS[ch.world] || '') : '';
+    return `<a class="search-item${i===0?' is-active':''}" href="#/char/${ch.id}" data-i="${i}">
+      <span class="search-av">${avatarBlock(ch)}</span>
+      <span style="min-width:0"><div class="search-name">${highlightName(ch.codename, q)}</div>${sub ? `<div class="search-sub">${escHtml(sub)}</div>` : ''}</span>
+      <span class="search-tag"${color ? ` style="--tag:${color}"` : ''}>${escHtml(charWorldLabel(ch))}</span>
+    </a>`;
+  }).join('');
+}
+function setSearchActive(i){
+  const items = document.querySelectorAll('#search-results .search-item');
+  if(!items.length) return;
+  searchActive = (i + items.length) % items.length;
+  items.forEach((el,k)=>el.classList.toggle('is-active', k === searchActive));
+  items[searchActive].scrollIntoView({ block:'nearest' });
+}
+function openSearch(){
+  const modal = document.getElementById('search-modal');
+  if(modal.classList.contains('open')) return;
+  document.getElementById('nav-links')?.classList.remove('open');
+  modal.classList.add('open'); document.body.classList.add('search-open');
+  const input = document.getElementById('search-input');
+  input.value = ''; renderSearchResults();
+  setTimeout(()=>input.focus(), 30);
+}
+function closeSearch(){
+  document.getElementById('search-modal').classList.remove('open');
+  document.body.classList.remove('search-open');
+  document.getElementById('search-input').blur(); /* 不然游標還停在隱藏的搜尋框裡，下一次按 / 會被當成在打字 */
+}
+(function initSearch(){
+  const input = document.getElementById('search-input');
+  input.addEventListener('input', renderSearchResults);
+  input.addEventListener('keydown', e=>{
+    if(e.key === 'ArrowDown'){ e.preventDefault(); setSearchActive(searchActive + 1); }
+    else if(e.key === 'ArrowUp'){ e.preventDefault(); setSearchActive(searchActive - 1); }
+    else if(e.key === 'Enter'){ const ch = searchHits[searchActive]; if(ch){ e.preventDefault(); closeSearch(); location.hash = '#/char/' + ch.id; } }
+  });
+  document.getElementById('search-results').addEventListener('mousemove', e=>{
+    const it = e.target.closest('.search-item'); if(it && +it.dataset.i !== searchActive) setSearchActive(+it.dataset.i);
+  });
+  document.getElementById('search-results').addEventListener('click', e=>{ if(e.target.closest('.search-item')) closeSearch(); });
+  document.addEventListener('keydown', e=>{
+    const open = document.getElementById('search-modal').classList.contains('open');
+    if(open && e.key === 'Escape'){ closeSearch(); return; }
+    const typing = /^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement?.tagName) || document.activeElement?.isContentEditable;
+    if(!open && !typing && (e.key === '/' || ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k'))){ e.preventDefault(); openSearch(); }
+  });
+  window.addEventListener('hashchange', closeSearch);
+})();
 
 /* ---------------- PROFILE ---------------- */
 function bioParagraphs(text){
