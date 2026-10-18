@@ -701,6 +701,42 @@ a.gate-cap:hover .gate-cap-text{ text-decoration:underline; text-underline-offse
   box-shadow:0 10px 26px rgba(30,30,34,.24);
 }
 .to-top-btn.show{opacity:1; transform:translateY(0); pointer-events:auto;}
+/* 角色頁的浮動分享按鈕：在「回到頂端」上面，點了往上展開選單 */
+.share-fab{
+  position:fixed; right:24px; bottom:80px; z-index:61;
+  display:none; flex-direction:column; align-items:flex-end; gap:10px;
+}
+body.is-profile .share-fab{ display:flex; }
+.share-fab-btn{
+  width:44px; height:44px; border-radius:50%; cursor:pointer;
+  background:var(--bg); color:var(--ink); border:1px solid var(--line);
+  display:flex; align-items:center; justify-content:center;
+  box-shadow:0 10px 26px rgba(30,30,34,.18);
+  transition:border-color .2s ease, color .2s ease, transform .2s ease;
+}
+.share-fab-btn svg{ width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:1.6; }
+.share-fab-btn svg circle{ fill:currentColor; stroke:none; }
+.share-fab-btn:hover, .share-fab.open .share-fab-btn{ border-color:var(--brand); color:var(--brand); }
+.share-menu{
+  display:flex; flex-direction:column; min-width:170px; padding:6px;
+  background:var(--bg); border:1px solid var(--line); border-radius:var(--radius);
+  box-shadow:0 22px 48px rgba(0,0,0,.22);
+  opacity:0; transform:translateY(8px) scale(.98); transform-origin:bottom right; pointer-events:none;
+  transition:opacity .2s ease, transform .25s cubic-bezier(.2,.8,.2,1);
+}
+.share-fab.open .share-menu{ opacity:1; transform:none; pointer-events:auto; }
+.share-menu-label{ font-family:var(--font-mono); font-size:10px; letter-spacing:.16em; color:var(--ink-faint); padding:8px 12px 6px; }
+.share-menu a, .share-menu button{
+  display:block; width:100%; text-align:left; box-sizing:border-box;
+  font-family:var(--font-mono); font-size:12.5px; color:var(--ink); text-decoration:none;
+  background:none; border:0; border-radius:8px; padding:10px 12px; cursor:pointer;
+}
+.share-menu a:hover, .share-menu button:hover{ background:var(--panel); color:var(--brand); }
+.share-menu .is-done{ color:var(--brand); }
+@media (max-width:640px){
+  .share-fab{ right:16px; bottom:66px; }
+  .share-fab-btn{ width:40px; height:40px; }
+}
 .to-top-btn:hover{filter:brightness(1.1);}
 @media (max-width:640px){
   .to-top-btn{right:16px; bottom:16px; width:40px; height:40px; font-size:15px;}
@@ -1524,7 +1560,7 @@ a.gate-cap:hover .gate-cap-text{ text-decoration:underline; text-underline-offse
 .pf-rule{ flex:1; height:1px; background:var(--brand); opacity:.55; min-width:24px; }
 .pf-basic h1.pf-name{ margin:0 0 12px; line-height:1.05; font-family:var(--font-disp); }
 .pf-given{ display:block; font-size:clamp(40px,6.4vw,64px); font-weight:700; letter-spacing:.03em; }
-.pf-family{ display:block; margin-top:10px; font-size:clamp(15px,2vw,19px); font-weight:500; letter-spacing:.32em; color:var(--ink-soft); }
+.pf-family{ display:block; margin-top:10px; font-size:clamp(15px,2vw,19px); font-weight:500; letter-spacing:.32em; color:var(--ink); }
 .pf-basic .p-role{ font-size:14px; color:var(--ink-soft); margin-bottom:22px; letter-spacing:.06em; }
 .pf-basic .p-role span::before, .pf-basic .p-role span::after{ content:'—'; margin:0 .7em; color:var(--ink-faint); }
 @media (max-width:640px){
@@ -1671,9 +1707,6 @@ body.cp-modal-open{ overflow:hidden; }
   .cp-card::before{ bottom:0; border-bottom:none; border-radius:calc(var(--radius) + 2px) calc(var(--radius) + 2px) 0 0; }
   .cp-title{ font-size:18px; }
 }
-.pf-share{ display:flex; flex-wrap:wrap; justify-content:center; gap:8px; margin-bottom:26px; }
-.pf-share .pill-link{ background:none; cursor:pointer; }
-.pf-share .pill-link.is-done{ color:var(--brand); border-color:var(--brand); }
 .pf-basic .field-list{
   text-align:left; background:var(--panel); border-radius:var(--radius);
   padding:2px 20px; margin-bottom:24px;
@@ -2193,6 +2226,13 @@ body.has-fullbody-bg footer{ border-top:none; }
 
 <!-- 角色頁往下捲動時出現的「回到最頂」按鈕 -->
 <button id="to-top-btn" class="to-top-btn" type="button" aria-label="Back to top">↑</button>
+<!-- 角色頁右下角的分享按鈕：一直跟著畫面，點了展開分享選單（內容由 setShareFab() 依角色填入） -->
+<div id="share-fab" class="share-fab">
+  <div class="share-menu" id="share-menu" role="menu"></div>
+  <button type="button" class="share-fab-btn" id="share-fab-btn" aria-label="分享這個角色" aria-expanded="false" onclick="toggleShareMenu(event)">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="5" r="2.6"/><circle cx="6" cy="12" r="2.6"/><circle cx="18" cy="19" r="2.6"/><path d="M8.3 10.8l7.4-4.3M8.3 13.2l7.4 4.3"/></svg>
+  </button>
+</div>
 
 <!-- 全站搜尋：選單的 Search（手機版是右上角放大鏡）、或按鍵盤 / 打開 -->
 <div id="search-modal" role="dialog" aria-modal="true" aria-label="搜尋角色" onclick="if(event.target===this) closeSearch()">
@@ -4262,16 +4302,18 @@ function renderProfile(id){
       </a>
     </div>` : '';
 
+  /* 後台沒填（空白或只有「—」）的欄位整行不顯示，狀態一定會顯示 */
+  const filled = v => { const s = String(v ?? '').trim(); return s && s !== '—' && s !== '-'; };
   const fields = [
-    ['Real Name', ch.realname||'—'],
-    ['Affiliation', ch.affiliation||'—'],
-    ['Skill', ch.skill||'—'],
-    ['Height', ch.height||'—'],
-    ['Birthday', (ch.birthday||'—') + (isBirthdayToday(ch) ? ' <span class="bday-badge">🎂 今天生日！</span>' : '')],
-    ['Age', ch.age||'—'],
-    ['CP', cpFieldValue(ch)],
+    ['Real Name', ch.realname],
+    ['Affiliation', ch.affiliation],
+    ['Skill', ch.skill],
+    ['Height', ch.height],
+    ['Birthday', filled(ch.birthday) ? ch.birthday + (isBirthdayToday(ch) ? ' <span class="bday-badge">🎂 今天生日！</span>' : '') : ''],
+    ['Age', ch.age],
+    ['CP', filled(ch.cp) ? cpFieldValue(ch) : ''],
     ['Status', `${STATUS_LABEL[ch.status]||ch.status}`],
-  ].map(([k,v])=>`<div class="field"><div class="k">${k}</div><div class="v">${v}</div></div>`).join('');
+  ].filter(([k,v])=>filled(v)).map(([k,v])=>`<div class="field"><div class="k">${k}</div><div class="v">${v}</div></div>`).join('');
 
   /* 沒有填任何文章連結的角色，Articles 整個區塊（標題＋空狀態提示）都不顯示，
      不是顯示一個「No articles yet.」的空區塊——沒資料就乾脆不要佔頁面空間 */
@@ -4305,7 +4347,6 @@ function renderProfile(id){
       </div>
       <h1 class="pf-name">${(()=>{ const m = String(ch.codename).match(/^([^·・•‧･]+)([·・•‧･].*)?$/); return m && m[2] ? `<span class="pf-given">${m[1]}</span><span class="pf-family">${m[2]}</span>` : `<span class="pf-given">${ch.codename}</span>`; })()}</h1>
       <div class="p-role">${ch.role && ch.role !== '—' ? `<span>${ch.role}</span>` : ''}</div>
-      ${shareButtons(ch)}
       <div class="field-list">${fields}</div>
       ${ch.bio ? `<div class="pf-bio">${bioParagraphs(ch.bio)}</div>` : ''}
     </div>
@@ -4334,6 +4375,7 @@ function renderProfile(id){
 
   initProfileReveal();
   setupFullbodyBackground(ch);
+  setShareFab(ch);
   layoutGallery();
   initGalleryParallax();
 }
@@ -4436,18 +4478,39 @@ window.addEventListener('hashchange', ()=>{ if(document.getElementById('cp-modal
 function shareUrlFor(ch){
   return `${location.origin}/char/${encodeURIComponent(ch.id)}/`;
 }
-function shareButtons(ch){
+/* 角色頁右下角浮動分享按鈕的選單內容（換角色時重新填入） */
+function setShareFab(ch){
+  const menu = document.getElementById('share-menu');
+  if(!menu) return;
+  closeShareMenu();
   const url = shareUrlFor(ch);
   const title = `${ch.codename} — Monday's Mood`;
   const xHref = `https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(url)}`;
   /* Plurk 的「網址 (文字)」格式會變成一個有標題的連結 */
   const plurkHref = `https://www.plurk.com/?qualifier=shares&status=${encodeURIComponent(`${url} (${title})`)}`;
-  return `<div class="pf-share">
-    <button type="button" class="pill-link" onclick="copyShareLink(this, '${ch.id}')">🔗 複製分享連結</button>
-    <a class="pill-link" href="${xHref}" target="_blank" rel="noopener">分享到 X</a>
-    <a class="pill-link" href="${plurkHref}" target="_blank" rel="noopener">分享到 Plurk</a>
-  </div>`;
+  menu.innerHTML = `
+    <div class="share-menu-label">SHARE · ${ch.codename}</div>
+    <button type="button" role="menuitem" onclick="copyShareLink(this, '${ch.id}')">🔗 複製分享連結</button>
+    <a role="menuitem" href="${xHref}" target="_blank" rel="noopener">分享到 X</a>
+    <a role="menuitem" href="${plurkHref}" target="_blank" rel="noopener">分享到 Plurk</a>
+    ${navigator.share ? `<button type="button" role="menuitem" onclick="navigator.share({ title:${JSON.stringify(title).replace(/"/g,'&quot;')}, url:${JSON.stringify(url).replace(/"/g,'&quot;')} }).catch(()=>{})">📤 分享到其他 App…</button>` : ''}`;
 }
+function toggleShareMenu(e){
+  if(e) e.stopPropagation();
+  const fab = document.getElementById('share-fab');
+  const open = !fab.classList.contains('open');
+  fab.classList.toggle('open', open);
+  document.getElementById('share-fab-btn').setAttribute('aria-expanded', open ? 'true' : 'false');
+}
+function closeShareMenu(){
+  const fab = document.getElementById('share-fab');
+  if(!fab) return;
+  fab.classList.remove('open');
+  document.getElementById('share-fab-btn').setAttribute('aria-expanded', 'false');
+}
+document.addEventListener('click', e=>{ if(!e.target.closest('#share-fab')) closeShareMenu(); });
+document.addEventListener('keydown', e=>{ if(e.key === 'Escape') closeShareMenu(); });
+window.addEventListener('hashchange', closeShareMenu);
 async function copyShareLink(btn, id){
   const ch = CHARACTERS.find(c=>c.id===id);
   if(!ch) return;
