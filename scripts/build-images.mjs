@@ -30,6 +30,24 @@ const VARIANTS = {
   thumb: img => img.resize(600, 600, { fit: 'outside', withoutEnlargement: true }).webp({ quality: 80 }),
   large: img => img.resize(2400, 2400, { fit: 'inside', withoutEnlargement: true }).webp({ quality: 82 }),
 };
+/* 首頁滿版大圖（gate-art/ 和 gate.json 裡列的圖）另外多做一個高畫質版：
+   長邊最多 3600px、畫質 90，給高解析度螢幕（筆電、手機）滿版顯示時才不會糊 */
+const HERO_VARIANT = img => img.resize(3600, 3600, { fit: 'inside', withoutEnlargement: true }).webp({ quality: 90 });
+function heroImageSet(){
+  const set = new Set();
+  try{
+    const data = JSON.parse(fs.readFileSync(path.join(ROOT, 'gate.json'), 'utf8'));
+    for(const s of data.slides || []) for(const src of [s.image, s.mobileImage]){
+      if(!src) continue;
+      let rel = String(src).replace(/^\.?\//, '');
+      try{ rel = decodeURI(rel); }catch{}
+      set.add(rel);
+    }
+  }catch{}
+  return set;
+}
+const HERO_IMAGES = heroImageSet();
+const isHero = rel => rel.startsWith('gate-art/') || HERO_IMAGES.has(rel);
 
 /* 不需要發布到網站上的檔案／資料夾 */
 const SKIP_COPY = new Set(['.git', '.github', 'node_modules', 'dist', 'scripts', 'package.json', 'package-lock.json', 'netlify.toml', '.gitignore']);
@@ -49,7 +67,8 @@ function listImages(dir){
 async function processImage(rel){
   const buf = fs.readFileSync(path.join(ROOT, rel));
   const hash = createHash('sha1').update(buf).digest('hex');
-  for(const [name, apply] of Object.entries(VARIANTS)){
+  const variants = isHero(rel) ? { ...VARIANTS, hero: HERO_VARIANT } : VARIANTS;
+  for(const [name, apply] of Object.entries(variants)){
     const cached = path.join(CACHE, `${hash}-${name}-v${VERSION}.webp`);
     if(!fs.existsSync(cached)){
       /* rotate() 依照相機的 EXIF 方向資訊把圖轉正，不然手機拍的照片可能會躺著 */
@@ -98,7 +117,7 @@ async function main(){
   }));
 
   done.sort();
-  fs.writeFileSync(path.join(DIST, '_img', 'manifest.json'), JSON.stringify({ version:VERSION, images:done }));
+  fs.writeFileSync(path.join(DIST, '_img', 'manifest.json'), JSON.stringify({ version:VERSION, images:done, hero:done.filter(isHero) }));
 
   const sizeOf = dir => {
     let total = 0;

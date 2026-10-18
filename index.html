@@ -418,7 +418,7 @@ body.is-gate{overflow-x:hidden;}
 @media (max-aspect-ratio:1/1){
   .gate-photo-layer{ background-image:var(--img-m, var(--img-d)); }
 }
-.gate-photo-layer{ will-change:opacity, transform; }
+.gate-photo-layer{ will-change:opacity; } /* 不加 will-change:transform：加了瀏覽器會沿用放大前的點陣圖，推近結束後圖會糊糊的 */
 /* 大圖的說明＋頁碼：固定在畫面上，跟著目前看到的那張圖切換（不跟著捲動） */
 #gate-photo-ui{
   position:fixed; inset:0; z-index:7; pointer-events:none;
@@ -2219,12 +2219,14 @@ const STATUS_COLOR = { alive:'#3fa66a', dead:'#5a5a5e' };
    清單裡沒有的圖（例如本機直接打開、還沒重新部署、外部網址）就照舊顯示原圖；
    壓縮版萬一讀取失敗，也會自動退回原圖（見下方 revealImg）。 */
 let IMG_MANIFEST = null;
+let IMG_HERO = new Set(); /* 有另外做高畫質版的首頁大圖 */
 async function loadImageManifest(){
   try{
     const res = await fetch('/_img/manifest.json', {cache:'no-cache'});
     if(!res.ok) return;
     const data = await res.json();
     IMG_MANIFEST = new Set(data.images || []);
+    IMG_HERO = new Set(data.hero || []);
   }catch(err){ /* 沒有清單就全部用原圖，不影響網站運作 */ }
 }
 function imgVariant(src, size){
@@ -2236,6 +2238,12 @@ function imgVariant(src, size){
 }
 const thumbSrc = src => imgVariant(src, 'thumb');
 const largeSrc = src => imgVariant(src, 'large');
+/* 首頁滿版大圖：有高畫質版就用高畫質版，沒有就用一般大圖 */
+const heroSrc = src => {
+  let rel = String(src||'').replace(/^\.?\//, '');
+  try{ rel = decodeURI(rel); }catch(e){}
+  return IMG_HERO.has(rel) ? imgVariant(src, 'hero') : largeSrc(src);
+};
 /* 產生 <img> 的 src 屬性；用的是壓縮版時，順便用 data-orig 記住原圖，讀取失敗時拿來退回 */
 function imgSrcAttr(src, size){
   const v = imgVariant(src, size);
@@ -2757,8 +2765,8 @@ function buildGatePhotos(){
   order.forEach(srcIdx=>{
     if(useReal){
       const s = GATE_SHOWCASE[srcIdx];
-      const mobile = s.mobileImage ? ` --img-m:url('${largeSrc(s.mobileImage)}');` : '';
-      html += `<div class="gate-photo-layer" data-i="${srcIdx}" style="--img-d:url('${largeSrc(s.image)}');${mobile}"></div>`;
+      const mobile = s.mobileImage ? ` --img-m:url('${heroSrc(s.mobileImage)}');` : '';
+      html += `<div class="gate-photo-layer" data-i="${srcIdx}" style="--img-d:url('${heroSrc(s.image)}');${mobile}"></div>`;
     } else {
       const hue = (srcIdx*63) % 360;
       html += `<div class="gate-photo-layer is-placeholder" style="--ph-a:hsl(${hue},70%,55%); --ph-b:hsl(${(hue+40)%360},70%,36%);">
@@ -2893,7 +2901,7 @@ function updateGateScroll(){
       layer.style.opacity = op.toFixed(3);
       /* 淡入的過程中，圖從 106% 慢慢縮回 100%，像鏡頭緩慢推近 */
       const s = raw < inEnd ? 1 + 0.06 * (1 - op) : 1;
-      layer.style.transform = `scale(${s.toFixed(4)})`;
+      layer.style.transform = s > 1.0005 ? `scale(${s.toFixed(4)})` : ''; /* 推近結束就拿掉 transform，讓瀏覽器用原解析度重新繪製 */
     });
     /* 說明＋頁碼：顯示目前最清楚的那一張 */
     const ui = document.getElementById('gate-photo-ui');
