@@ -30,6 +30,24 @@ const VARIANTS = {
   thumb: img => img.resize(600, 600, { fit: 'outside', withoutEnlargement: true }).webp({ quality: 80 }),
   large: img => img.resize(2400, 2400, { fit: 'inside', withoutEnlargement: true }).webp({ quality: 82 }),
 };
+/* 首頁滿版大圖（gate-art/ 和 gate.json 裡列的圖）另外多做一個高畫質版：
+   長邊最多 3600px、畫質 90，給高解析度螢幕（筆電、手機）滿版顯示時才不會糊 */
+const HERO_VARIANT = img => img.resize(3600, 3600, { fit: 'inside', withoutEnlargement: true }).webp({ quality: 90 });
+function heroImageSet(){
+  const set = new Set();
+  try{
+    const data = JSON.parse(fs.readFileSync(path.join(ROOT, 'gate.json'), 'utf8'));
+    for(const s of data.slides || []) for(const src of [s.image, s.mobileImage]){
+      if(!src) continue;
+      let rel = String(src).replace(/^\.?\//, '');
+      try{ rel = decodeURI(rel); }catch{}
+      set.add(rel);
+    }
+  }catch{}
+  return set;
+}
+const HERO_IMAGES = heroImageSet();
+const isHero = rel => rel.startsWith('gate-art/') || HERO_IMAGES.has(rel);
 
 /* 不需要發布到網站上的檔案／資料夾 */
 const SKIP_COPY = new Set(['.git', '.github', 'node_modules', 'dist', 'scripts', 'package.json', 'package-lock.json', 'netlify.toml', '.gitignore']);
@@ -49,18 +67,28 @@ function listImages(dir){
 async function processImage(rel){
   const buf = fs.readFileSync(path.join(ROOT, rel));
   const hash = createHash('sha1').update(buf).digest('hex');
-  for(const [name, apply] of Object.entries(VARIANTS)){
+  const variants = isHero(rel) ? { ...VARIANTS, hero: HERO_VARIANT } : VARIANTS;
+  /* 記下原圖的寬高（依 EXIF 轉正之後的方向），網頁排 Gallery 時就能先知道每張圖的比例 */
+  const meta = await sharp(buf, { limitInputPixels:false }).metadata();
+  const swap = (meta.orientation || 1) >= 5;
+  const dims = [swap ? meta.height : meta.width, swap ? meta.width : meta.height];
+  for(const [name, apply] of Object.entries(variants)){
     const cached = path.join(CACHE, `${hash}-${name}-v${VERSION}.webp`);
-    if(!fs.existsSync(cached)){
+    /* 快取檔是空的（之前的部署寫到一半被中斷）就當作沒有快取，重新產生 */
+    if(!fs.existsSync(cached) || fs.statSync(cached).size === 0){
       /* rotate() 依照相機的 EXIF 方向資訊把圖轉正，不然手機拍的照片可能會躺著 */
       const data = await apply(sharp(buf, { limitInputPixels:false }).rotate()).toBuffer();
-      fs.writeFileSync(cached, data);
+      if(!data.length) throw new Error(`產生的 ${name} 是空檔案`);
+      /* 先寫到暫存檔再改名：就算部署中途被中斷，也不會留下寫一半的壞檔被下次沿用 */
+      const tmp = cached + '.tmp-' + process.pid;
+      fs.writeFileSync(tmp, data);
+      fs.renameSync(tmp, cached);
     }
     const dest = path.join(DIST, '_img', name, rel + '.webp');
     fs.mkdirSync(path.dirname(dest), { recursive:true });
     fs.copyFileSync(cached, dest);
   }
-  return buf.length;
+  return { bytes: buf.length, dims };
 }
 
 async function main(){
@@ -78,6 +106,7 @@ async function main(){
   const done = [];
   const failed = [];
   let inputBytes = 0;
+  const dimsMap = {};
   /* 同時處理幾張圖：太多會吃光 Netlify 建置機的記憶體（大張 PNG 解碼後很佔空間） */
   const concurrency = Math.max(1, Math.min(4, os.availableParallelism?.() ?? 2));
   sharp.concurrency(1);
@@ -86,9 +115,10 @@ async function main(){
     while(next < images.length){
       const rel = images[next++];
       try{
-        const bytes = await processImage(rel);
+        const { bytes, dims } = await processImage(rel);
         inputBytes += bytes;
         done.push(rel);
+        if(dims[0] && dims[1]) dimsMap[rel] = dims;
       }catch(err){
         /* 單張圖壞掉不會讓整個部署失敗，那張圖會繼續用原圖顯示 */
         failed.push(rel);
@@ -98,7 +128,7 @@ async function main(){
   }));
 
   done.sort();
-  fs.writeFileSync(path.join(DIST, '_img', 'manifest.json'), JSON.stringify({ version:VERSION, images:done }));
+  fs.writeFileSync(path.join(DIST, '_img', 'manifest.json'), JSON.stringify({ version:VERSION, images:done, hero:done.filter(isHero), dims:dimsMap }));
 
   const sizeOf = dir => {
     let total = 0;

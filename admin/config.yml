@@ -60,6 +60,43 @@ collections:
               - {label: "簡短說明 Short Desc（顯示在共構世界選單卡片上）", name: "desc", widget: "text", required: false}
               - {label: "介紹全文 Brief（顯示在該世界觀角色列表頁的浮動卡片裡）", name: "brief", widget: "text", required: false}
               - {label: "代表色 Color（共構選單、換頁轉場、該世界觀頁面的強調色；留空就用網站內建的顏色）", name: "color", widget: "color", required: false}
+              - label: "時間軸 Timeline"
+                name: "timeline"
+                widget: "list"
+                required: false
+                collapsed: true
+                label_singular: "事件"
+                summary: "{{fields.date}}　{{fields.title}}"
+                hint: "有填任何一個事件，該世界觀的角色列表頁就會出現「🕰 時間軸」按鈕。會照這裡的順序由上往下排，可以拖曳調整。"
+                fields:
+                  - {label: "時間 Date", name: "date", widget: "string", required: false, hint: "隨意寫，例如 1998、1998 春、二十年前、第一章"}
+                  - {label: "標題 Title", name: "title", widget: "string"}
+                  - {label: "說明 Description", name: "desc", widget: "text", required: false, hint: "選填。換行會照樣顯示"}
+                  - label: "相關角色 Characters"
+                    name: "characters"
+                    widget: "list"
+                    required: false
+                    collapsed: false
+                    hint: "選填。填角色 ID（例如 coop-mafia-02）或角色名字，網站上的角色會顯示頭像、可以點進去；不在網站上的人就只顯示名字"
+                    field: {label: "角色", name: "character", widget: "string"}
+
+  - name: "gate"
+    label: "首頁 Gate"
+    files:
+      - file: "gate.json"
+        label: "首頁大圖 Showcase"
+        name: "gate"
+        fields:
+          - label: "首頁大圖（往下捲動時一張張淡入的滿版圖片，出現順序每次隨機）"
+            name: "slides"
+            widget: "list"
+            label_singular: "大圖"
+            summary: "{{fields.caption}}　{{fields.image}}{{fields.mobileImage | ternary('　＋手機直圖', '')}}"
+            fields:
+              - {label: "電腦版 Image（橫圖）", name: "image", widget: "image", hint: "直接上傳原圖就好，網站部署時會自動壓縮。"}
+              - {label: "手機版 Mobile Image（直圖，選填）", name: "mobileImage", widget: "image", required: false, hint: "手機（直的畫面）會改用這張。建議 9:16 左右的直圖，例如 1080×1920；留空的話手機上會把電腦版的橫圖裁切顯示。"}
+              - {label: "說明 Caption（選填）", name: "caption", widget: "string", required: false, hint: "捲到這張圖時左下角會淡入這行小字，例如作品名稱或「拉涅里與克里斯蒂亞諾」。留空就只顯示頁碼"}
+              - {label: "連結 Link（選填）", name: "link", widget: "string", required: false, hint: "填角色 ID（例如 coop-mafia-02）或角色名字，說明文字就能點進那個角色頁"}
 
   - name: "original"
     label: "企劃 Original"
