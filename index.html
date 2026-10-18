@@ -1979,7 +1979,7 @@ body.has-fullbody-bg footer{ border-top:none; }
   fill:#fff; fill-opacity:0;
   stroke:#fff; stroke-width:1.2; stroke-dasharray:1; stroke-dashoffset:1;
   animation:introDraw var(--dur, .85s) cubic-bezier(.45,0,.25,1) forwards, introFill .4s ease forwards;
-  animation-delay:calc(var(--k) * 60ms), calc(var(--k) * 60ms + var(--dur, .85s) - .1s); /* 每一筆畫完就接著填色，短的 S 不用等最長那筆 */
+  animation-delay:calc(var(--k) * 60ms), var(--fill, .9s); /* 填色時間由 JS 算（見 runIntroSplash） */
   transition:fill .6s ease, stroke .6s ease;
 }
 @keyframes introDraw{ to{ stroke-dashoffset:0; } }
@@ -2441,10 +2441,17 @@ function runIntroSplash(){
   const strokes = [...svg.querySelectorAll('path, rect')];
   const lens = strokes.map(p=>{ try{ return p.getTotalLength(); }catch(e){ return 0; } });
   const maxLen = Math.max(1, ...lens);
+  const durs = lens.map(l=>0.35 + 0.5 * l / maxLen);
+  /* 填色：MON、MOOD 這兩筆長的各自畫完就填；短的 S（和上面的小直條）畫得快，
+     但填色排在 MON 跟 MOOD 中間，才不會比旁邊的字先亮起來 */
+  const ends = durs.map((d,k)=>k * 0.06 + d - 0.1);
+  const longest = [...ends.keys()].sort((a,b)=>lens[b] - lens[a]).slice(0, 2);
+  const mid = (ends[longest[0]] + ends[longest[1]]) / 2;
   strokes.forEach((p,k)=>{
     p.setAttribute('pathLength', '1');
     p.style.setProperty('--k', k);
-    p.style.setProperty('--dur', (0.35 + 0.5 * lens[k] / maxLen).toFixed(2) + 's');
+    p.style.setProperty('--dur', durs[k].toFixed(2) + 's');
+    p.style.setProperty('--fill', (longest.includes(k) ? ends[k] : mid).toFixed(2) + 's');
   });
 
   const topbar = document.querySelector('.topbar');
