@@ -1514,9 +1514,22 @@ a.gate-cap:hover .gate-cap-text{ text-decoration:underline; text-underline-offse
 .pf-basic{
   text-align:center; max-width:480px; margin:0 auto 70px;
 }
-.pf-basic .p-code{font-family:var(--font-mono); font-size:12px; color:var(--ink-soft); margin-bottom:10px;}
-.pf-basic h1{font-family:var(--font-disp); font-weight:600; font-size:clamp(26px,4vw,38px); margin:0 0 6px;}
-.pf-basic .p-role{color:var(--ink-soft); font-size:14px; margin-bottom:18px;}
+/* 角色頁的「檔案卡」標題：最上面一行是世界觀代號／名稱，中間一條世界觀代表色的細線，
+   右邊是這個角色在該世界觀的編號和狀態；名字用大標題，「·」後面的姓氏縮小放在下一行 */
+.pf-meta{
+  display:flex; align-items:center; gap:14px; margin-bottom:22px;
+  font-family:var(--font-mono); font-size:10.5px; letter-spacing:.18em; color:var(--ink-soft); white-space:nowrap;
+}
+.pf-meta > span:first-child{ color:var(--brand); }
+.pf-rule{ flex:1; height:1px; background:var(--brand); opacity:.55; min-width:24px; }
+.pf-basic h1.pf-name{ margin:0 0 12px; line-height:1.05; font-family:var(--font-disp); }
+.pf-given{ display:block; font-size:clamp(40px,6.4vw,64px); font-weight:700; letter-spacing:.03em; }
+.pf-family{ display:block; margin-top:10px; font-size:clamp(15px,2vw,19px); font-weight:500; letter-spacing:.32em; color:var(--ink-soft); }
+.pf-basic .p-role{ font-size:14px; color:var(--ink-soft); margin-bottom:22px; letter-spacing:.06em; }
+.pf-basic .p-role span::before, .pf-basic .p-role span::after{ content:'—'; margin:0 .7em; color:var(--ink-faint); }
+@media (max-width:640px){
+  .pf-meta{ font-size:9.5px; letter-spacing:.12em; gap:10px; }
+}
 /* CP 名字：有介紹時可以點，點了開 CP 小視窗 */
 .cp-link{
   font:inherit; color:var(--brand); background:none; border:none; padding:0; cursor:pointer;
@@ -1945,36 +1958,63 @@ html{ scrollbar-width:thin; scrollbar-color:rgba(128,128,128,.45) transparent; }
 }
 
 /* ---------------- lightbox ---------------- */
+/* 燈箱：深色底（看圖比較專注），上面一行是角色名＋編號、右上關閉，
+   中間大圖，下面說明，最底下一排小縮圖可以直接跳到某一張 */
 #lightbox{
   position:fixed; inset:0; z-index:200;
-  background:rgba(255,255,255,.97);
+  background:rgba(14,13,16,.96);
+  backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
   display:none; align-items:center; justify-content:center;
   flex-direction:column;
+  color:#f2f0f3;
 }
 #lightbox.open{display:flex; animation:fadeIn .3s ease both;}
-#lightbox img{max-width:min(86vw,900px); max-height:74vh; object-fit:contain; box-shadow:0 20px 60px rgba(0,0,0,.12);}
-.lb-cap{font-family:var(--font-mono); font-size:12px; color:var(--ink-soft); margin-top:16px;}
-.lb-close{
-  position:absolute; top:26px; right:clamp(20px,4vw,56px);
-  font-family:var(--font-mono); font-size:12px; color:var(--ink-soft);
-  border:1px solid var(--line); border-radius:999px; padding:8px 16px; background:var(--bg);
+#lightbox #lb-img{max-width:min(86vw,1100px); max-height:calc(100vh - 210px); object-fit:contain; box-shadow:0 30px 80px rgba(0,0,0,.45);}
+.lb-top{
+  position:absolute; top:0; left:0; right:0; padding:22px clamp(20px,4vw,56px);
+  display:flex; justify-content:space-between; align-items:center; gap:16px;
 }
-.lb-close:hover{border-color:var(--accent); color:var(--accent);}
+.lb-title{ display:flex; align-items:baseline; gap:14px; min-width:0; }
+#lb-name{ font-family:var(--font-disp); font-size:15px; font-weight:600; letter-spacing:.06em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.lb-count{ font-family:var(--font-mono); font-size:11px; letter-spacing:.14em; color:rgba(242,240,243,.55); white-space:nowrap; }
+.lb-cap{font-family:var(--font-cjk); font-size:13px; color:rgba(242,240,243,.75); margin-top:16px; min-height:1.4em; text-align:center; padding:0 20px;}
+.lb-close{
+  font-family:var(--font-mono); font-size:11.5px; letter-spacing:.08em; color:rgba(242,240,243,.75);
+  border:1px solid rgba(255,255,255,.22); border-radius:999px; padding:8px 16px; background:transparent; flex:none;
+}
+.lb-close:hover{border-color:#fff; color:#fff;}
 .lb-nav{
   position:absolute; top:50%; transform:translateY(-50%);
-  width:44px; height:44px; border:1px solid var(--line); border-radius:50%; background:var(--bg);
+  width:46px; height:46px; border:1px solid rgba(255,255,255,.2); border-radius:50%; background:rgba(255,255,255,.04);
   display:flex; align-items:center; justify-content:center; font-family:var(--font-mono);
-  color:var(--ink);
+  color:#f2f0f3; transition:background .2s ease, border-color .2s ease;
 }
-.lb-nav:hover{border-color:var(--accent); color:var(--accent);}
+.lb-nav:hover{border-color:#fff; background:rgba(255,255,255,.12);}
+.lb-strip{
+  position:absolute; left:0; right:0; bottom:18px;
+  display:flex; gap:6px; justify-content:safe center; overflow-x:auto; padding:4px clamp(20px,4vw,56px);
+  scrollbar-width:none;
+}
+.lb-strip::-webkit-scrollbar{ display:none; }
+.lb-strip button{
+  flex:none; width:46px; height:46px; padding:0; border:0; border-radius:4px; overflow:hidden; cursor:pointer;
+  background:rgba(255,255,255,.08); opacity:.42; outline:1px solid transparent; outline-offset:2px;
+  transition:opacity .25s ease, outline-color .25s ease;
+}
+.lb-strip button:hover{ opacity:.8; }
+.lb-strip button.is-on{ opacity:1; outline-color:#fff; }
+.lb-strip img{ width:100%; height:100%; object-fit:cover; display:block; opacity:1 !important; }
+.lb-strip button.is-sensitive img{ filter:blur(6px); }
 .lb-prev{left:clamp(14px,4vw,48px);}
 .lb-next{right:clamp(14px,4vw,48px);}
 /* 手機：左右箭頭移到畫面下方，不要蓋住圖片的左右兩側；也可以直接左右滑動圖片切換 */
 @media (max-width:640px){
-  .lb-nav{ top:auto; bottom:calc(24px + env(safe-area-inset-bottom, 0px)); transform:none; }
-  .lb-prev{ left:calc(50% - 60px); }
-  .lb-next{ right:calc(50% - 60px); }
-  .lb-cap{ padding:0 20px; text-align:center; }
+  /* 手機：不放左右箭頭（直接左右滑動圖片換張），底下的小縮圖列也可以點 */
+  .lb-nav{ display:none; }
+  #lightbox #lb-img{ max-width:94vw; max-height:calc(100svh - 230px); }
+  .lb-top{ padding:16px; }
+  .lb-strip{ bottom:calc(14px + env(safe-area-inset-bottom, 0px)); padding:4px 16px; }
+  .lb-strip button{ width:40px; height:40px; }
 }
 
 /* 頁尾：上面一排連結＋回到頂端，中間一個淡淡的大 LOGO 壓底，最下面一行小字。
@@ -2175,11 +2215,15 @@ body.has-fullbody-bg footer{ border-top:none; }
 </div>
 
 <div id="lightbox">
-  <button class="lb-close" onclick="closeLightbox()">CLOSE ✕</button>
-  <button class="lb-nav lb-prev" onclick="lbNav(-1)">←</button>
+  <div class="lb-top">
+    <div class="lb-title"><span id="lb-name"></span><span class="lb-count" id="lb-count"></span></div>
+    <button class="lb-close" onclick="closeLightbox()">CLOSE ✕</button>
+  </div>
+  <button class="lb-nav lb-prev" onclick="lbNav(-1)" aria-label="上一張">←</button>
   <img id="lb-img" src="" alt="">
-  <button class="lb-nav lb-next" onclick="lbNav(1)">→</button>
+  <button class="lb-nav lb-next" onclick="lbNav(1)" aria-label="下一張">→</button>
   <div class="lb-cap" id="lb-cap"></div>
+  <div class="lb-strip" id="lb-strip"></div>
 </div>
 
 <footer>
@@ -4254,9 +4298,13 @@ function renderProfile(id){
     </div>
 
     <div class="pf-reveal pf-basic">
-      <div class="p-code">${ch.id.toUpperCase()} · ${STATUS_LABEL[ch.status]||ch.status}</div>
-      <h1>${ch.codename}</h1>
-      <div class="p-role">${ch.role}</div>
+      <div class="pf-meta">
+        <span>${ch.category==='original' ? 'PLURK PROJECT' : `${(WORLD_META[ch.world] && WORLD_META[ch.world].code) || ''} / ${(WORLD_META[ch.world] && WORLD_META[ch.world].name) || String(ch.world||'').toUpperCase()}`}</span>
+        <i class="pf-rule" aria-hidden="true"></i>
+        <span>No.${String(siblingIdx + 1).padStart(2,'0')} / ${String(siblingList.length).padStart(2,'0')} · ${(STATUS_LABEL[ch.status]||ch.status||'').toUpperCase()}</span>
+      </div>
+      <h1 class="pf-name">${(()=>{ const m = String(ch.codename).match(/^([^·・•‧･]+)([·・•‧･].*)?$/); return m && m[2] ? `<span class="pf-given">${m[1]}</span><span class="pf-family">${m[2]}</span>` : `<span class="pf-given">${ch.codename}</span>`; })()}</h1>
+      <div class="p-role">${ch.role && ch.role !== '—' ? `<span>${ch.role}</span>` : ''}</div>
       ${shareButtons(ch)}
       <div class="field-list">${fields}</div>
       ${ch.bio ? `<div class="pf-bio">${bioParagraphs(ch.bio)}</div>` : ''}
@@ -4775,6 +4823,13 @@ function lbNav(dir){
   }, 170);
   preloadLightboxNeighbors();
 }
+/* 點底部小縮圖：直接跳到那一張（用一般切換的滑動動畫，方向依前後決定） */
+function lbGo(target){
+  if(target === lbState.index) return;
+  const dir = target > lbState.index ? 1 : -1;
+  lbState.index = target - dir;
+  lbNav(dir);
+}
 /* 先在背景下載前一張、後一張大圖，切換時幾乎不用等 */
 function preloadLightboxNeighbors(){
   const ch = CHARACTERS.find(c=>c.id===lbState.charId);
@@ -4820,8 +4875,21 @@ function renderLightbox(){
   } else {
     img.style.display='none';
   }
-  const cap = document.getElementById('lb-cap');
-  cap.textContent = `${ch.codename} · IMG_${String(lbState.index+1).padStart(2,'0')}${item.caption ? ' · '+item.caption : ''}  (${lbState.index+1}/${ch.gallery.length})`;
+  document.getElementById('lb-name').textContent = ch.codename;
+  document.getElementById('lb-count').textContent = `${String(lbState.index+1).padStart(2,'0')} / ${String(ch.gallery.length).padStart(2,'0')}`;
+  document.getElementById('lb-cap').textContent = item.caption || '';
+  /* 底部小縮圖列：換角色時重建，換張時只切換目前那格的樣式並捲到看得到的位置 */
+  const strip = document.getElementById('lb-strip');
+  if(strip.dataset.char !== ch.id){
+    strip.dataset.char = ch.id;
+    strip.innerHTML = ch.gallery.length > 1 ? ch.gallery.map((g,i)=>{
+      const src = g.thumb || g.image;
+      return `<button type="button" class="${g.sensitive ? 'is-sensitive' : ''}" onclick="lbGo(${i})" aria-label="第 ${i+1} 張">${src ? `<img src="${thumbSrc(src)}" alt="" loading="lazy">` : ''}</button>`;
+    }).join('') : '';
+  }
+  const btns = strip.querySelectorAll('button');
+  btns.forEach((b,i)=>b.classList.toggle('is-on', i === lbState.index));
+  if(btns[lbState.index]) btns[lbState.index].scrollIntoView({ block:'nearest', inline:'center', behavior:'smooth' });
 
   /* 若無真實圖片，顯示放大版佔位色塊 */
   let ph = document.getElementById('lb-placeholder');
