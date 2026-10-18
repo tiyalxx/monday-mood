@@ -1978,7 +1978,7 @@ body.has-fullbody-bg footer{ border-top:none; }
 .intro-logo path, .intro-logo rect{
   fill:#fff; fill-opacity:0;
   stroke:#fff; stroke-width:1.2; stroke-dasharray:1; stroke-dashoffset:1;
-  animation:introDraw .85s cubic-bezier(.45,0,.25,1) forwards, introFill .4s ease forwards;
+  animation:introDraw var(--dur, .85s) cubic-bezier(.45,0,.25,1) forwards, introFill .4s ease forwards;
   animation-delay:calc(var(--k) * 60ms), calc(.95s + var(--k) * 30ms);
   transition:fill .6s ease, stroke .6s ease;
 }
@@ -2436,7 +2436,16 @@ function runIntroSplash(){
   const svg = el.querySelector('.intro-logo');
   const src = document.querySelector('.topbar .brand-logo');
   if(src){ svg.setAttribute('viewBox', src.getAttribute('viewBox')); svg.innerHTML = src.innerHTML; }
-  svg.querySelectorAll('path, rect').forEach((p,k)=>{ p.setAttribute('pathLength', '1'); p.style.setProperty('--k', k); });
+  /* 每一筆的描線時間依實際長度決定：長的筆畫（MON、MOOD）慢一點，短的（S 跟上面那一小條）快一點，
+     看起來每一筆的筆速差不多，不會有哪一筆特別拖 */
+  const strokes = [...svg.querySelectorAll('path, rect')];
+  const lens = strokes.map(p=>{ try{ return p.getTotalLength(); }catch(e){ return 0; } });
+  const maxLen = Math.max(1, ...lens);
+  strokes.forEach((p,k)=>{
+    p.setAttribute('pathLength', '1');
+    p.style.setProperty('--k', k);
+    p.style.setProperty('--dur', (0.35 + 0.5 * lens[k] / maxLen).toFixed(2) + 's');
+  });
 
   const topbar = document.querySelector('.topbar');
   const appEl = document.getElementById('app');
