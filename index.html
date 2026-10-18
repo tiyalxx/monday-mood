@@ -496,7 +496,16 @@ body.is-gate{overflow-x:hidden;}
 
 .topbar-right{
   display:flex; align-items:center; gap:22px;
+  min-width:0; flex:1 1 auto; justify-content:flex-end; margin-left:24px;
 }
+/* 視窗縮小時導覽列的字不要換行（不然會變成上下兩行、歪七扭八），
+   空間不夠時由麵包屑讓位：它會縮短，左邊被擠掉的部分淡出、可以左右滑 */
+.topbar .brand, .back-btn, .nav-links > *, .crumb .seg, .crumb .sep{ white-space:nowrap; flex:none; }
+@media (min-width:861px){ .topbar .crumb{ min-width:0; flex:0 1 auto; overflow-x:auto; } }
+.topbar .crumb{ scrollbar-width:none; }
+.topbar .crumb::-webkit-scrollbar{ display:none; }
+.crumb.is-scrolled{ -webkit-mask-image:linear-gradient(90deg, transparent, #000 28px); mask-image:linear-gradient(90deg, transparent, #000 28px); }
+@media (max-width:1240px){ .brand small{ display:none; } }
 .nav-links{
   display:flex; align-items:center; gap:22px;
 }
@@ -1447,10 +1456,6 @@ body.is-gate{overflow-x:hidden;}
 .cp-link-icon{ font-size:.85em; margin-left:6px; }
 /* ================= 全站搜尋 ================= */
 .search-link{ display:inline-flex; align-items:center; gap:6px; background:none; border-top:0; border-bottom:0; border-left:0; cursor:pointer; }
-.search-link kbd{
-  font-family:var(--font-mono); font-size:10px; line-height:1; color:var(--ink-faint);
-  border:1px solid var(--line); border-radius:4px; padding:2px 5px; margin-left:2px;
-}
 .search-ico{ width:14px; height:14px; display:block; flex:none; }
 .search-btn{ display:none; }
 @media (max-width:860px){
@@ -2031,7 +2036,7 @@ body.has-fullbody-bg footer{ border-top:none; }
           </div>
         </div>
       </div>
-      <button type="button" class="about-link search-link" onclick="openSearch()" aria-label="搜尋角色"><svg class="search-ico" viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.75" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M13 13l4.5 4.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>Search<kbd>/</kbd></button>
+      <button type="button" class="about-link search-link" onclick="openSearch()" aria-label="搜尋角色"><svg class="search-ico" viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.75" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M13 13l4.5 4.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>Search</button>
       <a href="#/random" class="about-link">🎲 Random</a>
       <a href="#/about" class="about-link">About</a>
     </div>
@@ -2543,7 +2548,12 @@ function setCrumb(parts, opts){
   }).join('');
   el.scrollLeft = el.scrollWidth; /* 手機版麵包屑可以左右滑，預設停在最右邊顯示目前頁面 */
   el.classList.toggle('is-scrolled', el.scrollLeft > 0);
-  if(!el.dataset.fadeBound){ el.dataset.fadeBound = '1'; el.addEventListener('scroll', ()=>el.classList.toggle('is-scrolled', el.scrollLeft > 0), {passive:true}); }
+  if(!el.dataset.fadeBound){
+    el.dataset.fadeBound = '1';
+    el.addEventListener('scroll', ()=>el.classList.toggle('is-scrolled', el.scrollLeft > 0), {passive:true});
+    /* 視窗縮放時麵包屑的寬度會變，重新捲到最右邊，讓「目前這一頁」一直看得到 */
+    window.addEventListener('resize', ()=>{ el.scrollLeft = el.scrollWidth; el.classList.toggle('is-scrolled', el.scrollLeft > 0); }, {passive:true});
+  }
 
   /* 上一頁按鈕：除了首頁，其他頁面都會顯示，回到麵包屑往前一個有連結的層級 */
   const backBtn = document.getElementById('back-btn');
