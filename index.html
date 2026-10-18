@@ -4921,8 +4921,16 @@ function revealImg(e){
   const el = e.target;
   if(!el || el.tagName !== 'IMG') return;
   if(e.type === 'error'){
-    /* 壓縮版圖片讀取失敗：退回原圖再試一次，原圖也失敗才算真的載入失敗 */
+    /* 讀取失敗先自動重試一次（網路一時不穩、同時下載太多圖被伺服器暫時拒絕，通常重試就好），
+       還是失敗再退回原圖，原圖也失敗才算真的載入失敗 */
+    if(!el.dataset.retried && el.getAttribute('src')){
+      el.dataset.retried = '1';
+      const src = el.getAttribute('src');
+      setTimeout(()=>{ el.src = src + (src.includes('?') ? '&' : '?') + 'r=1'; }, 900);
+      return;
+    }
     if(el.dataset.orig){
+      delete el.dataset.retried;
       const orig = el.dataset.orig;
       delete el.dataset.orig;
       el.src = orig;

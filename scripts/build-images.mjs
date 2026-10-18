@@ -74,10 +74,15 @@ async function processImage(rel){
   const dims = [swap ? meta.height : meta.width, swap ? meta.width : meta.height];
   for(const [name, apply] of Object.entries(variants)){
     const cached = path.join(CACHE, `${hash}-${name}-v${VERSION}.webp`);
-    if(!fs.existsSync(cached)){
+    /* 快取檔是空的（之前的部署寫到一半被中斷）就當作沒有快取，重新產生 */
+    if(!fs.existsSync(cached) || fs.statSync(cached).size === 0){
       /* rotate() 依照相機的 EXIF 方向資訊把圖轉正，不然手機拍的照片可能會躺著 */
       const data = await apply(sharp(buf, { limitInputPixels:false }).rotate()).toBuffer();
-      fs.writeFileSync(cached, data);
+      if(!data.length) throw new Error(`產生的 ${name} 是空檔案`);
+      /* 先寫到暫存檔再改名：就算部署中途被中斷，也不會留下寫一半的壞檔被下次沿用 */
+      const tmp = cached + '.tmp-' + process.pid;
+      fs.writeFileSync(tmp, data);
+      fs.renameSync(tmp, cached);
     }
     const dest = path.join(DIST, '_img', name, rel + '.webp');
     fs.mkdirSync(path.dirname(dest), { recursive:true });
