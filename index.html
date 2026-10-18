@@ -292,6 +292,16 @@ body.is-gate{overflow-x:hidden;}
   overflow:hidden;
 }
 .gate-scene{position:relative; z-index:2;}
+/* 往下捲時第一屏整個慢慢淡出（白底、ENTER、LOGO 一起），底下固定的大圖接著淡入，
+   不會再出現「白底在 LOGO 下面一刀切斷、大圖從下面冒出來」的硬邊。
+   ENTER 同時以比較慢的速度往下沉（視差），有種退到後面去的層次感。
+   --p 是第一屏捲了多少（0～1），由 updateGateScroll() 即時更新；
+   用 translate/scale 屬性而不是 transform，才不會跟 LOGO 原本的進場動畫打架。 */
+.gate-scene-hero{ opacity:calc(1 - clamp(0, (var(--p, 0) - .12) / .62, 1)); }
+/* 第一屏的白底在最下緣漸層變透明，跟底下大圖之間不會有一條橫線（只在開始捲動之後才套用，免得一進站 LOGO 下緣被淡掉） */
+.gate-scene-hero.is-scrolling .gate-media{ -webkit-mask-image:linear-gradient(#000 55%, transparent); mask-image:linear-gradient(#000 55%, transparent); }
+.gate-scene-hero .gate-center{ translate:0 calc(var(--p, 0) * 24vh); }
+.gate-scene-hero .gate-bottom-logo{ scale:calc(1 - var(--p, 0) * .06); transform-origin:50% 100%; } /* LOGO 不往下移（會被第一屏的邊界切掉），只微微縮小、跟著淡出 */
 .gate-scene-hero{
   min-height:100vh;
   /* 手機瀏覽器（Safari、LINE 內建瀏覽器）的 100vh 是「網址列收起來時」的高度，
@@ -2769,7 +2779,9 @@ function updateGateScroll(){
   if(!bgFixed || !heroScene) return;
   const heroH = heroScene.offsetHeight || window.innerHeight;
   const y = window.scrollY || 0;
-  if(fixedEnter) fixedEnter.classList.toggle('show', y > heroH*0.35);
+  heroScene.style.setProperty('--p', Math.min(1, Math.max(0, y / heroH)).toFixed(3));
+  heroScene.classList.toggle('is-scrolling', y > 4);
+  if(fixedEnter) fixedEnter.classList.toggle('show', y > heroH*0.62); /* 等大圖淡入了才出現：它是白字玻璃按鈕，太早出現會在白底上變成看不到字的白色膠囊 */
   if(scrollHint) scrollHint.classList.toggle('hide', y > 40);
 
   /* 離開第一屏之後，每捲過一個畫面高度就淡出上一張、淡入下一張大圖；
@@ -2780,9 +2792,10 @@ function updateGateScroll(){
     const zoneH = window.innerHeight || 800;
     const raw = (y - heroH) / zoneH; /* 0 = 剛捲離第一屏，1 = 再捲過一個畫面高度…以此類推 */
     const FADE = 0.3; /* 淡入/淡出各佔一個畫面高度的 30% */
+    /* 第一張大圖提早一點開始淡入，跟第一屏的淡出重疊，變成交叉淡化 */
     layers.forEach((layer,i)=>{
       const isLast = i === n-1;
-      const inStart = i - FADE, inEnd = i + FADE;
+      const inStart = i === 0 ? -0.55 : i - FADE, inEnd = i + FADE;
       let op;
       if(raw <= inStart) op = 0;
       else if(raw < inEnd) op = (raw - inStart) / (inEnd - inStart);
