@@ -1496,9 +1496,9 @@ body.is-profile .share-fab{ display:flex; }
 
 /* ================= PROFILE（近未來動態捲動版面） ================= */
 .pf-avatar-wrap{
-  min-height:64vh;
+  /* 頭像和下面的名字是一組：不再撐滿大半個畫面，只留適當的上方空間 */
   display:flex; align-items:center; justify-content:center;
-  padding:20px 0;
+  padding:clamp(48px,12vh,120px) 0 34px;
 }
 .pf-avatar-circle{
   width:clamp(160px,22vw,220px); aspect-ratio:1/1; border-radius:50%;
@@ -1550,10 +1550,10 @@ body.is-profile .share-fab{ display:flex; }
 .pf-basic{
   text-align:center; max-width:480px; margin:0 auto 70px;
 }
-/* 角色頁的「檔案卡」標題：最上面一行是世界觀代號／名稱，中間一條世界觀代表色的細線，
+/* 角色頁的「檔案卡」標題：名字、身分下面一行是世界觀代號／名稱，中間一條世界觀代表色的細線，
    右邊是這個角色在該世界觀的編號和狀態；名字用大標題，「·」後面的姓氏縮小放在下一行 */
 .pf-meta{
-  display:flex; align-items:center; gap:14px; margin-bottom:22px;
+  display:flex; align-items:center; gap:14px; margin-bottom:26px;
   font-family:var(--font-mono); font-size:10.5px; letter-spacing:.18em; color:var(--ink-soft); white-space:nowrap;
 }
 .pf-meta > span:first-child{ color:var(--brand); }
@@ -1561,7 +1561,7 @@ body.is-profile .share-fab{ display:flex; }
 .pf-basic h1.pf-name{ margin:0 0 12px; line-height:1.05; font-family:var(--font-disp); }
 .pf-given{ display:block; font-size:clamp(40px,6.4vw,64px); font-weight:700; letter-spacing:.03em; }
 .pf-family{ display:block; margin-top:10px; font-size:clamp(15px,2vw,19px); font-weight:500; letter-spacing:.32em; color:var(--ink); }
-.pf-basic .p-role{ font-size:14px; color:var(--ink-soft); margin-bottom:22px; letter-spacing:.06em; }
+.pf-basic .p-role{ font-size:14px; color:var(--ink-soft); margin-bottom:40px; letter-spacing:.06em; }
 .pf-basic .p-role span::before, .pf-basic .p-role span::after{ content:'—'; margin:0 .7em; color:var(--ink-faint); }
 @media (max-width:640px){
   .pf-meta{ font-size:9.5px; letter-spacing:.12em; gap:10px; }
@@ -4340,13 +4340,13 @@ function renderProfile(id){
     </div>
 
     <div class="pf-reveal pf-basic">
+      <h1 class="pf-name">${(()=>{ const m = String(ch.codename).match(/^([^·・•‧･]+)([·・•‧･].*)?$/); return m && m[2] ? `<span class="pf-given">${m[1]}</span><span class="pf-family">${m[2]}</span>` : `<span class="pf-given">${ch.codename}</span>`; })()}</h1>
+      <div class="p-role">${ch.role && ch.role !== '—' ? `<span>${ch.role}</span>` : ''}</div>
       <div class="pf-meta">
         <span>${ch.category==='original' ? 'PLURK PROJECT' : `${(WORLD_META[ch.world] && WORLD_META[ch.world].code) || ''} / ${(WORLD_META[ch.world] && WORLD_META[ch.world].name) || String(ch.world||'').toUpperCase()}`}</span>
         <i class="pf-rule" aria-hidden="true"></i>
         <span>No.${String(siblingIdx + 1).padStart(2,'0')} / ${String(siblingList.length).padStart(2,'0')} · ${(STATUS_LABEL[ch.status]||ch.status||'').toUpperCase()}</span>
       </div>
-      <h1 class="pf-name">${(()=>{ const m = String(ch.codename).match(/^([^·・•‧･]+)([·・•‧･].*)?$/); return m && m[2] ? `<span class="pf-given">${m[1]}</span><span class="pf-family">${m[2]}</span>` : `<span class="pf-given">${ch.codename}</span>`; })()}</h1>
-      <div class="p-role">${ch.role && ch.role !== '—' ? `<span>${ch.role}</span>` : ''}</div>
       <div class="field-list">${fields}</div>
       ${ch.bio ? `<div class="pf-bio">${bioParagraphs(ch.bio)}</div>` : ''}
     </div>
