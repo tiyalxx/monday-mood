@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
+<script>
+/* 同一個分頁已經看過開場動畫、或系統開了「減少動態效果」：一開始就不顯示開場（避免閃一下藍色） */
+try{ if(sessionStorage.getItem('mm-intro-seen') || matchMedia('(prefers-reduced-motion: reduce)').matches) document.documentElement.classList.add('no-intro'); }catch(e){}
+</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Monday's Mood</title>
@@ -1946,68 +1950,61 @@ body.has-fullbody-bg footer{ border-top:none; }
   .cursor-trail{display:none;}
 }
 
-/* ================= 進站開場動畫（圓點地球） ================= */
+/* ================= 進站開場動畫 =================
+   藍底上，MON'S MOOD 的 LOGO 先用白色細線一筆一筆描出來、再填滿；
+   右下角的數字跟著角色資料的實際讀取進度跑到 100。讀完之後，
+   藍色背景分成幾條像百葉窗一樣依序往上收（跟換頁的掃色轉場同一種手法），
+   LOGO 同時平滑縮放、移到首頁底部大 LOGO 的位置接上去。
+   同一個分頁裡只播一次；系統開了「減少動態效果」的人直接跳過。 */
 #intro-splash{
   position:fixed; inset:0; z-index:999999;
-  background:#404aff;
-  display:flex; align-items:center; justify-content:center;
-  cursor:pointer;
-  transition:opacity .9s ease;
+  cursor:pointer; overflow:hidden;
 }
-#intro-splash.hide{ opacity:0; pointer-events:none; }
-/* 開場改成「讀取中」的感覺：一圈圓點依序亮起（像 loading spinner），
-   下面配一條會跑滿的進度條，兩種讀取感一起給 */
-.intro-loader{
-  position:relative;
-  width:min(30vw,116px); aspect-ratio:1/1;
+.no-intro #intro-splash{ display:none; }
+.intro-strips{ position:absolute; inset:0; display:flex; }
+.intro-strips i{
+  flex:1; height:100%; background:#404aff;
+  margin-right:-1px; /* 條與條之間不要露出細縫 */
+  transition:transform .75s cubic-bezier(.76,0,.24,1);
+  transition-delay:calc(var(--k) * 55ms);
 }
-.intro-loader .intro-dot{
-  position:absolute; top:50%; left:50%; width:10px; height:10px;
-  margin:-5px 0 0 -5px; border-radius:50%; background:#fff;
-  opacity:.28;
-  animation:introDotPulse 1.15s ease-in-out infinite;
+#intro-splash.is-out .intro-strips i{ transform:translateY(-101%); }
+.intro-logo{
+  position:absolute; left:50%; top:50%;
+  width:min(62vw, 440px); height:auto; overflow:visible;
+  transform:translate(-50%,-50%);
+  transform-origin:0 0;
 }
-@keyframes introDotPulse{
-  0%,100%{ opacity:.28; transform:scale(.72); }
-  50%{ opacity:1; transform:scale(1.18); }
+.intro-logo path, .intro-logo rect{
+  fill:#fff; fill-opacity:0;
+  stroke:#fff; stroke-width:1.2; stroke-dasharray:1; stroke-dashoffset:1;
+  animation:introDraw 1.15s cubic-bezier(.55,0,.25,1) forwards, introFill .45s ease forwards;
+  animation-delay:calc(var(--k) * 90ms), calc(1.05s + var(--k) * 40ms);
+  transition:fill .6s ease, stroke .6s ease;
 }
-.intro-label{
-  position:absolute; left:50%; top:calc(50% + 26vmin);
-  transform:translateX(-50%);
-  font-family:var(--font-mono); font-size:11px; letter-spacing:.22em;
-  color:rgba(255,255,255,.85); white-space:nowrap;
+@keyframes introDraw{ to{ stroke-dashoffset:0; } }
+@keyframes introFill{ to{ fill-opacity:1; stroke-opacity:0; } }
+.intro-meta{
+  position:absolute; left:clamp(20px,4vw,56px); right:clamp(20px,4vw,56px); bottom:clamp(20px,4vh,40px);
+  display:flex; justify-content:space-between; align-items:flex-end;
+  font-family:var(--font-mono); font-size:11px; letter-spacing:.2em; color:rgba(255,255,255,.72);
+  transition:opacity .3s ease;
 }
-.intro-progress{
-  position:absolute; left:50%; top:calc(50% + 42vmin); transform:translateX(-50%);
-  width:min(48vw,220px); height:3px; border-radius:2px;
-  background:rgba(255,255,255,.25); overflow:hidden;
+.intro-count{ font-size:13px; color:#fff; font-variant-numeric:tabular-nums; }
+#intro-splash.is-out .intro-meta{ opacity:0; }
+@media (max-width:640px){
+  .intro-meta{ font-size:9.5px; letter-spacing:.14em; }
+  .intro-tag span{ display:block; }
 }
-.intro-progress-fill{
-  height:100%; width:0%; background:#fff; border-radius:2px;
-  transition:width 1.05s cubic-bezier(.4,0,.2,1);
-}
-.intro-progress-fill.run{ width:100%; }
-/* 結束時不是直接淡出消失，而是從中間長出一個白色圓圈，
-   撐大到蓋滿整個畫面（變成全白），再讓整個開場動畫淡出，
-   銜接到首頁，感覺比較像「展開進入」而不是硬切換 */
-.intro-expand{
-  position:absolute; left:50%; top:50%; width:160vmax; height:160vmax;
-  margin:-80vmax 0 0 -80vmax; border-radius:50%; background:#ffffff;
-  transform:scale(0);
-  transition:transform .9s cubic-bezier(.5,0,.2,1);
-}
-.intro-expand.grow{ transform:scale(1); }
 </style>
 </head>
 <body>
 
-<!-- 進站的讀取動畫（圓點轉圈＋進度條），第一次載入網站時會先蓋在最上面，
-     動畫跑完（或使用者按一下跳過）之後淡出消失，才看到首頁內容 -->
-<div id="intro-splash">
-  <div class="intro-loader"></div>
-  <div class="intro-label">LOADING</div>
-  <div class="intro-progress"><div class="intro-progress-fill"></div></div>
-  <div class="intro-expand"></div>
+<!-- 進站開場動畫（LOGO 描繪＋讀取進度），同一個分頁裡只會播一次 -->
+<div id="intro-splash" aria-hidden="true">
+  <div class="intro-strips"><i style="--k:0"></i><i style="--k:1"></i><i style="--k:2"></i><i style="--k:3"></i><i style="--k:4"></i><i style="--k:5"></i></div>
+  <svg class="intro-logo" xmlns="http://www.w3.org/2000/svg"></svg>
+  <div class="intro-meta"><span class="intro-tag"><span>MONDAY'S MOOD /</span> <span>CHARACTER ARCHIVE</span></span><span>LOADING <span class="intro-count">000</span></span></div>
 </div>
 
 <div id="wipe"><div id="wipe-bg"></div><span id="wipe-label"></span></div>
@@ -2343,7 +2340,7 @@ window.addEventListener('hashchange', ()=>{
 });
 window.addEventListener('DOMContentLoaded', ()=>{
   document.getElementById('foot-time').textContent = 'REV. ' + new Date().toISOString().slice(0,10);
-  Promise.all([loadWorldMeta(), loadImageManifest(), loadGateSlides()]).then(()=>loadCharacters()).then(populateIndexDropdown);
+  window.__dataReady = Promise.all([loadWorldMeta(), loadImageManifest(), loadGateSlides()]).then(()=>loadCharacters()).then(populateIndexDropdown);
   runIntroSplash();
   initIndexNav();
   initNavBurger();
@@ -2427,64 +2424,74 @@ function initNavBurger(){
   });
 }
 
-/* 用幾個圓點平均排成一個大圓圈，依序一顆一顆亮起來（像常見的
-   loading spinner），角度用數學算，不用手動排 */
-function buildIntroGlobe(container){
-  const count = 10;
-  const radius = 42; // % of container
-  for(let i=0; i<count; i++){
-    const angle = (i/count) * Math.PI * 2 - Math.PI/2;
-    const x = 50 + Math.cos(angle) * radius;
-    const y = 50 + Math.sin(angle) * radius;
-    const dot = document.createElement('div');
-    dot.className = 'intro-dot';
-    dot.style.left = x.toFixed(2) + '%';
-    dot.style.top = y.toFixed(2) + '%';
-    dot.style.animationDelay = (i/count * 1.15).toFixed(2) + 's';
-    container.appendChild(dot);
-  }
-}
-
-/* 開場動畫：圓點地球跑一輪之後，從地球位置「長出」一個白色圓圈撐滿全螢幕，
-   蓋滿之後整個開場畫面才淡出，銜接到首頁——不是直接切換不見。
-   也可以直接點一下跳過（跳過時一樣會走展開的銜接動畫，只是提早開始）。 */
+/* 開場動畫（說明見 CSS 的 #intro-splash 那段） */
 function runIntroSplash(){
   const el = document.getElementById('intro-splash');
   if(!el) return;
-  buildIntroGlobe(el.querySelector('.intro-loader'));
-  const progressFill = el.querySelector('.intro-progress-fill');
-  requestAnimationFrame(()=>{ requestAnimationFrame(()=>{ if(progressFill) progressFill.classList.add('run'); }); });
-  const expand = el.querySelector('.intro-expand');
-  /* 白色圓圈蓋滿畫面的那一刻，底下的首頁其實已經整個渲染好了，
-     只是被蓋住看不到——所以先把它透明度設 0，等圓圈蓋滿之後
-     直接拿掉開場動畫（此時整個畫面已經是白的，拿掉不會有跳動感），
-     再讓首頁內容自己淡入，這樣才會是「真的淡出銜接」而不是硬切。
-     （如果只是把開場動畫整個淡出，因為底色都是白的，視覺上幾乎看不出來在變化。） */
+  const skip = document.documentElement.classList.contains('no-intro');
+  if(skip){ el.remove(); return; }
+  try{ sessionStorage.setItem('mm-intro-seen', '1'); }catch(e){}
+
+  /* LOGO 直接沿用導覽列那顆的圖形，每一筆依序描線 */
+  const svg = el.querySelector('.intro-logo');
+  const src = document.querySelector('.topbar .brand-logo');
+  if(src){ svg.setAttribute('viewBox', src.getAttribute('viewBox')); svg.innerHTML = src.innerHTML; }
+  svg.querySelectorAll('path, rect').forEach((p,k)=>{ p.setAttribute('pathLength', '1'); p.style.setProperty('--k', k); });
+
   const topbar = document.querySelector('.topbar');
   const appEl = document.getElementById('app');
   if(topbar) topbar.style.opacity = '0';
-  if(appEl) appEl.style.opacity = '0';
-  let dismissed = false;
-  const dismiss = ()=>{
-    if(dismissed) return;
-    dismissed = true;
-    expand.classList.add('grow');
+
+  /* 進度：時間（LOGO 畫完至少 1.5 秒）跟資料讀取兩者取比較慢的那個，
+     資料讀完前最多停在 90；最長 6 秒一定結束，避免網路有問題時卡住 */
+  const MIN = 1500, MAX = 6000, t0 = performance.now();
+  let ready = false, shown = 0, done = false, skipWait = false;
+  (window.__dataReady || Promise.resolve()).then(()=>{ ready = true; }, ()=>{ ready = true; });
+  const countEl = el.querySelector('.intro-count');
+  const tick = (now)=>{
+    if(done) return;
+    const t = now - t0;
+    const timeP = skipWait ? 1 : Math.min(1, t / MIN);
+    const target = (ready ? 1 : Math.min(.9, timeP)) * Math.min(1, timeP / .98) * 100;
+    shown += (Math.max(shown, target) - shown) * .18;
+    if(target >= 100 && shown > 99.4) shown = 100;
+    countEl.textContent = String(Math.floor(shown)).padStart(3, '0');
+    if((shown >= 100 && ready) || t > MAX){ done = true; setTimeout(leave, 160); return; }
+    requestAnimationFrame(tick);
+  };
+  requestAnimationFrame(tick);
+  el.addEventListener('click', ()=>{ skipWait = true; });
+
+  function leave(){
+    if(appEl){ appEl.style.removeProperty('transition'); appEl.style.opacity = '1'; }
+    const gateLogo = document.querySelector('.gate-bottom-logo svg');
+    const from = svg.getBoundingClientRect();
+    if(gateLogo){
+      /* 首頁：LOGO 移到底部大 LOGO 的位置、顏色換成它的顏色，落地的瞬間換成真的那顆 */
+      const holder = gateLogo.parentElement;
+      holder.style.animation = 'none';
+      holder.style.visibility = 'hidden';
+      const to = gateLogo.getBoundingClientRect();
+      const color = getComputedStyle(gateLogo.querySelector('path')).fill;
+      svg.style.transform = `translate(${from.left}px, ${from.top}px)`;
+      svg.style.left = svg.style.top = '0';
+      svg.getBoundingClientRect();
+      svg.style.transition = 'transform .95s cubic-bezier(.76,0,.24,1)';
+      svg.style.transform = `translate(${to.left}px, ${to.top}px) scale(${to.width / from.width})`;
+      svg.querySelectorAll('path, rect').forEach(p=>{ p.style.animation = 'none'; p.style.fillOpacity = '1'; p.style.strokeOpacity = '0'; p.style.transition = 'fill .45s ease .45s'; p.style.fill = color; }); /* 先維持白色，等藍色收到一半、底下露出白底了才換顏色，不然會跟藍底融在一起看不見 */
+      setTimeout(()=>{ holder.style.visibility = ''; }, 1000);
+    } else {
+      /* 其他頁面（例如直接打開某個角色的分享網址）：LOGO 往上淡出 */
+      svg.style.transition = 'opacity .5s ease, transform .8s cubic-bezier(.76,0,.24,1)';
+      svg.style.opacity = '0'; svg.style.transform = 'translate(-50%, -70%)';
+    }
+    el.classList.add('is-out');
     setTimeout(()=>{
       el.remove();
-      /* 首頁入口（ENTER 那頁）本來就要把導覽列藏起來。這裡不能無腦把
-         topbar 透明度寫死成 1，那樣會蓋掉「入口頁要藏起來」的設計
-         （變成看得到但點不到，因為 pointer-events:none 還在）；
-         但也不能寫死成 0，不然使用者離開入口頁、切換到其他頁面之後，
-         topbar 會永遠卡在藏起來的狀態（因為這段淡入的程式碼只會執行一次）。
-         正確做法是把這裡設定的 inline opacity 拿掉，交還給 CSS 的
-         body.is-gate 規則自己去接手判斷──之後每次切換頁面，
-         是不是入口頁都會即時反映在 topbar 該不該顯示上。 */
+      /* 導覽列的 inline opacity 拿掉，交回 CSS 判斷（入口頁本來就要藏起導覽列） */
       if(topbar){ topbar.style.transition = 'opacity .8s ease'; topbar.style.removeProperty('opacity'); }
-      if(appEl){ appEl.style.transition = 'opacity .8s ease'; appEl.style.opacity = '1'; }
-    }, 900);
-  };
-  el.addEventListener('click', dismiss);
-  setTimeout(dismiss, 1150);
+    }, 1100);
+  }
 }
 
 /* 角色資料現在拆成 4 個檔案，對應後台的分類/世界觀資料夾，
