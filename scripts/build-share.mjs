@@ -128,7 +128,8 @@ function sharePage(ch, worldName){
 <meta name="twitter:description" content="${esc(desc)}">
 <meta name="twitter:image" content="${esc(imageUrl)}">
 <meta name="twitter:image:alt" content="${esc(name)}">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='16' fill='%23404aff'/%3E%3C/svg%3E">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <!-- 這頁只給分享預覽用；真人打開會立刻跳到網站裡的角色頁。
      不用 meta refresh，因為有些平台的爬蟲會跟著跳轉，就會抓到首頁的預覽 -->
 <script>location.replace(${JSON.stringify(appUrl)});</script>
