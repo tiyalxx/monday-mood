@@ -1811,15 +1811,29 @@ body.cp-modal-open{ overflow:hidden; }
    容器本身不再上底色，縫隙直接透出後面的頁面／立繪背景，圖片不夠多時就只是
    留白，不會有多餘的色塊 */
 .gallery-grid{
-  display:grid; grid-template-columns:repeat(auto-fill, minmax(140px, 220px)); gap:1px;
-  justify-content:start;
-}
-@media (max-width:640px){
-  .gallery-grid{ grid-template-columns:repeat(3, 1fr); }
+  /* 等高對齊排列：每一排高度相同，圖片照原本比例（不裁切），每排剛好撐滿整行寬度。
+   每張縮圖的寬高由 layoutGallery() 依圖片比例算好、寫進 inline style；
+   JS 還沒排好之前先用下面這個 flex 排法頂著，不會一片空白 */
+  display:flex; flex-wrap:wrap; gap:6px;
 }
 .gallery-thumb{
-  aspect-ratio:1/1; position:relative; cursor:zoom-in; overflow:hidden; border-radius:var(--radius-sm); background:var(--panel);
+  flex:none; width:180px; height:180px;
+  position:relative; cursor:zoom-in; overflow:hidden; border-radius:var(--radius-sm); background:var(--panel);
 }
+/* 滑過去：底部淡入編號（07 / 28）和說明 */
+.gallery-info{
+  position:absolute; left:0; right:0; bottom:0; z-index:2; pointer-events:none;
+  display:flex; align-items:flex-end; justify-content:space-between; gap:10px;
+  padding:26px 10px 8px;
+  background:linear-gradient(transparent, rgba(0,0,0,.55));
+  color:#fff; font-size:11px; line-height:1.4;
+  opacity:0; transform:translateY(6px); transition:opacity .3s ease, transform .3s ease;
+}
+.gallery-no{ font-family:var(--font-mono); letter-spacing:.1em; font-size:10px; opacity:.85; flex:none; }
+.gallery-cap{ text-align:right; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; min-width:0; }
+.gallery-thumb:hover .gallery-info{ opacity:1; transform:none; }
+.gallery-thumb.is-sensitive .gallery-info{ display:none; }
+@media (hover:none){ .gallery-info{ display:none; } }
 /* Gallery 區塊捲進畫面時，縮圖一張接一張浮現（--i 是第幾張，最多延遲到第 18 張） */
 .pf-reveal .gallery-thumb{
   opacity:0; transform:translateY(22px) scale(.96);
@@ -2258,6 +2272,14 @@ const STATUS_COLOR = { alive:'#3fa66a', dead:'#5a5a5e' };
    壓縮版萬一讀取失敗，也會自動退回原圖（見下方 revealImg）。 */
 let IMG_MANIFEST = null;
 let IMG_HERO = new Set(); /* 有另外做高畫質版的首頁大圖 */
+let IMG_DIMS = {};        /* 每張圖的原始寬高，排 Gallery 用 */
+/* 圖片的寬高比（寬÷高）；不知道的話當作正方形 */
+function imgRatio(src){
+  let rel = String(src||'').replace(/^\.?\//, '');
+  try{ rel = decodeURI(rel); }catch(e){}
+  const d = IMG_DIMS[rel];
+  return d ? Math.min(3, Math.max(.33, d[0] / d[1])) : 1;
+}
 async function loadImageManifest(){
   try{
     const res = await fetch('/_img/manifest.json', {cache:'no-cache'});
@@ -2265,6 +2287,7 @@ async function loadImageManifest(){
     const data = await res.json();
     IMG_MANIFEST = new Set(data.images || []);
     IMG_HERO = new Set(data.hero || []);
+    IMG_DIMS = data.dims || {};
   }catch(err){ /* 沒有清單就全部用原圖，不影響網站運作 */ }
 }
 function imgVariant(src, size){
@@ -2307,6 +2330,44 @@ function galleryThumb(item, ch, idx){
   if(src){ return `<img ${imgSrcAttr(src,'thumb')} alt="" loading="lazy" decoding="async">`; }
   return `<div class="avatar-fill">IMG_${String(idx+1).padStart(2,'0')}</div>`;
 }
+
+/* Gallery 等高對齊排列（justified rows）：一張一張往同一排塞，塞到「照目標高度排會超過整行寬」
+   就收尾這一排，把這排等比例縮放到剛好撐滿整行；最後一排不硬撐（照目標高度靠左排），
+   避免只有一兩張時被放得超大。視窗寬度改變時重新排。 */
+function layoutGallery(){
+  document.querySelectorAll('.gallery-grid').forEach(grid=>{
+    const items = [...grid.querySelectorAll('.gallery-thumb')];
+    if(!items.length) return;
+    const W = grid.clientWidth; if(!W) return;
+    const GAP = 6;
+    const target = W < 520 ? 130 : W < 900 ? 180 : 220;
+    let row = [], sum = 0;
+    const flush = (last)=>{
+      if(!row.length) return;
+      const free = W - GAP * (row.length - 1);
+      let h = free / sum;
+      if(last && h > target * 1.15) h = target; /* 最後一排太空就不撐滿 */
+      let used = 0;
+      row.forEach((el,k)=>{
+        const r = +el.dataset.ratio || 1;
+        /* 整排的最後一張吃掉四捨五入剩下的幾 px，右邊才會切齊 */
+        const w = (!last && k === row.length - 1) ? free - used : Math.floor(r * h);
+        used += w;
+        el.style.width = w + 'px';
+        el.style.height = Math.round(h) + 'px';
+      });
+      row = []; sum = 0;
+    };
+    items.forEach(el=>{
+      const r = +el.dataset.ratio || 1;
+      row.push(el); sum += r;
+      if(sum * target + GAP * (row.length - 1) >= W) flush(false);
+    });
+    flush(true);
+  });
+}
+let galleryResizeT = null;
+window.addEventListener('resize', ()=>{ clearTimeout(galleryResizeT); galleryResizeT = setTimeout(layoutGallery, 120); }, {passive:true});
 
 /* Gallery 縮圖視差：滑鼠在縮圖裡的位置決定圖片往哪個方向輕輕位移
    （滑鼠在右上，圖片就往右上偏移一點），疊加在原本 hover 放大上面，
@@ -4177,9 +4238,11 @@ function renderProfile(id){
     </a>
   `).join('') : '';
 
+  const gTotal = (ch.gallery || []).length;
   const gallery = ch.gallery && ch.gallery.length ? ch.gallery.map((g,i)=>`
-    <div class="gallery-thumb${g.sensitive ? ' is-sensitive' : ''}" style="--i:${Math.min(i, 18)}" onclick="handleGalleryThumbClick(this, '${ch.id}', ${i})">
+    <div class="gallery-thumb${g.sensitive ? ' is-sensitive' : ''}" style="--i:${Math.min(i, 18)}" data-ratio="${imgRatio(g.thumb || g.image).toFixed(4)}" onclick="handleGalleryThumbClick(this, '${ch.id}', ${i})">
       ${galleryThumb(g, ch, i)}
+      <div class="gallery-info"><span class="gallery-no">${String(i+1).padStart(2,'0')} / ${String(gTotal).padStart(2,'0')}</span>${g.caption && !g.sensitive ? `<span class="gallery-cap">${g.caption}</span>` : ''}</div>
       ${g.sensitive ? `<div class="sensitive-badge"><div class="icon">⚠</div>敏感內容<br>點擊查看</div>` : ''}
     </div>
   `).join('') : `<div class="empty-note">No images yet.</div>`;
@@ -4223,6 +4286,7 @@ function renderProfile(id){
 
   initProfileReveal();
   setupFullbodyBackground(ch);
+  layoutGallery();
   initGalleryParallax();
 }
 

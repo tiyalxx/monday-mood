@@ -68,6 +68,10 @@ async function processImage(rel){
   const buf = fs.readFileSync(path.join(ROOT, rel));
   const hash = createHash('sha1').update(buf).digest('hex');
   const variants = isHero(rel) ? { ...VARIANTS, hero: HERO_VARIANT } : VARIANTS;
+  /* 記下原圖的寬高（依 EXIF 轉正之後的方向），網頁排 Gallery 時就能先知道每張圖的比例 */
+  const meta = await sharp(buf, { limitInputPixels:false }).metadata();
+  const swap = (meta.orientation || 1) >= 5;
+  const dims = [swap ? meta.height : meta.width, swap ? meta.width : meta.height];
   for(const [name, apply] of Object.entries(variants)){
     const cached = path.join(CACHE, `${hash}-${name}-v${VERSION}.webp`);
     if(!fs.existsSync(cached)){
@@ -79,7 +83,7 @@ async function processImage(rel){
     fs.mkdirSync(path.dirname(dest), { recursive:true });
     fs.copyFileSync(cached, dest);
   }
-  return buf.length;
+  return { bytes: buf.length, dims };
 }
 
 async function main(){
@@ -97,6 +101,7 @@ async function main(){
   const done = [];
   const failed = [];
   let inputBytes = 0;
+  const dimsMap = {};
   /* 同時處理幾張圖：太多會吃光 Netlify 建置機的記憶體（大張 PNG 解碼後很佔空間） */
   const concurrency = Math.max(1, Math.min(4, os.availableParallelism?.() ?? 2));
   sharp.concurrency(1);
@@ -105,9 +110,10 @@ async function main(){
     while(next < images.length){
       const rel = images[next++];
       try{
-        const bytes = await processImage(rel);
+        const { bytes, dims } = await processImage(rel);
         inputBytes += bytes;
         done.push(rel);
+        if(dims[0] && dims[1]) dimsMap[rel] = dims;
       }catch(err){
         /* 單張圖壞掉不會讓整個部署失敗，那張圖會繼續用原圖顯示 */
         failed.push(rel);
@@ -117,7 +123,7 @@ async function main(){
   }));
 
   done.sort();
-  fs.writeFileSync(path.join(DIST, '_img', 'manifest.json'), JSON.stringify({ version:VERSION, images:done, hero:done.filter(isHero) }));
+  fs.writeFileSync(path.join(DIST, '_img', 'manifest.json'), JSON.stringify({ version:VERSION, images:done, hero:done.filter(isHero), dims:dimsMap }));
 
   const sizeOf = dir => {
     let total = 0;
