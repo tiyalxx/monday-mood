@@ -6,7 +6,97 @@
   <title>Monday's Mood — Admin</title>
 </head>
 <body>
-  <!-- 這頁不用改，它只是負責把後台工具（Decap CMS）載進來 -->
+  <!-- 這頁負責把後台工具（Decap CMS）載進來，下面另外加了「Gallery 一次上傳多張圖片」的按鈕 -->
   <script src="https://unpkg.com/decap-cms@3.17.0/dist/decap-cms.js"></script>
+  <script>
+  /* Gallery 一次上傳多張：
+     Decap 內建的媒體庫一次只能選一張圖，所以在角色資料的「Gallery」清單上方加一個按鈕，
+     可以一次選好幾張，每張會依序上傳並各自新增成一筆圖片（說明留空、敏感內容預設關閉）。
+     做法是沿用內建的 list 清單元件，只在名稱是 gallery 的清單上方多畫一排按鈕，其他清單完全不變。 */
+  (function(){
+    const base = window.CMS && CMS.getWidget('list');
+    if(!base || !window.h) return;
+    const h = window.h;
+    const ListControl = base.control;
+
+    class GalleryListControl extends ListControl {
+      isGallery(){
+        const fields = this.props.field.get('fields');
+        return this.props.field.get('name') === 'gallery' && !!fields && fields.some(f => f.get('name') === 'image');
+      }
+
+      uploadMany = async e => {
+        const input = e.target;
+        const files = [...input.files].filter(f => /^image\//.test(f.type))
+          .sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric:true }));
+        input.value = '';
+        if(!files.length || this.state.bulkBusy) return;
+        const { field, config, onPersistMedia } = this.props;
+        const imageField = field.get('fields').find(f => f.get('name') === 'image');
+        const cfg = k => config && (typeof config.get === 'function' ? config.get(k) : config[k]);
+        const mediaFolder = String(cfg('media_folder') || '').replace(/^\/+|\/+$/g, '');
+        const publicFolder = String(cfg('public_folder') || '/' + mediaFolder).replace(/\/+$/, '');
+        let ok = 0, failed = 0;
+        for(let i = 0; i < files.length; i++){
+          this.setState({ bulkBusy:true, bulkMsg:`上傳中 ${i + 1} / ${files.length}：${files[i].name}` });
+          let saved = null;
+          try{
+            const action = await onPersistMedia(files[i], { field:imageField });
+            /* 在編輯畫面裡上傳時，圖片會先暫存，按「Publish」存檔時才跟資料一起存進去（跟內建的單張上傳一樣） */
+            const pl = action && action.payload;
+            saved = pl && (pl.path ? pl : pl.file);
+          }catch(err){ console.error(err); }
+          if(!saved || !saved.path){ failed++; continue; }
+          const p = String(saved.path).replace(/^\/+/, '');
+          const url = mediaFolder && p.startsWith(mediaFolder + '/') ? publicFolder + p.slice(mediaFolder.length) : '/' + p;
+          this.appendImage(url);
+          ok++;
+          /* 等畫面更新完再傳下一張，確保拿到的是最新的清單 */
+          await new Promise(r => setTimeout(r, 0));
+        }
+        this.setState({ bulkBusy:false, bulkMsg: `完成：新增 ${ok} 張` + (failed ? `，${failed} 張沒有上傳成功` : '') + '。記得按上方的「Publish」→「Publish now」存檔，圖片才會真的存進去。' });
+      };
+
+      /* 跟內建的「新增」一樣，只是新增的那筆預設收合起來，一次加很多張時清單才不會一下子變很長 */
+      appendImage(url){
+        const { field, onChange } = this.props;
+        const value = this.props.value || field.get('fields').clear();
+        const item = field.clear().merge({ image:url, caption:'', sensitive:false });
+        const addToTop = field.get('add_to_top', false);
+        const key = crypto.randomUUID();
+        this.setState({
+          itemsCollapsed: addToTop ? [true, ...this.state.itemsCollapsed] : [...this.state.itemsCollapsed, true],
+          keys: addToTop ? [key, ...this.state.keys] : [...this.state.keys, key],
+        });
+        onChange(addToTop ? value.unshift(item) : value.push(item));
+      }
+
+      render(){
+        const list = super.render();
+        if(!this.isGallery()) return list;
+        const busy = !!this.state.bulkBusy;
+        const bar = h('div', { style:{ display:'flex', alignItems:'center', flexWrap:'wrap', gap:'10px 14px', margin:'0 0 12px' } },
+          h('label', {
+            style:{
+              display:'inline-flex', alignItems:'center', gap:'6px', padding:'8px 14px', borderRadius:'5px',
+              background: busy ? '#c7cad1' : '#3a69c7', color:'#fff', fontSize:'13px', fontWeight:600,
+              cursor: busy ? 'default' : 'pointer', userSelect:'none',
+            },
+          },
+            busy ? '上傳中…' : '＋ 一次上傳多張圖片',
+            h('input', { type:'file', accept:'image/*', multiple:true, disabled:busy, onChange:this.uploadMany, style:{ display:'none' } })
+          ),
+          h('span', { style:{ fontSize:'12px', color:'#798291', lineHeight:1.5 } },
+            this.state.bulkMsg || '可以一次選很多張，會依檔名順序加到清單最後面；說明和「R18／敏感內容」之後再點開那一筆設定。')
+        );
+        return h('div', null, bar, list);
+      }
+    }
+
+    /* 用同一個名稱 list 重新註冊（其餘設定照舊），Decap 會在主控台印一行「重複註冊」的提醒，屬正常現象 */
+    const { control, preview, ...rest } = base;
+    CMS.registerWidget({ ...rest, name:'list', controlComponent:GalleryListControl, previewComponent:preview });
+  })();
+  </script>
 </body>
 </html>

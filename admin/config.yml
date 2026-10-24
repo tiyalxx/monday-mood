@@ -167,7 +167,7 @@ collections:
                 collapsed: true
                 label_singular: "圖片"
                 summary: "{{fields.sensitive | ternary('⚠ 敏感　', '')}}{{fields.caption}}　{{fields.image}}"
-                hint: "可以拖曳調整順序；網站上的 Gallery 會照這個順序排列"
+                hint: "可以拖曳調整順序；網站上的 Gallery 會照這個順序排列。想一次加很多張，用上方的「＋ 一次上傳多張圖片」按鈕"
                 fields:
                   - {label: "圖片 Image", name: "image", widget: "image", hint: "直接上傳原圖就好，網站部署時會自動壓縮成縮圖和大圖，不用自己縮小。"}
                   - {label: "說明 Caption", name: "caption", widget: "string", required: false}
