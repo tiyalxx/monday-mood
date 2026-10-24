@@ -170,8 +170,9 @@ button{font-family:inherit; cursor:pointer;}
   position:sticky; top:0; z-index:40;
   display:flex; align-items:center; justify-content:space-between;
   padding:22px clamp(20px,4vw,56px);
-  background:rgba(255,255,255,.88);
-  backdrop-filter:blur(6px);
+  /* 不用毛玻璃模糊（backdrop-filter）：底色本來就快不透明，模糊幾乎看不出來，
+     但瀏覽器捲動時每一格都要重新模糊導覽列後面的畫面，是角色頁捲動卡的主因之一 */
+  background:rgba(255,255,255,.93);
   border-bottom:1px solid var(--line);
   transition:opacity .4s ease;
   /* 導覽列的背景永遠是白色霧面，不管底下的頁面套用哪個世界觀主題，
@@ -763,12 +764,11 @@ body.is-profile .share-fab{ display:flex; }
    小字更像是轉場的視覺焦點。 */
 #wipe{
   position:fixed; inset:0; z-index:100;
-  pointer-events:none;
+  pointer-events:none; overflow:hidden;
 }
 #wipe-bg{
   position:absolute; inset:0;
-  transform:scaleX(0);
-  transform-origin:left;
+  transform:translateX(-100%);
   background:var(--wipe-color, var(--wipe-default));
 }
 #wipe.run #wipe-bg{
@@ -790,11 +790,14 @@ body.is-profile .share-fab{ display:flex; }
   transition:opacity .25s ease, transform .3s ease;
   transition-delay:0ms !important;
 }
+/* 色塊從左邊滑進來蓋滿、再往右邊滑出去（看起來跟「從左展開、往右收起」一樣）。
+   只用 translateX，整段動畫交給顯示卡跑；以前在關鍵影格裡切換 transform-origin，
+   瀏覽器只能用主執行緒跑，剛好遇到中途要排好整個新頁面的那一下，色塊就會頓住 */
 @keyframes wipeSweep{
-  0%{transform:scaleX(0); transform-origin:left;}
-  48%{transform:scaleX(1); transform-origin:left;}
-  52%{transform:scaleX(1); transform-origin:right;}
-  100%{transform:scaleX(0); transform-origin:right;}
+  0%{transform:translateX(-100%);}
+  48%{transform:translateX(0);}
+  52%{transform:translateX(0);}
+  100%{transform:translateX(100%);}
 }
 
 /* 換頁之後，新頁面的內容不是整塊瞬間出現，而是依序一個一個浮現
@@ -1588,7 +1591,7 @@ body.is-profile .share-fab{ display:flex; }
 }
 #search-modal{
   position:fixed; inset:0; z-index:220;
-  background:rgba(20,18,20,.45); backdrop-filter:blur(4px); -webkit-backdrop-filter:blur(4px);
+  background:rgba(20,18,20,.52);
   display:none; justify-content:center; align-items:flex-start; padding:12vh 20px 20px;
 }
 #search-modal.open{ display:flex; animation:fadeIn .2s ease both; }
@@ -1641,26 +1644,33 @@ body.search-open{ overflow:hidden; }
 
 #cp-modal{
   position:fixed; inset:0; z-index:210;
-  background:rgba(20,18,20,.55); backdrop-filter:blur(4px); -webkit-backdrop-filter:blur(4px);
+  /* 不用毛玻璃模糊：全螢幕的 backdrop-filter 會讓卡片打開、捲動時每一格都重新模糊整個背景，
+     背景改成稍微深一點的半透明色，一樣能把注意力集中在卡片上 */
+  background:rgba(20,18,20,.62);
   display:none; align-items:center; justify-content:center; padding:20px;
 }
-#cp-modal.open{ display:flex; animation:fadeIn .25s ease both; }
+#cp-modal.open{ display:flex; animation:cpFade .25s ease both; }
+@keyframes cpFade{ from{ opacity:0; } to{ opacity:1; } }
 body.cp-modal-open{ overflow:hidden; }
 .cp-card{
-  position:relative; width:min(460px, 100%); max-height:min(88vh, 820px); overflow-y:auto;
+  position:relative; width:min(460px, 100%); max-height:min(88vh, 820px);
+  display:flex; flex-direction:column; overflow:hidden;
   background:var(--bg); color:var(--ink); border:1px solid var(--line); border-radius:calc(var(--radius) + 6px);
-  box-shadow:0 30px 80px rgba(0,0,0,.28); padding:40px 30px 32px;
+  box-shadow:0 30px 80px rgba(0,0,0,.28);
   text-align:center;
   animation:cpCardIn .35s cubic-bezier(.2,.8,.2,1) both;
 }
-/* 小卡片內側再框一圈細線，像實體卡片的邊框 */
+/* 小卡片內側再框一圈細線，像實體卡片的邊框。
+   內容太長時是裡面的 #cp-modal-body 在捲動，卡片本身不動，這圈框線才會一直貼齊整張卡片 */
 .cp-card::before{
   content:''; position:absolute; inset:8px; border:1px solid var(--line);
-  border-radius:calc(var(--radius) + 2px); pointer-events:none;
+  border-radius:calc(var(--radius) + 2px); pointer-events:none; z-index:2;
 }
+/* 捲動區域縮在框線內側（margin 9px），捲動時內容會在框線那裡被切齊，不會壓過框線 */
+#cp-modal-body{ flex:1 1 auto; min-height:0; overflow-y:auto; overscroll-behavior:contain; margin:9px; padding:31px 21px 23px; }
 @keyframes cpCardIn{ from{ opacity:0; transform:translateY(14px) scale(.98); } to{ opacity:1; transform:none; } }
 .cp-close{
-  position:absolute; top:14px; right:14px; width:34px; height:34px; border-radius:50%;
+  position:absolute; z-index:3; top:14px; right:14px; width:34px; height:34px; border-radius:50%;
   border:1px solid var(--line); background:var(--bg); color:var(--ink-soft); font-size:13px;
 }
 .cp-close:hover{ color:var(--brand); border-color:var(--brand); }
@@ -1672,8 +1682,9 @@ body.cp-modal-open{ overflow:hidden; }
 .cp-title.is-wrapped{ white-space:normal; }
 .cp-x{ color:var(--brand); margin:0 .5em; font-weight:400; }
 .cp-divider{ color:var(--brand); font-size:12px; margin:12px 0 18px; opacity:.8; }
-.cp-image{ margin:0 0 20px; border-radius:var(--radius-sm); overflow:hidden; background:var(--panel); }
-.cp-image img{ display:block; width:100%; height:auto; max-height:42vh; object-fit:contain; }
+/* 圖片後面不墊底色：直式圖不會被左右兩塊灰底夾住，圓角直接套在圖片本身 */
+.cp-image{ margin:0 0 20px; display:flex; justify-content:center; }
+.cp-image img{ display:block; max-width:100%; width:auto; height:auto; max-height:42vh; border-radius:var(--radius-sm); }
 /* 特質量表：左邊是「這個角色 → 對方」、右邊是「對方 → 這個角色」，中間是項目名稱，
    每項 0～5 個圓點，跟網站其他地方（狀態點、捲動提示點）同一種小圓點語言 */
 .cp-traits{
@@ -1703,7 +1714,8 @@ body.cp-modal-open{ overflow:hidden; }
 .cp-partner{ display:inline-block; margin-top:22px; }
 @media (max-width:640px){
   #cp-modal{ align-items:flex-end; padding:0; }
-  .cp-card{ width:100%; max-height:88vh; border-radius:calc(var(--radius) + 6px) calc(var(--radius) + 6px) 0 0; padding:36px 22px calc(28px + env(safe-area-inset-bottom, 0px)); }
+  .cp-card{ width:100%; max-height:88vh; border-radius:calc(var(--radius) + 6px) calc(var(--radius) + 6px) 0 0; }
+  #cp-modal-body{ margin:9px 9px 0; padding:27px 13px calc(28px + env(safe-area-inset-bottom, 0px)); }
   .cp-card::before{ bottom:0; border-bottom:none; border-radius:calc(var(--radius) + 2px) calc(var(--radius) + 2px) 0 0; }
   .cp-title{ font-size:18px; }
 }
@@ -1739,20 +1751,23 @@ body.cp-modal-open{ overflow:hidden; }
   width:min(56vw,820px);
   overflow:hidden;
   z-index:0; pointer-events:none;
-  opacity:0; filter:blur(24px);
-  transition:opacity .9s ease, filter .9s ease;
+  /* 只用透明度淡入：整塊加 filter 的話，捲動時每一格畫面都要重畫整張大圖，會很卡 */
+  opacity:0;
+  transition:opacity .9s ease;
 }
-.pf-bg-fullbody.show{display:block; opacity:1; filter:blur(0);}
-.pf-bg-fullbody.in-view{opacity:1; filter:blur(0);}
+.pf-bg-fullbody.show{display:block; opacity:1;}
+.pf-bg-fullbody.in-view{opacity:1;}
 .pf-bg-fullbody img{
   position:absolute; top:0; left:0;
   width:100%; height:auto; display:block;
   transform:translateY(0);
   opacity:0;
-  will-change:transform, width, height, opacity;
-  transition:opacity .5s ease, filter .5s ease;
+  will-change:transform, opacity;
+  transition:opacity .5s ease;
 }
-.pf-bg-fullbody img.loaded{opacity:var(--fb-dim, 1); filter:blur(calc((1 - var(--fb-dim, 1)) * 3px)) saturate(calc(.55 + var(--fb-dim, 1) * .45));}
+/* 捲到 Gallery 附近時立繪變淡：只改透明度（交給顯示卡處理，很省），
+   不再跟著捲動一直改模糊／飽和度濾鏡——那會讓瀏覽器每一格都重新處理整張大圖 */
+.pf-bg-fullbody img.loaded{opacity:var(--fb-dim, 1);}
 /* 立繪圖片本身還在載入時，用一個淡淡的閃光骨架占位，
    這樣切換角色的當下畫面不會整塊空白、感覺卡住不動 */
 .pf-bg-fullbody::before{
@@ -1767,7 +1782,7 @@ body.cp-modal-open{ overflow:hidden; }
   opacity:1;
   transition:opacity .35s ease;
 }
-.pf-bg-fullbody.in-view::before{opacity:0;}
+.pf-bg-fullbody.in-view::before{opacity:0; animation:none;} /* 立繪出來後就停掉閃光動畫，不然看不見了還一直在背景重畫 */
 @keyframes pfSkeletonShimmer{
   0%{background-position:200% 0;}
   100%{background-position:-200% 0;}
@@ -1996,7 +2011,6 @@ html{ scrollbar-width:thin; scrollbar-color:rgba(128,128,128,.45) transparent; }
 #lightbox{
   position:fixed; inset:0; z-index:200;
   background:rgba(14,13,16,.96);
-  backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
   display:none; align-items:center; justify-content:center;
   flex-direction:column;
   color:#f2f0f3;
@@ -4447,6 +4461,7 @@ function openCpModal(id){
   const info = ch && cpInfo(ch);
   if(!info) return;
   const partner = cpPartner(ch);
+  document.getElementById('cp-modal-body').scrollTop = 0;
   document.getElementById('cp-modal-body').innerHTML = `
     <div class="cp-label">CP</div>
     <h2 class="cp-title" id="cp-modal-title"><span>${ch.codename}</span><span class="cp-x">×</span><span>${ch.cp}</span></h2>
@@ -4714,40 +4729,46 @@ function updateFullbodyParallax(){
   const natW = Number(bg.dataset.natW) || img.naturalWidth;
   const natH = Number(bg.dataset.natH) || img.naturalHeight;
   if(!natW || !natH) return;
+  /* 先把需要量的數字一次量完，再一次寫回樣式：讀寫交錯會逼瀏覽器每次捲動都重新排版好幾次 */
   const INSET = 22;
   const boxW = bg.clientWidth - INSET*2, boxH = bg.clientHeight - INSET*2;
-  const naturalRatio = natW / natH; // 寬/高
-  img.style.width = boxW.toFixed(1) + 'px';
-  img.style.height = 'auto';
-  img.style.left = INSET + 'px';
-  const renderedH = boxW / naturalRatio;
-  if(renderedH > boxH){
+  const scrollable = document.documentElement.scrollHeight - window.innerHeight;
+  const dim = fullbodyDimValue();
+  const renderedH = boxW / (natW / natH); // 撐滿寬度後的高度
+  const tall = renderedH > boxH;
+  const top = tall ? INSET : INSET + (boxH - renderedH) / 2;
+  /* 尺寸、位置只有在視窗大小改變或換圖時才需要重設，捲動時只改 transform 和透明度 */
+  const geo = `${boxW.toFixed(1)}|${top.toFixed(1)}`;
+  if(img.dataset.geo !== geo){
+    img.dataset.geo = geo;
+    img.style.width = boxW.toFixed(1) + 'px';
+    img.style.height = 'auto';
+    img.style.left = INSET + 'px';
+    img.style.top = top.toFixed(1) + 'px';
+  }
+  if(tall){
     // 瘦長立繪：撐滿寬度後比盒子高，捲動時往上平移露出頭到腳
-    img.style.top = INSET + 'px';
-    const maxTranslate = renderedH - boxH;
-    const scrollable = document.documentElement.scrollHeight - window.innerHeight;
     const progress = scrollable > 0 ? Math.min(1, Math.max(0, window.scrollY / scrollable)) : 0;
-    img.style.transform = `translateY(${(-progress * maxTranslate).toFixed(1)}px)`;
+    img.style.transform = `translateY(${(-progress * (renderedH - boxH)).toFixed(1)}px)`;
   } else {
     // 寬扁／偏方立繪：撐滿寬度後比盒子矮，直接整張置中，不裁切也不用捲動
-    img.style.top = (INSET + (boxH - renderedH) / 2).toFixed(1) + 'px';
     img.style.transform = 'translateY(0)';
   }
-  updateFullbodyDim(bg);
+  bg.style.setProperty('--fb-dim', dim);
 }
 /* 捲到 Gallery（沒有 Gallery 就是頁尾的上一位／下一位）附近時，立繪慢慢變淡、
    微微模糊，融進背景裡，不會跟縮圖、按鈕疊在一起搶畫面；但不會完全消失，
    往回捲又會慢慢變回來。用 CSS 變數 --fb-dim 控制（1 = 原本，FULLBODY_MIN_DIM = 最淡） */
 const FULLBODY_MIN_DIM = 0.16;
-function updateFullbodyDim(bg){
+function fullbodyDimValue(){
   const target = document.querySelector('.profile-view .gallery-grid') || document.querySelector('.profile-view .pf-char-nav');
-  if(!target){ bg.style.setProperty('--fb-dim', 1); return; }
+  if(!target) return '1';
   const vh = window.innerHeight;
   const top = target.getBoundingClientRect().top;
   /* 目標區塊的頂端從畫面 90% 高度往上捲到 30% 的這段距離內，從 1 漸變到最淡 */
   const t = Math.min(1, Math.max(0, (vh*0.9 - top) / (vh*0.6)));
   const eased = t * t * (3 - 2*t); // smoothstep，開始跟結束都比較柔和
-  bg.style.setProperty('--fb-dim', (1 - eased * (1 - FULLBODY_MIN_DIM)).toFixed(3));
+  return (1 - eased * (1 - FULLBODY_MIN_DIM)).toFixed(3);
 }
 let fullbodyParallaxTicking = false;
 window.addEventListener('scroll', ()=>{
