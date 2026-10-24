@@ -20,6 +20,7 @@
         "desire": 4
       },
       "cp": "菲洛梅娜·斯托亞諾夫斯基",
+      "cpImage": "/images/uploads/插圖-20261006-2.jpg",
       "affiliation": "霍洛伊魔法學院 (2026)",
       "skill": "樞紐解構",
       "fullbodyImg": "/images/uploads/052515157111.png",
@@ -62,6 +63,66 @@
         },
         {
           "image": "/images/uploads/插圖-20260914.jpg"
+        },
+        {
+          "sensitive": false,
+          "image": "/images/uploads/插圖-20260907-2.jpg"
+        },
+        {
+          "sensitive": false,
+          "image": "/images/uploads/插圖-20260831.jpg"
+        },
+        {
+          "sensitive": false,
+          "image": "/images/uploads/插圖-20260827.jpg"
+        },
+        {
+          "sensitive": false,
+          "image": "/images/uploads/插圖-20260910.jpg"
+        },
+        {
+          "sensitive": false,
+          "image": "/images/uploads/插圖-20260906.jpg"
+        },
+        {
+          "sensitive": false,
+          "image": "/images/uploads/插圖-20260903-2.jpg"
+        },
+        {
+          "sensitive": false,
+          "image": "/images/uploads/插圖-20260902.jpg"
+        },
+        {
+          "sensitive": false,
+          "image": "/images/uploads/插圖-20260914-4.jpg"
+        },
+        {
+          "sensitive": false,
+          "image": "/images/uploads/39h80hocfatc8qgm8aetzl.jpg"
+        },
+        {
+          "sensitive": false,
+          "image": "/images/uploads/6clsg4rc7gbek82eq8emzo.jpg"
+        },
+        {
+          "sensitive": false,
+          "image": "/images/uploads/插圖-20260928.jpg"
+        },
+        {
+          "sensitive": false,
+          "image": "/images/uploads/hr_bpgkbuaawwgp.jpg"
+        },
+        {
+          "sensitive": false,
+          "image": "/images/uploads/插圖-20260930-2.jpg"
+        },
+        {
+          "sensitive": false,
+          "image": "/images/uploads/龍王生賀-拉爾菲-有字-.jpg"
+        },
+        {
+          "sensitive": false,
+          "image": "/images/uploads/插圖-20261006-2.jpg"
         }
       ],
       "status": "alive",
