@@ -1647,20 +1647,24 @@ body.search-open{ overflow:hidden; }
 #cp-modal.open{ display:flex; animation:fadeIn .25s ease both; }
 body.cp-modal-open{ overflow:hidden; }
 .cp-card{
-  position:relative; width:min(460px, 100%); max-height:min(88vh, 820px); overflow-y:auto;
+  position:relative; width:min(460px, 100%); max-height:min(88vh, 820px);
+  display:flex; flex-direction:column; overflow:hidden;
   background:var(--bg); color:var(--ink); border:1px solid var(--line); border-radius:calc(var(--radius) + 6px);
-  box-shadow:0 30px 80px rgba(0,0,0,.28); padding:40px 30px 32px;
+  box-shadow:0 30px 80px rgba(0,0,0,.28);
   text-align:center;
   animation:cpCardIn .35s cubic-bezier(.2,.8,.2,1) both;
 }
-/* 小卡片內側再框一圈細線，像實體卡片的邊框 */
+/* 小卡片內側再框一圈細線，像實體卡片的邊框。
+   內容太長時是裡面的 #cp-modal-body 在捲動，卡片本身不動，這圈框線才會一直貼齊整張卡片 */
 .cp-card::before{
   content:''; position:absolute; inset:8px; border:1px solid var(--line);
-  border-radius:calc(var(--radius) + 2px); pointer-events:none;
+  border-radius:calc(var(--radius) + 2px); pointer-events:none; z-index:2;
 }
+/* 捲動區域縮在框線內側（margin 9px），捲動時內容會在框線那裡被切齊，不會壓過框線 */
+#cp-modal-body{ flex:1 1 auto; min-height:0; overflow-y:auto; overscroll-behavior:contain; margin:9px; padding:31px 21px 23px; }
 @keyframes cpCardIn{ from{ opacity:0; transform:translateY(14px) scale(.98); } to{ opacity:1; transform:none; } }
 .cp-close{
-  position:absolute; top:14px; right:14px; width:34px; height:34px; border-radius:50%;
+  position:absolute; z-index:3; top:14px; right:14px; width:34px; height:34px; border-radius:50%;
   border:1px solid var(--line); background:var(--bg); color:var(--ink-soft); font-size:13px;
 }
 .cp-close:hover{ color:var(--brand); border-color:var(--brand); }
@@ -1703,7 +1707,8 @@ body.cp-modal-open{ overflow:hidden; }
 .cp-partner{ display:inline-block; margin-top:22px; }
 @media (max-width:640px){
   #cp-modal{ align-items:flex-end; padding:0; }
-  .cp-card{ width:100%; max-height:88vh; border-radius:calc(var(--radius) + 6px) calc(var(--radius) + 6px) 0 0; padding:36px 22px calc(28px + env(safe-area-inset-bottom, 0px)); }
+  .cp-card{ width:100%; max-height:88vh; border-radius:calc(var(--radius) + 6px) calc(var(--radius) + 6px) 0 0; }
+  #cp-modal-body{ margin:9px 9px 0; padding:27px 13px calc(28px + env(safe-area-inset-bottom, 0px)); }
   .cp-card::before{ bottom:0; border-bottom:none; border-radius:calc(var(--radius) + 2px) calc(var(--radius) + 2px) 0 0; }
   .cp-title{ font-size:18px; }
 }
@@ -4447,6 +4452,7 @@ function openCpModal(id){
   const info = ch && cpInfo(ch);
   if(!info) return;
   const partner = cpPartner(ch);
+  document.getElementById('cp-modal-body').scrollTop = 0;
   document.getElementById('cp-modal-body').innerHTML = `
     <div class="cp-label">CP</div>
     <h2 class="cp-title" id="cp-modal-title"><span>${ch.codename}</span><span class="cp-x">×</span><span>${ch.cp}</span></h2>
