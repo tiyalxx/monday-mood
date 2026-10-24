@@ -1676,8 +1676,9 @@ body.cp-modal-open{ overflow:hidden; }
 .cp-title.is-wrapped{ white-space:normal; }
 .cp-x{ color:var(--brand); margin:0 .5em; font-weight:400; }
 .cp-divider{ color:var(--brand); font-size:12px; margin:12px 0 18px; opacity:.8; }
-.cp-image{ margin:0 0 20px; border-radius:var(--radius-sm); overflow:hidden; background:var(--panel); }
-.cp-image img{ display:block; width:100%; height:auto; max-height:42vh; object-fit:contain; }
+/* 圖片後面不墊底色：直式圖不會被左右兩塊灰底夾住，圓角直接套在圖片本身 */
+.cp-image{ margin:0 0 20px; display:flex; justify-content:center; }
+.cp-image img{ display:block; max-width:100%; width:auto; height:auto; max-height:42vh; border-radius:var(--radius-sm); }
 /* 特質量表：左邊是「這個角色 → 對方」、右邊是「對方 → 這個角色」，中間是項目名稱，
    每項 0～5 個圓點，跟網站其他地方（狀態點、捲動提示點）同一種小圓點語言 */
 .cp-traits{
