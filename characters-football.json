@@ -1,3 +1,230 @@
 {
-  "characters": []
+  "characters": [
+    {
+      "height": "183",
+      "bio": "西班牙、巴西雙重國籍，司職前腰。\n家族世居巴塞隆納，父親是加泰隆尼亞人，母親則來自里約熱內盧。\n\n從小進入當地知名青訓營，接受了傳統嚴苛的西班牙傳控訓練，在青訓梯隊嶄露頭角後，他被充滿重工業底蘊的豪門 VAF 發掘並招致麾下。",
+      "realname": "—",
+      "affiliation": "VAF",
+      "skill": "—",
+      "fullbodyImg": "/images/uploads/插圖-20260808.jpg",
+      "gallery": [
+        {
+          "image": "/images/uploads/阿德里人設.jpg",
+          "caption": "",
+          "sensitive": false
+        },
+        {
+          "image": "/images/uploads/插圖-20260808-2.jpg",
+          "caption": "",
+          "sensitive": false
+        }
+      ],
+      "status": "alive",
+      "role": "前腰",
+      "codename": "阿德里安·費雷爾·里貝羅",
+      "id": "coop-football-1",
+      "relationships": [
+        {
+          "target": "約西普·馬克西莫維奇",
+          "label": "隊長"
+        }
+      ],
+      "birthday": "3.17",
+      "age": "26"
+    },
+    {
+      "cpTraitsMine": {
+        "affection": 5,
+        "loyalty": 5,
+        "possessive": 5,
+        "dependence": 5,
+        "desire": 4
+      },
+      "height": "188",
+      "bio": "MET現任隊長，出身於英格蘭，同時也是英格蘭國家隊的副隊長。\n\n曾拿過歐洲金靴獎，擁有厚實身板，背身護球是世界前三的水平，能在對手後衛的包夾下當作前場支點。擅長回撤，常主動撤回前腰位置拉出空間，回到禁區，不管是凌空抽射還是高空頭球都相當有破壞力與威脅性。",
+      "realname": "—",
+      "avatarImg": "/images/uploads/插圖-20260816-2.jpg",
+      "cpTraitsTheirs": {
+        "affection": 4,
+        "loyalty": 5,
+        "possessive": 3,
+        "dependence": 3,
+        "desire": 3
+      },
+      "cp": "約西普·馬克西莫維奇",
+      "cpImage": "/images/uploads/插圖-20260826-2.jpg",
+      "affiliation": "MET",
+      "skill": "—",
+      "fullbodyImg": "/images/uploads/插圖-202608161.png",
+      "gallery": [
+        {
+          "image": "/images/uploads/哈里人設.jpg",
+          "caption": "",
+          "sensitive": false
+        },
+        {
+          "image": "/images/uploads/插圖-20260826-2.jpg",
+          "caption": "",
+          "sensitive": false
+        },
+        {
+          "image": "/images/uploads/s__22863875.jpg",
+          "caption": "",
+          "sensitive": false
+        },
+        {
+          "sensitive": true,
+          "image": "/images/uploads/插圖-20260903.jpg"
+        }
+      ],
+      "status": "alive",
+      "role": "中鋒",
+      "codename": "哈里·迪弗倫",
+      "id": "coop-football-2",
+      "relationships": [
+        {
+          "target": "約西普·馬克西莫維奇",
+          "label": "愛人"
+        },
+        {
+          "target": "coop-football-3",
+          "label": "隊友"
+        },
+        {
+          "target": "coop-football-4",
+          "label": "隊友"
+        },
+        {
+          "target": "米希·韋伯",
+          "label": "隊友"
+        }
+      ],
+      "birthday": "11.7",
+      "age": "29",
+      "cpIntro": "20 歲那年，哈里和約西普・馬克西莫維奇被並稱為「路易斯漢姆雙子星」，兩人在隊上的感情也比跟其他隊友都要好。但交往之後，哈里在場上的表現明顯下滑，兩人只好說好先暫時分開。\n\n沒想到之後約西普一聲不吭就轉會去了西甲，讓哈里一直耿耿於懷。等到合約一到期，哈里也被西甲球隊挖角，兩人最後在西班牙德比上以對手的身分重逢。"
+    },
+    {
+      "cpTraitsMine": {
+        "affection": 4,
+        "loyalty": 4,
+        "possessive": 5,
+        "dependence": 3,
+        "desire": 5
+      },
+      "height": "195",
+      "bio": "母親是前荷蘭國家女排選手，遺傳了擁有巨人體型與恐怖彈跳。無論是防守對手的角球轟炸，還是攻方角球時的前插頭球重槌，皆能完全掌控高空禁飛區。\n\n擅長在規則邊緣給予極強的身體碰撞，用果斷又狠辣的上搶讓對手產生恐懼。下腳時乾淨俐落，但碰撞力道十分誇張。",
+      "realname": "—",
+      "avatarImg": "/images/uploads/插圖-20260829.jpg",
+      "cpTraitsTheirs": {
+        "affection": 4,
+        "loyalty": 5,
+        "possessive": 5,
+        "dependence": 5,
+        "desire": 4
+      },
+      "cp": "米夏埃爾·「米希」·韋伯",
+      "cpImage": "/images/uploads/插圖-20260829-2.jpg",
+      "affiliation": "MET",
+      "skill": "—",
+      "fullbodyImg": "/images/uploads/插圖-20260908.png",
+      "gallery": [
+        {
+          "image": "/images/uploads/魯德人設.jpg",
+          "caption": "",
+          "sensitive": false
+        },
+        {
+          "image": "/images/uploads/插圖-20260829-2.jpg",
+          "caption": "",
+          "sensitive": false
+        },
+        {
+          "image": "/images/uploads/插圖-20260831.jpg",
+          "caption": "",
+          "sensitive": true
+        },
+        {
+          "image": "/images/uploads/插圖-20260914-3.jpg",
+          "caption": "",
+          "sensitive": true
+        }
+      ],
+      "status": "alive",
+      "role": "中後衛",
+      "codename": "魯德·范·德·瓦爾",
+      "id": "coop-football-3",
+      "relationships": [
+        {
+          "target": "米希·韋伯",
+          "label": "性愛基礎上的愛人"
+        },
+        {
+          "target": "coop-football-2",
+          "label": "隊長"
+        },
+        {
+          "target": "coop-football-4",
+          "label": "隊友"
+        }
+      ],
+      "birthday": "8.14",
+      "age": "26",
+      "cpIntro": "魯德和米希在隊上常常互嗆、打打鬧鬧，但米希的挑釁越來越過火，魯德最後乾脆用強硬的手段逼他服軟。從那之後，兩人就變成了一種吵吵鬧鬧、卻又對彼此予取予求的關係。"
+    },
+    {
+      "cpTraitsMine": {
+        "affection": 4,
+        "loyalty": 4,
+        "possessive": 4,
+        "dependence": 3,
+        "desire": 4
+      },
+      "height": "180",
+      "bio": "費利佩現為 MET 的中場核心。\n\n於布宜諾斯艾利斯的貧民窟長大，在當地知名青訓一路踢上來，後去義甲待了幾年，戰術意識被磨得很細。26 歲轉會到 MET，很快就坐穩主力中場的位置。",
+      "realname": "—",
+      "avatarImg": "/images/uploads/插圖-20261005.jpg",
+      "cpTraitsTheirs": {
+        "dependence": 5,
+        "possessive": 5,
+        "loyalty": 5,
+        "affection": 3,
+        "desire": 4
+      },
+      "cp": "索菲揚·賽斯",
+      "affiliation": "VAF",
+      "skill": "—",
+      "fullbodyImg": "/images/uploads/插圖-202609888.png",
+      "gallery": [
+        {
+          "sensitive": false,
+          "image": "/images/uploads/費利佩人設.jpg"
+        }
+      ],
+      "status": "alive",
+      "role": "中場",
+      "codename": "費利佩·佩雷斯",
+      "id": "coop-football-4",
+      "relationships": [
+        {
+          "target": "coop-football-2",
+          "label": "隊長"
+        },
+        {
+          "target": "coop-football-3",
+          "label": "隊友"
+        },
+        {
+          "target": "米希·韋伯",
+          "label": "隊友"
+        },
+        {
+          "target": "索菲揚·賽斯",
+          "label": "愛人、狗"
+        }
+      ],
+      "birthday": "1.6",
+      "age": "27",
+      "cpIntro": "費利佩剛來沒多久，就很快跟 MET 更衣室的人打成一片，唯獨索菲揚讓他多花了點時間。但他很快就發現，對方骨子裡其實渴望被人掌控，於是便開始積極地展開攻勢。"
+    }
+  ]
 }
