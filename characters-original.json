@@ -454,6 +454,55 @@
       ],
       "birthday": "2.11",
       "age": "16"
+    },
+    {
+      "realname": "—",
+      "cp": "懷亞特·黑爾",
+      "affiliation": "瑞德蒙高中 (2025)",
+      "skill": "—",
+      "status": "alive",
+      "role": "學生",
+      "codename": "凱·納瓦羅",
+      "id": "orig-05",
+      "age": "18"
+    },
+    {
+      "realname": "—",
+      "cp": "阿摩司·門羅",
+      "affiliation": "—",
+      "skill": "—",
+      "status": "alive",
+      "role": "學生",
+      "codename": "克洛帕斯·門羅",
+      "id": "orig-05",
+      "age": "17"
+    },
+    {
+      "cpTraitsMine": {
+        "affection": 5,
+        "loyalty": 5,
+        "possessive": 5,
+        "dependence": 5,
+        "desire": 5
+      },
+      "height": "193",
+      "bio": "出身於從事海上作戰、為母系制度的塞夫林家族。\n為現今家主的次子，還有一名哥哥納什，\n重視身為繼承人的妹妹，為了家族能付出一切。\n話語一針見血，完美主義，或許還有控制狂傾向。",
+      "realname": "—",
+      "cpTraitsTheirs": {
+        "affection": 4,
+        "loyalty": 5,
+        "possessive": 5,
+        "dependence": 4,
+        "desire": 3
+      },
+      "cp": "切瑞莉",
+      "affiliation": "佛地杜多",
+      "skill": "—",
+      "status": "alive",
+      "role": "虎鯨",
+      "codename": "雷弗爾·塞夫林",
+      "id": "orig-06",
+      "age": "26"
     }
   ]
 }
